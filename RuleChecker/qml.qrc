@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/ButtonWithText.qml</file>
+        <file>qml/ButtonWithTextInput.qml</file>
+        <file>qml/ComplexText.qml</file>
+        <file>qml/ComplexTextWithOtherText.qml</file>
+        <file>qml/FlickableScrollBar.qml</file>
+        <file>qml/main.qml</file>
+        <file>qml/ProgressBarWithText.qml</file>
+    </qresource>
+</RCC>

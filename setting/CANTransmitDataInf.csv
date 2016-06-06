@@ -1,0 +1,6 @@
+1,0B4,車速(SP1),7,16,eventSpeed,Receiving Data Stream
+2,343,車間距離,3,8,EventDistance,Receiving Data Stream
+3,2C1,アクセル開度率,7,8,eventAccelOpen,Receiving Data Stream
+4,384,道路種別判定信号,1.4,4,EventRoadClass,Receiving Data Stream
+5,025,舵角,2,12,EventSteeringAngle,Receiving Data Stream
+6,3BC,シフト状態,2.3,2,EventShiftState,Receiving Data Stream

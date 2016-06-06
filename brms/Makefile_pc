@@ -1,0 +1,84 @@
+TRICEPSBASE=$(HOME)/cep/triceps-2.0.0
+CLIPSBASE=$(HOME)/cep/clips_core_source_630
+CFLAGS = -I$(TRICEPSBASE)/cpp -I$(TRICEPSBASE)/cpp/app -I$(TRICEPSBASE)/cpp/pw -I$(TRICEPSBASE)/cpp/common -I$(TRICEPSBASE)/cpp/mem -I$(TRICEPSBASE)/cpp/sched	\
+		-I$(TRICEPSBASE)/cpp/table -I$(TRICEPSBASE)/cpp/type -I$(TRICEPSBASE)/cpp/wrap  -DTRICEPS_NSPR4 -I$(CLIPSBASE)/core -I./common -I./event -I./signaladapter -I./streaming -I./utility -g	\
+		 -Wall -x c++  -fno-strict-aliasing -Wundef -Wpointer-arith -Wshadow -Wcast-qual \
+	    -Winline -Wredundant-decls -Waggregate-return -D_DEBUG_CLIPS_
+
+LDFLAGS = -L$(TRICEPSBASE)/cpp/build -L$(CLIPSBASE)/core  -lpthread -ltriceps -lclips 
+
+MKDIR_P=mkdir -p
+
+DIR_TARGET=../bin
+DIR_OBJ=obj
+DIR_OBJ_STREAM=${DIR_OBJ}/streaming
+DIR_OBJ_EXT=${DIR_OBJ}/extension
+DIR_OBJ_COMMON=${DIR_OBJ}/common
+DIR_OBJ_SIGNAL=${DIR_OBJ}/signaladapter
+DIR_OBJ_EVENT=${DIR_OBJ}/event
+#OBJS =  EntryPoint.o CepMain.o AppMgr.o RuleEng.o UserFunctions.o EStream.o SocketReceiveThread.o CANDataParse.o	\
+	CANTransmitData.o StringUtil.o TimeUtil.o
+SRC = $(wildcard *.cpp )
+SRC_STREAM = $(wildcard streaming/*.cpp )
+SRC_EXT = $(wildcard extension/*.cpp )
+SRC_COMMON = $(wildcard common/*.cpp )
+SRC_SIGNAL = $(wildcard signaladapter/*.cpp )
+SRC_EVENT = $(wildcard event/*.cpp )
+
+OBJS =$(patsubst %.cpp,${DIR_OBJ}/%.o, ${SRC}) $(patsubst %.cpp,${DIR_OBJ}/%.o, ${SRC_STREAM})	\
+	$(patsubst %.cpp,${DIR_OBJ}/%.o, ${SRC_EXT}) $(patsubst %.cpp,${DIR_OBJ}/%.o, ${SRC_COMMON})	\
+	$(patsubst %.cpp,${DIR_OBJ}/%.o, ${SRC_SIGNAL}) $(patsubst %.cpp,${DIR_OBJ}/%.o, ${SRC_EVENT})
+
+
+dir :
+	$(MKDIR_P) $(DIR_OBJ) $(DIR_OBJ_STREAM) $(DIR_OBJ_EXT) $(DIR_OBJ_COMMON) $(DIR_OBJ_SIGNAL) $(DIR_OBJ_EVENT)
+
+cep : $(dir) $(OBJS)
+	gcc -o $(DIR_TARGET)/testCep $(OBJS) $(LDFLAGS) -lstdc++ -lm -lrt
+
+clean :
+	rm -R $(DIR_OBJ) $(DIR_TARGET)/testCep
+
+
+${DIR_OBJ_SIGNAL}/SocketReceiveThread.o: signaladapter/SocketReceiveThread.cpp
+	gcc -c $(CFLAGS) $< -o $@ 
+${DIR_OBJ_SIGNAL}/CANDataParse.o: signaladapter/CANDataParse.cpp 
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ_EVENT}/CANTransmitData.o: event/CANTransmitData.cpp
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ_COMMON}/StringUtil.o: common/StringUtil.cpp
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ_COMMON}/TimeUtil.o: common/TimeUtil.cpp
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ_COMMON}/SysTimer.o: common/SysTimer.cpp
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ_COMMON}/Message.o: common/Message.cpp
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ}/BRMS.o: BRMS.cpp
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ}/Controller.o: Controller.cpp
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ}/CepMain.o: CepMain.cpp 
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ}/ClipsRuleMgr.o: ClipsRuleMgr.cpp
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ}/ClipsSessionMgr.o: ClipsSessionMgr.cpp
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ_EXT}/ExternalFunctions.o: extension/ExternalFunctions.cpp
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ}/RuleEng.o: RuleEng.cpp 
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ_EXT}/UserFunctions.o: extension/UserFunctions.cpp 
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ}/DBAccessor.o: DBAccessor.cpp 
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ_STREAM}/EntryPoint.o: streaming/EntryPoint.cpp 
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ_STREAM}/SignalEntryPoint.o: streaming/SignalEntryPoint.cpp 
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ_STREAM}/EntryPointHistory.o: streaming/EntryPointHistory.cpp 
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ_STREAM}/EntryPointOutput.o: streaming/EntryPointOutput.cpp 
+	gcc -c $(CFLAGS) $< -o $@
+${DIR_OBJ_STREAM}/EntryPointUser.o: streaming/EntryPointUser.cpp 
+	gcc -c $(CFLAGS) $< -o $@
