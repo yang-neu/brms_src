@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<BrmsAdaptor>("hmiapp", 1, 0, "BrmsAdaptor", "BrmsAdaptor: Cannot be created in QML");
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("brms", &brms);
-    engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/qml/profile01SuddenAccel.qml")));
     brms.init(argc, argv);
     brms.start();
 
