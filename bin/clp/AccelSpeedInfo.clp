@@ -22,6 +22,7 @@
    (bind ?AccelInfoList (fact-slot-value ?AccelSpeedInfoAddrList acceleration))
    (bind ?CountInfoList (fact-slot-value ?AccelSpeedInfoAddrList count))
    (bind ?*AccelSpeedInfoList* (insert$ ?*AccelSpeedInfoList* 1 ?AccelInfoList ?CountInfoList))
+   (retract ?AccelSpeedInfoAddrList)
    (printout t "Accel speed info is:"  ?*AccelSpeedInfoList* crlf))
    
 
