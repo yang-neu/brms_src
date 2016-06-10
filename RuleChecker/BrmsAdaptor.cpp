@@ -55,6 +55,22 @@ void BrmsAdaptor::updateAll()
     emit roadKindChanged(QString(QString::fromUtf8(m_brms->getRoadKind().c_str(), strlen(m_brms->getRoadKind().c_str()))));
     emit speedChanged(m_brms->getSpeed());
 
+
+    QVector<double> qv_data;
+    qv_data << 1.7 << 24 << 1.8 << 31 << 1.9 << 3 << 2.0 << 2 << 2.1 << 1 << 1.6 << 128 << 1.5 << 71; //評価用データ
+
+    while(qv_data.length()) {
+        double data = qv_data.takeFirst();
+        int count = qv_data.takeFirst();
+        emit accelInfoChanged("old", data, count);
+        // /*m_brrm->getAccelInfo()*/
+    }
+
+    vector<double> v_data;
+    v_data.push_back(1.7);
+    v_data.push_back(15);
+    emit accelInfoChanged("this", v_data.at(0), v_data.at(1) /*m_brrm->getAccelInfo()*/);
+
     emit suddenAccelChanged(QString(QString::fromUtf8(m_brms->getSuddenAccel().c_str(), strlen(m_brms->getSuddenAccel().c_str()))));
     emit suddenAccelCountChanged(m_brms->getSuddenAccelCount());
     emit suddenAccelStateChanged(QString(QString::fromUtf8(m_brms->getSuddenAccelState().c_str(), strlen(m_brms->getSuddenAccelState().c_str()))));

@@ -12,15 +12,10 @@ Window {
     height: 720;
     color: "#eeeeee";
 
-    property var tripInfo: new Array;
-
-    property int j:0;
-
     property double speedMax: 250;
     property double aMax: 3;
 
-    property int samplingNmuK: 0; //OKD
-
+    property int samplingNmuK: 0;
     property double aTripMax: 0;
     property double aTripAve: 0;
     property double aTripAve2: 0;
@@ -29,53 +24,28 @@ Window {
     property double m_Speed: 250;
     property double m_A: 3;
     property double m_A1: 3;
-    property double m_Accel: 1;
 
     property string suddenAccel:"Profile1_Text";
     property string suddenAccelState:"StatsNotJudge";
     property int suddenAccelCount:0;
 
     Component.onCompleted: {
-            profile01SuddenAccel.loadOldTripsInfo();
+        //Nothing to do
     }
 
     Connections {
         target: brms;
         onSpeedChanged:m_Speed = speed.toFixed(2);
-        onAccelChanged:m_Accel = accel.toFixed(2);
         onAChanged: {
             m_A = a.toFixed(2);
             m_A1 = m_A>0 ? m_A: 0-m_A;
-
-            if(0<m_A) {
-                //加速度の最大値
-                aTripMax = m_A > aTripMax ? m_A: aTripMax;
-
-                //サンプル数
-                //samplingNmuK = samplingNmuK>=500 ? 500: samplingNmuK+1;
-                samplingNmuK++;
-
-                //平均
-                aTripAve = (((aTripAve * (samplingNmuK-1)) + m_A) / samplingNmuK).toFixed(2);
-
-                //データの2乗の平均
-                aTripAve2 = (((aTripAve2 * (samplingNmuK-1)) + (m_A)*(m_A)) / samplingNmuK);
-
-                //分散
-                aTripVariance = (aTripAve2 - (aTripAve)*(aTripAve)).toFixed(2);
-
-                //グラフ表示
-                localfunc.displayGraph();
-
-            }
-
         }
         onSuddenAccelChanged: suddenAccel = str;
         onSuddenAccelStateChanged: suddenAccelState = str;
         onSuddenAccelCountChanged: suddenAccelCount = count;
-        onSampleNumCountChanged: {
-            //OKD
-            //samplingNmuK = samplingNmuK>=500 ? 500: samplingNmuK+1
+        onAccelInfoChanged: {
+            //localfunc.printConsoleLog("accel=" + data + ", count=" + count);
+            localfunc.displayGraph(state, data, count);
         }
 
     }
@@ -456,96 +426,96 @@ Window {
             console.log(msg);
         }
 
-        function displayGraph() {
+        function displayGraph(state, data, count) {
             //localfunc.printConsoleLog(m_A.toFixed(1));
 
-            switch(m_A.toFixed(1)) {
+            switch(data.toFixed(1)) {
             case "0.1":
-                graphBar01.countupThisTrip();
+                graphBar01.update(state, count);
                 break;
 
             case "0.2":
-                graphBar02.countupThisTrip();
+                graphBar02.update(state, count);
                 break;
 
             case "0.3":
-                graphBar03.countupThisTrip();
+                graphBar03.update(state, count);
                 break;
 
             case "0.4":
-                graphBar04.countupThisTrip();
+                graphBar04.update(state, count);
                 break;
 
             case "0.5":
-                graphBar05.countupThisTrip();
+                graphBar05.update(state, count);
                 break;
 
             case "0.6":
-                 graphBar06.countupThisTrip();
+                 graphBar06.update(state, count);
                  break;
 
             case "0.7":
-                graphBar07.countupThisTrip();
+                graphBar07.update(state, count);
                 break;
 
             case "0.8":
-                graphBar08.countupThisTrip();
+                graphBar08.update(state, count);
                 break;
 
             case "0.9":
-                graphBar09.countupThisTrip();
+                graphBar09.update(state, count);
                 break;
 
             case "1.0":
-                graphBar10.countupThisTrip();
+                graphBar10.update(state, count);
                 break;
 
             case "1.1":
-                graphBar11.countupThisTrip();
+                graphBar11.update(state, count);
                 break;
 
             case "1.2":
-                graphBar12.countupThisTrip();
+                graphBar12.update(state, count);
                 break;
 
             case "1.3":
-                graphBar13.countupThisTrip();
+                graphBar13.update(state, count);
                 break;
 
             case "1.4":
-                graphBar14.countupThisTrip();
+                graphBar14.update(state, count);
                 break;
 
             case "1.5":
-                graphBar15.countupThisTrip();
+                graphBar15.update(state, count);
                 break;
 
             case "1.6":
-                 graphBar16.countupThisTrip();
+                 graphBar16.update(state, count);
                  break;
 
             case "1.7":
-                graphBar17.countupThisTrip();
+                graphBar17.update(state, count);
                 break;
 
             case "1.8":
-                graphBar18.countupThisTrip();
+                graphBar18.update(state, count);
                 break;
 
             case "1.9":
-                graphBar19.countupThisTrip();
+                graphBar19.update(state, count);
                 break;
 
             case "2.0":
-                graphBar20.countupThisTrip();
+                graphBar20.update(state, count);
                 break;
 
             case "2.1":
-                graphBar21.countupThisTrip();
+                graphBar21.update(state, count);
                 break;
 
             case "2.2":
-                graphBar22.countupThisTrip();
+                graphBar22.update(state, count);
                 break;
 
             default:
@@ -555,131 +525,5 @@ Window {
             return;
         }
 
-        function loadOldTripsInfo() {
-            localfunc.printConsoleLog("loadOldTripsInfo(): called");
-
-            //loadOldAccelInfo(tripInfo);
-
-            localfunc.printConsoleLog("tripInfo.length=" + tripInfo.length);
-
-            return;
-        }
-
-        function saveTripInfo() {
-            localfunc.printConsoleLog("saveTripInfo(): called");
-
-            aTripMax=0;
-            aTripAve=0;
-            samplingNmuK=0;
-
-            //tripInfoの初期化
-            localfunc.printConsoleLog("tripInfoを初期化")
-            while(tripInfo.length)
-            {
-                //tripInfo.pop();
-                localfunc.printConsoleLog("tripInfo["+tripInfo.length+"]" + tripInfo.pop());
-            }
-
-            graphBar01.saveTripInfo();
-            graphBar02.saveTripInfo();
-            graphBar03.saveTripInfo();
-            graphBar04.saveTripInfo();
-            graphBar05.saveTripInfo();
-            graphBar06.saveTripInfo();
-            graphBar07.saveTripInfo();
-            graphBar08.saveTripInfo();
-            graphBar09.saveTripInfo();
-            graphBar10.saveTripInfo();
-            graphBar11.saveTripInfo();
-            graphBar12.saveTripInfo();
-            graphBar13.saveTripInfo();
-            graphBar14.saveTripInfo();
-            graphBar15.saveTripInfo();
-            graphBar16.saveTripInfo();
-            graphBar17.saveTripInfo();
-            graphBar18.saveTripInfo();
-            graphBar19.saveTripInfo();
-            graphBar20.saveTripInfo();
-            graphBar21.saveTripInfo();
-            graphBar22.saveTripInfo();
-
-            //OKD
-            //DBに保存
-            //saveAccelInfo(tripInfo);
-        }
     }
-
-    //--------------------------------------------------
-    // サンプルコード
-    //--------------------------------------------------
-    Item {/*
-        //animationのサンプル
-        Rectangle {
-            id: rect;
-            anchors.centerIn: parent;
-            width: 200;
-            height: 100;
-            color: '#3f51b5';		// Indigo
-            //text: qsTr("Hello, World :)");
-        }
-
-        NumberAnimation {
-            id: animation;
-            target: rect;
-            running: true;			// 自動再生
-            loops: Animation.Infinite;	// 無限ループ
-            property: 'rotation';
-            from: 0;			// プロパティの変化前の値
-            to: 360;			// プロパティの変化後の値
-            duration: 20000;
-        }*/
-    }
-
-    Item {/*
-        // クリックしたときの動作1
-        Rectangle {
-            width: 200
-            height: 200
-            property int i: 0
-
-            Text {
-                id: hello
-                x: 66
-                y: 93
-                text: "Hello World"
-                MouseArea {
-                            property int j: 0
-                            id: mouse_area1
-                            anchors.fill: parent
-                            onClicked:{
-                                for(j=0;j < 3 ; j ++)
-                                {
-                                     console.log(j)
-                                    hello.text = j
-                                }
-                            }
-                }
-            }
-        }*/
-    }
-    Item {
-        /*
-        id: timeArray
-        property var array: new Array
-
-        Text {
-            id: text2
-        }
-
-        Timer {
-            interval: 1000; running: true; repeat: true
-            onTriggered: {
-                timeArray.array.push(Qt.formatDateTime(new Date(), 'yyyy-MM-dd hh:mm:ss'))
-                text2.text = timeArray.array.join('\n')
-                localfunc.printConsoleLog(timeArray.array.length)
-            }
-        }
-        */
-    }
-
 }

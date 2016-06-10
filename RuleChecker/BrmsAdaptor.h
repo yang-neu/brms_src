@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QTimerEvent>
 #include "../brms/BRMS.h"
+#include <vector>
+#include <QVector>
 
 class BrmsAdaptor : public QObject, RouterInterface
 {
@@ -86,6 +88,8 @@ signals:
     void roadKindChanged(QString str);
     void frontCarChanged(QString str);
     void driveSceneChanged(QString str);
+
+    void accelInfoChanged(QString state, double data, int count);
 
     void suddenAccelChanged(QString str);
     void suddenAccelStateChanged(QString str);
