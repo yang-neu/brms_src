@@ -9,19 +9,16 @@ Text {
         spacing: 0
         anchors.bottom: parent.top
         anchors.bottomMargin: 11
-        Rectangle { id:oldTrips00; color: "blue"; width: 10; height: 0 }
+        Rectangle { id:oldTrips00; color: "steelblue"; width: 10; height: 0 }
         Rectangle { id:thisTrip00; color: "orange"; width: 10; height: 0 }
         Rectangle { id:nowAccel00; color: "red"; width: 10; height: 0 }
     }
 
-    function countupThisTrip() {
-        thisTrip00.height++;
-    }
-    function saveTripInfo() {
-        oldTrips00.height = oldTrips00.height + thisTrip00.height;
-        thisTrip00.height = 0;
-
-        tripInfo.push(text);
-        tripInfo.push(oldTrips00.height);
+    function update(state, count) {
+        if("old" === state) {
+            oldTrips00.height= count;
+        }else if("this" === state){
+            thisTrip00.height= count;
+        }
     }
 }

@@ -31,6 +31,8 @@ Window {
 
     Component.onCompleted: {
         //Nothing to do
+        suddenAccelBar.x = (17 * (graphBar01.width + verticalAxis.spacing)) + 32; //1.7以上は急加速
+        suddenAccelBar.y = -15;
     }
 
     Connections {
@@ -224,7 +226,8 @@ Window {
             GraphAxis{ text: qsTr(" 50 ") }
             GraphAxis{ text: qsTr("  0 ")
                 Row {
-                    x: 20;
+                    id: verticalAxis
+                    x: 40;
                     y: 20;
                     spacing: 10;
                     GraphBar {id: graphBar01; text: qsTr("0.1") }
@@ -249,6 +252,18 @@ Window {
                     GraphBar {id: graphBar20; text: qsTr("2.0") }
                     GraphBar {id: graphBar21; text: qsTr("2.1") }
                     GraphBar {id: graphBar22; text: qsTr("2.2") }
+                }
+            }
+            Rectangle {
+                //anchors.bottom: parent.top
+                id: suddenAccelBar
+                width: 3
+                height: 350
+                color: "purple"
+                Text {
+                    x:10
+                    text: qsTr("急加速領域")
+                    color: parent.color
                 }
             }
 

@@ -136,6 +136,7 @@ protected:
     int m_Interval;
     void timerEvent(QTimerEvent *event);
     void updateAll();
+    void updateAccelInfo();
 
     BRMS *m_brms;
 };

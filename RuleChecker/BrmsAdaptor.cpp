@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <QString>
 #include "BrmsAdaptor.h"
+#include "stdlib.h" //rand() for Debug
+#include "time.h" //time() for Debug
 
 BrmsAdaptor::BrmsAdaptor( QObject *parent) :
     QObject(parent), m_Interval(100),m_TimerID(0), isDebug(false), flagIG(true)
@@ -38,7 +40,10 @@ void BrmsAdaptor::init(int argc, char *argv[])
 void BrmsAdaptor::timerEvent(QTimerEvent *event)
 {
     if (event->timerId() == m_TimerID)
+    {
         updateAll();
+        updateAccelInfo();
+    }
 }
 
 
@@ -54,22 +59,6 @@ void BrmsAdaptor::updateAll()
     //qDebug()<<"BrmsAdaptor::updateAll ++++++++++++++++++"<<m_brms->getRoadKind().c_str();
     emit roadKindChanged(QString(QString::fromUtf8(m_brms->getRoadKind().c_str(), strlen(m_brms->getRoadKind().c_str()))));
     emit speedChanged(m_brms->getSpeed());
-
-
-    QVector<double> qv_data;
-    qv_data << 1.7 << 24 << 1.8 << 31 << 1.9 << 3 << 2.0 << 2 << 2.1 << 1 << 1.6 << 128 << 1.5 << 71; //評価用データ
-
-    while(qv_data.length()) {
-        double data = qv_data.takeFirst();
-        int count = qv_data.takeFirst();
-        emit accelInfoChanged("old", data, count);
-        // /*m_brrm->getAccelInfo()*/
-    }
-
-    vector<double> v_data;
-    v_data.push_back(1.7);
-    v_data.push_back(15);
-    emit accelInfoChanged("this", v_data.at(0), v_data.at(1) /*m_brrm->getAccelInfo()*/);
 
     emit suddenAccelChanged(QString(QString::fromUtf8(m_brms->getSuddenAccel().c_str(), strlen(m_brms->getSuddenAccel().c_str()))));
     emit suddenAccelCountChanged(m_brms->getSuddenAccelCount());
@@ -102,4 +91,33 @@ void BrmsAdaptor::updateAll()
     emit followStopStateChanged(QString(QString::fromUtf8(m_brms->getFollowStopState().c_str(), strlen(m_brms->getFollowStopState().c_str()))));
     emit followStopCountChanged(m_brms->getFollowStopCount());
 }
+
+void BrmsAdaptor::updateAccelInfo()
+{
+    QVector<double> accelInfo;
+
+    //brmsからデータを取得
+    //accelInfo = m_brrm->getAccelInfo();
+
+    //評価用データ for Debug
+    accelInfo << 1.7 << 24 << 1.8 << 31 << 1.9 << 3 << 2.0 << 2 << 2.1 << 1 <<
+                 1.6 << 128 << 1.5 << 71 << 1.4 << 20 << 1.3 << 89 << 1.2 << 11 <<
+                 1.1 << 90 << 1.0 << 34 << 0.9 << 5 << 0.8 << 76 << 0.4 << 54 ;
+
+    //accelInfoChangedシグナルを送信
+    while(accelInfo.length()) {
+        double data = accelInfo.takeFirst();
+        int count = accelInfo.takeFirst();
+        emit accelInfoChanged("old", data, count);
+    }
+
+    //ランダムで今回のTrip加速度を生成 for Debug
+    {
+        srand((unsigned)time(NULL));
+        //printf("accel=%d count=%d\n",rand()%22+1, rand()%50+1);
+        emit accelInfoChanged("this", (rand()%22+1)*0.1, rand()%50+1);
+    }
+
+}
+
 
