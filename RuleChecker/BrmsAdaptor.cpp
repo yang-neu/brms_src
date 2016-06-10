@@ -97,7 +97,9 @@ void BrmsAdaptor::updateAccelInfo()
     QVector<double> accelInfo;
 
     //brmsからデータを取得
-    //accelInfo = m_brrm->getAccelInfo();
+    //vector<FieldAndValue> v_data;
+    //v_data = m_brms->getCommonData();
+    //FieldAndValue value = v_data.at(0);
 
     //評価用データ for Debug
     accelInfo << 1.7 << 24 << 1.8 << 31 << 1.9 << 3 << 2.0 << 2 << 2.1 << 1 <<
@@ -108,14 +110,23 @@ void BrmsAdaptor::updateAccelInfo()
     while(accelInfo.length()) {
         double data = accelInfo.takeFirst();
         int count = accelInfo.takeFirst();
-        emit accelInfoChanged("old", data, count);
+        emit accelInfoChanged("old", data, count, "caution");
     }
 
     //ランダムで今回のTrip加速度を生成 for Debug
     {
         srand((unsigned)time(NULL));
-        //printf("accel=%d count=%d\n",rand()%22+1, rand()%50+1);
-        emit accelInfoChanged("this", (rand()%22+1)*0.1, rand()%50+1);
+
+        double data = (rand()%22+1)*0.1;
+        double count = (rand()%50+1);
+
+
+        //printf("accel=%d count=%d\n",data, count);
+        if(data>=1.8) {
+            emit accelInfoChanged("this", data, count, "caution");
+        }else{
+            emit accelInfoChanged("this", data, count, "none");
+        }
     }
 
 }

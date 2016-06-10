@@ -47,7 +47,7 @@ Window {
         onSuddenAccelCountChanged: suddenAccelCount = count;
         onAccelInfoChanged: {
             //localfunc.printConsoleLog("accel=" + data + ", count=" + count);
-            localfunc.displayGraph(state, data, count);
+            localfunc.displayGraph(state, data, count, caution);
         }
 
     }
@@ -441,96 +441,96 @@ Window {
             console.log(msg);
         }
 
-        function displayGraph(state, data, count) {
+        function displayGraph(state, data, count, caution) {
             //localfunc.printConsoleLog(m_A.toFixed(1));
 
             switch(data.toFixed(1)) {
             case "0.1":
-                graphBar01.update(state, count);
+                graphBar01.update(state, count, caution);
                 break;
 
             case "0.2":
-                graphBar02.update(state, count);
+                graphBar02.update(state, count, caution);
                 break;
 
             case "0.3":
-                graphBar03.update(state, count);
+                graphBar03.update(state, count, caution);
                 break;
 
             case "0.4":
-                graphBar04.update(state, count);
+                graphBar04.update(state, count, caution);
                 break;
 
             case "0.5":
-                graphBar05.update(state, count);
+                graphBar05.update(state, count, caution);
                 break;
 
             case "0.6":
-                 graphBar06.update(state, count);
+                 graphBar06.update(state, count, caution);
                  break;
 
             case "0.7":
-                graphBar07.update(state, count);
+                graphBar07.update(state, count, caution);
                 break;
 
             case "0.8":
-                graphBar08.update(state, count);
+                graphBar08.update(state, count, caution);
                 break;
 
             case "0.9":
-                graphBar09.update(state, count);
+                graphBar09.update(state, count, caution);
                 break;
 
             case "1.0":
-                graphBar10.update(state, count);
+                graphBar10.update(state, count, caution);
                 break;
 
             case "1.1":
-                graphBar11.update(state, count);
+                graphBar11.update(state, count, caution);
                 break;
 
             case "1.2":
-                graphBar12.update(state, count);
+                graphBar12.update(state, count, caution);
                 break;
 
             case "1.3":
-                graphBar13.update(state, count);
+                graphBar13.update(state, count, caution);
                 break;
 
             case "1.4":
-                graphBar14.update(state, count);
+                graphBar14.update(state, count, caution);
                 break;
 
             case "1.5":
-                graphBar15.update(state, count);
+                graphBar15.update(state, count, caution);
                 break;
 
             case "1.6":
-                 graphBar16.update(state, count);
+                 graphBar16.update(state, count, caution);
                  break;
 
             case "1.7":
-                graphBar17.update(state, count);
+                graphBar17.update(state, count, caution);
                 break;
 
             case "1.8":
-                graphBar18.update(state, count);
+                graphBar18.update(state, count, caution);
                 break;
 
             case "1.9":
-                graphBar19.update(state, count);
+                graphBar19.update(state, count, caution);
                 break;
 
             case "2.0":
-                graphBar20.update(state, count);
+                graphBar20.update(state, count, caution);
                 break;
 
             case "2.1":
-                graphBar21.update(state, count);
+                graphBar21.update(state, count, caution);
                 break;
 
             case "2.2":
-                graphBar22.update(state, count);
+                graphBar22.update(state, count, caution);
                 break;
 
             default:

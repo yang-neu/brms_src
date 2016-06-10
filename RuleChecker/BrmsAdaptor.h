@@ -89,7 +89,7 @@ signals:
     void frontCarChanged(QString str);
     void driveSceneChanged(QString str);
 
-    void accelInfoChanged(QString state, double data, int count);
+    void accelInfoChanged(QString state, double data, int count, QString caution);
 
     void suddenAccelChanged(QString str);
     void suddenAccelStateChanged(QString str);
