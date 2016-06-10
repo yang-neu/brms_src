@@ -26,6 +26,10 @@
 #include "streaming/SignalEntryPoint.h"
 #include "streaming/EntryPointOutput.h"
 #include "streaming/EntryPointUser.h"
+
+//add by liusiping @ 2016/06/10
+#include "streaming/EntryPointCommonData.h"
+
 #include "Controller.h"
 #include "event/EventCharacteristicAndStatus3sigma.h"
 #include "event/EventCharacteristicAndStatusBinomial.h"
@@ -900,6 +904,12 @@ bool BRMS::setupSession(string &sessionID)
 	pStream = new EntryPointOutput();
 	pmgr->getSession(sessionID)->registEntryPoint("Data Output Stream", pStream);
 	pStream->initialize("Data Output Stream");
+ 
+    //add by liusiping @ 2016/06/10
+	pStream = new EntryPointCommonData();
+	pmgr->getSession(sessionID)->registEntryPoint("Common Data Stream", pStream);
+	pStream->initialize("Common Data Stream");
+	
 	return true;
 }
 extern "C" void SetupClipsUserFunc(CLIPS_USER_FP newEntryPoint,Ext_FuncInfo *extFuncTable, int cnt);
@@ -1215,6 +1225,17 @@ int BRMS::getFollowStopCount()
 
     return pStream->getFollowStopCount();
 }
+
+//add by liusiping @ 2016/06/10
+vector<FieldAndValue> BRMS::getCommonData()
+{
+    ClipsSessionMgr *pmgr = ClipsSessionMgr::get();
+    EntryPointCommonData *pStream = dynamic_cast<EntryPointCommonData *>(pmgr->getSession(m_sessionID)->getEntryPoint("Common Data Stream"));
+
+    return pStream->getCommonData();
+}
+
+
 
 void BRMS::onIG()
 {
