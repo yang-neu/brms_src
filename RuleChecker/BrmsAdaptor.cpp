@@ -94,73 +94,44 @@ void BrmsAdaptor::updateAll()
 
 void BrmsAdaptor::updateAccelInfo()
 {
-    QVector<double> accelInfo;
-
-    //brmsからデータを取得
-    //vector<FieldAndValue> v_data;
-    //v_data = m_brms->getCommonData();
-    //while(v_data.size()) {
-    //    FieldAndValue value = v_data.pop_back();
-    //}
-    //vector<FieldAndValue>::iterator it;
-    //for(it=v_data.begin(); it!=v_data.end(); it++) {
-    //    printf("it=%d\n", *it.);
-    //}
-
     int i;
+    int data_i;
+    float data_f;
 
-     FieldAndValue data;
+    vector<FieldAndValue> data = m_brms->getCommonData();
+    if(data.empty())
+    {
+        //nothing to do
+    }
+    else{
+        for (i=0; i<data.size(); i++)
+        {
+            if(data[i].type == 0){
+                data_f=(float)data[i].data.f_value;
+            }else if (data[i].type == 1){
+                data_i=(int)data[i].data.i_value;
+            }
 
-     int data_i;
-
-     float data_f;
-
-     FieldDataVec tmp = m_brms->getCommonData();
-
-     if(tmp.empty())
-
-     {
-
-         //do nothing
-
-     }
-
-     else{
-
-         for (i=0;i<20;i++)
-
-         {
-
-             data=tmp[i];
-
-             if(data.type == 0){
-
-                 data_f=(float)data.data.f_value;
-
-             }else if (data.type == 1){
-
-                 data_i=(int)data.data.i_value;
-
-             }
-
-             emit accelInfoChanged("old", data_f, data_i, "caution");
-
-         }
+            emit accelInfoChanged("old", data_f, data_i, "caution");
+        }
 
      }
 
 
     //評価用データ for Debug
-    //accelInfo << 1.7 << 24 << 1.8 << 31 << 1.9 << 3 << 2.0 << 2 << 2.1 << 1 <<
-    //             1.6 << 128 << 1.5 << 71 << 1.4 << 20 << 1.3 << 89 << 1.2 << 11 <<
-    //             1.1 << 90 << 1.0 << 34 << 0.9 << 5 << 0.8 << 76 << 0.4 << 54 ;
+    /*{
+        QVector<double> accelInfo;
+        accelInfo << 1.7 << 24 << 1.8 << 31 << 1.9 << 3 << 2.0 << 2 << 2.1 << 1 <<
+                     1.6 << 128 << 1.5 << 71 << 1.4 << 20 << 1.3 << 89 << 1.2 << 11 <<
+                     1.1 << 90 << 1.0 << 34 << 0.9 << 5 << 0.8 << 76 << 0.4 << 54 ;
 
-    //accelInfoChangedシグナルを送信
-    while(accelInfo.length()) {
-        double data = accelInfo.takeFirst();
-        int count = accelInfo.takeFirst();
-        emit accelInfoChanged("old", data, count, "caution");
-    }
+        //accelInfoChangedシグナルを送信
+        while(accelInfo.length()) {
+            double data = accelInfo.takeFirst();
+            int count = accelInfo.takeFirst();
+            emit accelInfoChanged("old", data, count, "caution");
+        }
+    }*/
 
     //ランダムで今回のTrip加速度を生成 for Debug
     {
@@ -168,7 +139,6 @@ void BrmsAdaptor::updateAccelInfo()
 
         double data = (rand()%22+1)*0.1;
         double count = (rand()%50+1);
-
 
         //printf("accel=%d count=%d\n",data, count);
         if(data>=1.8) {
