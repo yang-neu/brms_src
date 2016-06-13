@@ -28,6 +28,23 @@ Text {
             width: 10;
             height: 0 ;
             anchors.horizontalCenter: parent.horizontalCenter;
+
+            onHeightChanged: {
+                animation00.running = true
+            }
+
+            PropertyAnimation {
+                id: animation00;
+                target: thisTrip00;
+                property: "color";
+                from: "red"
+                to: thisTrip00.color;
+                running: false;
+                duration: 500;
+                //loops: 5 //Animation.Infinite;
+
+            }
+
         }
     }
 
