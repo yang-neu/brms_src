@@ -8,8 +8,8 @@ import hmiapp 1.0
 Window {
     id: profile01SuddenAccel;
     visible: true;
-    width: 1920;
-    height: 720;
+    width: 1024;
+    height: 768;
     color: "#eeeeee";
 
     property double speedMax: 250;
@@ -25,14 +25,9 @@ Window {
     property double m_A: 3;
     property double m_A1: 3;
 
-    property string suddenAccel:"Profile1_Text";
-    property string suddenAccelState:"StatsNotJudge";
-    property int suddenAccelCount:0;
 
     Component.onCompleted: {
         //Nothing to do
-        suddenAccelBar.x = (17 * (graphBar01.width + verticalAxis.spacing)) + 32; //1.7以上は急加速
-        suddenAccelBar.y = -15;
     }
 
     Connections {
@@ -42,9 +37,6 @@ Window {
             m_A = a.toFixed(2);
             m_A1 = m_A>0 ? m_A: 0-m_A;
         }
-        onSuddenAccelChanged: suddenAccel = str;
-        onSuddenAccelStateChanged: suddenAccelState = str;
-        onSuddenAccelCountChanged: suddenAccelCount = count;
         onAccelInfoChanged: {
             //localfunc.printConsoleLog("accel=" + data + ", count=" + count);
             localfunc.displayGraph(state, data, count, caution);
@@ -55,188 +47,35 @@ Window {
     //--------------------------------------------------
     // 画面
     //--------------------------------------------------
-    Column {
-        x: 8
-        y: 0
-        height: 300
-        spacing: 20;
-
-        Text{
-            text: qsTr("■入力情報");
-            font.pixelSize: 14
-        }
-        ProgressBarWithText {
-            progressText: qsTr("Speed");
-            progressDate: m_Speed.toString();//qsTr("52.39");
-            progressUnit: qsTr("km/h");
-            progressValue: m_Speed;
-            progressMinimumValue: 0;
-            progressMaximumValue: speedMax;
-        }
-        ProgressBarWithText {
-            progressText: qsTr("a");
-            progressDate: m_A.toString();//qsTr("0.81");
-            progressUnit: qsTr("m/s²");
-            progressValue: m_A1;
-            progressMinimumValue: 0.0;
-            progressMaximumValue: 9.0;
-        }
-
-        Text{
-            text: qsTr("■分析結果");
-            font.pixelSize: 14
-        }
-        ProgressBarWithText {
-            progressText: qsTr("加速シーンの最大値");
-            progressDate: aTripMax.toString();
-            progressUnit: qsTr("m/s²");
-            progressValue: aTripMax;
-            progressMinimumValue: 0;
-            progressMaximumValue: speedMax;
-        }
-        Text {
-            text: qsTr("これまでのサンプル数");
-            font.pixelSize: 14
-            Text {
-                x: 159
-                y: 0;
-                text: samplingNmuK.toString();
-                font.pixelSize: 14
-            }
-            Text {
-                x: 238
-                y: 0
-                text: qsTr("個");
-                font.pixelSize: 14
-            }
-        }
-        Text {
-            text: qsTr("今回のサンプル数");
-            font.pixelSize: 14
-            Text {
-                x: 159
-                y: 0;
-                text: samplingNmuK.toString();
-                font.pixelSize: 14
-            }
-            Text {
-                x: 238
-                y: 0
-                text: qsTr("個");
-                font.pixelSize: 14
-            }
-        }
-        ProgressBarWithText {
-            progressText: qsTr("急加速の割合");
-            progressDate: (0).toString();
-            progressUnit: qsTr("%");
-            progressValue: 0;
-            progressMinimumValue: 0;
-            progressMaximumValue: 500;
-        }
-        ProgressBarWithText {
-            progressText: qsTr("これまでの平均");
-            progressDate: aTripAve.toString();
-            progressUnit: qsTr("m/s²");
-            progressValue: aTripAve;
-            progressMinimumValue: 0;
-            progressMaximumValue: 500;
-        }
-        ProgressBarWithText {
-            progressText: qsTr("今回の平均");
-            progressDate: aTripAve.toString();
-            progressUnit: qsTr("m/s²");
-            progressValue: aTripAve;
-            progressMinimumValue: 0;
-            progressMaximumValue: 500;
-        }
-        Text {
-            text: qsTr("分算値");
-            font.pixelSize: 14
-            Text {
-                x: 159
-                y: 0;
-                text: aTripVariance.toString();
-                font.pixelSize: 14
-            }
-            Text {
-                x: 238
-                y: 0
-                text: qsTr("(m/s²)²");
-                font.pixelSize: 14
-            }
-        }
-        Text {
-            text: qsTr("3σ外");
-            font.pixelSize: 14
-            Text {
-                x: 159
-                y: 0;
-                text: (0).toString();
-                font.pixelSize: 14
-            }
-            Text {
-                x: 238
-                y: 0
-                text: qsTr("個");
-                font.pixelSize: 14
-            }
-        }
-    }
-
-    Column {
-        x: 290;
-        y: 0;
-        height: 300;
-        spacing: 20;
-
-        Text{
-            text: qsTr("プロファイル１　急加速診断");
-            font.pixelSize: 14;
-        }
-        ComplexTextWithOtherText{
-            complexTextWT: qsTr("Profile1 急加速");
-            complexSubTextWT: qsTr(suddenAccel);//qsTr("Profile1_Text");
-            complexSubTextWT_Stats: qsTr(suddenAccelState);//qsTr("Different from always");
-            complexSubTextWT_Number: suddenAccelCount;//"114";
-        }
-    }
-
     Rectangle{
         id: graph01
-        x:290;
-        y:120;
-
-        Text{
-            x:0;
-            y:0
-            text: qsTr("■Graph");
-        }
+        x:0;
+        y:0;
 
         Column {
             x:10;
             y:20;
             spacing: 32;
 
-            GraphAxis{ text: qsTr("300 ") }
-            GraphAxis{ text: qsTr("250 ") }
-            GraphAxis{ text: qsTr("200 ") }
-            GraphAxis{ text: qsTr("150 ") }
-            GraphAxis{ text: qsTr("100 ") }
-            GraphAxis{ text: qsTr(" 50 ") }
-            GraphAxis{ text: qsTr("  0 ")
+            GraphAxis{ text: qsTr("30 ") }
+            GraphAxis{ text: qsTr("25 ") }
+            GraphAxis{ text: qsTr("20 ") }
+            GraphAxis{ text: qsTr("15 ") }
+            GraphAxis{ text: qsTr("10 ") }
+            GraphAxis{ text: qsTr(" 5 ") }
+            GraphAxis{ text: qsTr(" 0 ")
                 Row {
                     id: verticalAxis
                     x: 40;
                     y: 20;
                     spacing: 10;
-                    GraphBar {id: graphBar01; text: qsTr("0.1") }
-                    GraphBar {id: graphBar02; text: qsTr("0.2") }
-                    GraphBar {id: graphBar03; text: qsTr("0.3") }
-                    GraphBar {id: graphBar04; text: qsTr("0.4") }
-                    GraphBar {id: graphBar05; text: qsTr("0.5") }
-                    GraphBar {id: graphBar06; text: qsTr("0.6") }
-                    GraphBar {id: graphBar07; text: qsTr("0.7") }
+                    //GraphBar {id: graphBar01; text: qsTr("0.1") }
+                    //GraphBar {id: graphBar02; text: qsTr("0.2") }
+                    //GraphBar {id: graphBar03; text: qsTr("0.3") }
+                    //GraphBar {id: graphBar04; text: qsTr("0.4") }
+                    //GraphBar {id: graphBar05; text: qsTr("0.5") }
+                    //GraphBar {id: graphBar06; text: qsTr("0.6") }
+                    //GraphBar {id: graphBar07; text: qsTr("0.7") }
                     GraphBar {id: graphBar08; text: qsTr("0.8") }
                     GraphBar {id: graphBar09; text: qsTr("0.9") }
                     GraphBar {id: graphBar10; text: qsTr("1.0") }
@@ -254,182 +93,91 @@ Window {
                     GraphBar {id: graphBar22; text: qsTr("2.2") }
                 }
             }
-            Rectangle {
-                //anchors.bottom: parent.top
-                id: suddenAccelBar
-                width: 3
-                height: 350
-                color: "purple"
-                Text {
-                    x:10
-                    text: qsTr("急加速領域")
-                    color: parent.color
-                }
-            }
-
         }
-    }
 
-    Rectangle {
-        x:10
-        y:516
-        width: 1100
-        height: 2
-        color: "blue"
-    }
-
-    Text{
-        x: 820
-        y: 635
-        width: 56
-        height: 12
-        text: qsTr("Save");
-        font.pixelSize: 14
-    }
-    property int igOffId: 0
-    ButtonWithText{
-        id: igOff
-        x: 820
-        y: 660
-        buttonWidth: 100;
-        buttonHeight: 40;
-        buttonText: qsTr("IG OFF");
-        onButtonPressed:{
-            brms.switchIG = 0;
-            if (igOffId == 0)
-            {
-                igOffId = 1;
-                igOff.buttonText = qsTr("IG ON");
-                localfunc.saveTripInfo();
-            }
-            else
-            {
-                igOffId = 0;
-                igOff.buttonText = qsTr("IG OFF");
-                localfunc.loadOldTripsInfo();
-            }
-        }
-    }
-    Rectangle{
-        id: listViewBackground
-        x: 1150;
-        y: 50;
-        width: 730;
-        height: 650;
-        color:"white";
-        border.color: "#a8bed4";
-        visible: true;
-    }
-
-    property int clickNo: 0;
-    property string message: "";
-    property string outputmessage: "";
-    property string currentLineMessage: "";
-    property double messageLength: 0;
-    property double m_PositionX : 0
-    ListView {
-        id: logListView;
-
-        anchors.fill: listViewBackground;
-        anchors.topMargin: 20;
-        anchors.bottomMargin: 40;
-        z: 999
-
-        clip: true;
-        interactive: false;
-        model: debugsModel
-        delegate: Component {
+        Rectangle {
+            id: suddenAccelBar
+            x : ((17-7) * (graphBar17.width + verticalAxis.spacing)) + 45; //1.7以上は急加速
+            y : 15;
+            width: 3
+            height: 350
+            color: "purple"
             Text {
-                anchors.leftMargin: 4;
-                text: textOutput;
-                font.pixelSize: 14;
-                color: "black"
-            }
-        }
-        ListModel { id: debugsModel }
-        Connections {
-            target: brms;
-            onUpdateMessage:logListView.logOutput(str)
-        }
-        function logOutput(message) {
-            debugsModel.append( { textOutput: message} );
-            logListView.positionViewAtEnd();
-        }
-    }
-    FlickableScrollBar  {
-        id:flickableScrollBarVertical
-        scrollArea: logListView;
-        orientation: Qt.Vertical;
-        height: logListView.height;
-        width: 20;
-        anchors.left: logListView.right;
-        anchors.top: logListView.top;
-    }
-    FlickableScrollBar  {
-        id:flickableScrollBarHorizontal
-        scrollArea: logListView;
-        orientation: Qt.Horizontal;
-        height: 20;
-        width: logListView.width;
-        anchors.left: logListView.left;
-        anchors.top: logListView.bottom;
-        anchors.topMargin: 20;
-    }
-    Rectangle {
-        id:up
-        width:flickableScrollBarVertical.width;
-        height:20;
-        anchors.left: flickableScrollBarVertical.left;
-        anchors.bottom: flickableScrollBarVertical.top;
-        color:"#eeeeee"
-        border.color: "#a8bed4";
-        Canvas {
-            anchors.fill: parent;
-            onPaint: {
-                var ctx = getContext("2d");
-                ctx.save();
-                ctx.strokeStyle = "black";
-                ctx.fillStyle = "black"
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(10, 6);
-                ctx.lineTo(5, 14);
-                ctx.lineTo(15, 14);
-                ctx.lineTo(10, 6);
-                ctx.stroke();
-                ctx.restore();
-                ctx.fill();
-            }
-        }
-    }
-    Rectangle {
-        id:down
-        width:flickableScrollBarVertical.width;
-        height:20;
-        anchors.left: flickableScrollBarVertical.left;
-        anchors.top: flickableScrollBarVertical.bottom;
-        color:"#eeeeee"
-        border.color: "#a8bed4";
-        Canvas {
-            anchors.fill: parent;
-            onPaint: {
-                var ctx = getContext("2d");
-                ctx.save();
-                ctx.strokeStyle = "black";
-                ctx.fillStyle = "black"
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(5, 6);
-                ctx.lineTo(10, 14);
-                ctx.lineTo(15, 6);
-                ctx.lineTo(5, 6);
-                ctx.stroke();
-                ctx.restore();
-                ctx.fill();
+                x:10
+                text: qsTr("急加速領域")
+                color: parent.color
             }
         }
     }
 
+    Column {
+        x: 700
+        y: 0
+        spacing: 20;
+
+        Text{
+            text: qsTr("■診断結果");
+            font.pixelSize: 14
+        }
+        Text{
+            text: qsTr("■入力情報");
+            font.pixelSize: 14
+        }
+        NumericalData {
+            displayText: qsTr("速度");
+            displayData: m_Speed.toString();
+            displayUnit: qsTr("km/h");
+        }
+        NumericalData {
+            displayText: qsTr("車両状態");
+            displayData: (0).toString();
+            displayUnit: qsTr("");
+        }
+        Text{
+            text: qsTr("■分析結果");
+            font.pixelSize: 14
+        }
+        NumericalData {
+            displayText: qsTr("加速シーンの最大値");
+            displayData: aTripMax.toString();
+            displayUnit: qsTr("m/s²");
+        }
+        NumericalData {
+            displayText: qsTr("これまでのサンプル数");
+            displayData: samplingNmuK.toString();
+            displayUnit: qsTr("個");
+        }
+        NumericalData {
+            displayText: qsTr("今回のサンプル数");
+            displayData: samplingNmuK.toString();
+            displayUnit: qsTr("個");
+        }
+        NumericalData {
+            displayText: qsTr("急加速の割合");
+            displayData: (0).toString();
+            displayUnit: qsTr("%");
+        }
+        NumericalData {
+            displayText: qsTr("これまでの平均");
+            displayData: aTripAve.toString();
+            displayUnit: qsTr("m/s²");
+        }
+        NumericalData {
+            displayText: qsTr("今回の平均");
+            displayData: aTripAve.toString();
+            displayUnit: qsTr("m/s²");
+        }
+        NumericalData {
+            displayText: qsTr("分算値");
+            displayData: aTripVariance.toString();
+            displayUnit: qsTr("(m/s²)²");
+        }
+        NumericalData {
+            displayText: qsTr("3σ外");
+            displayData: (0).toString();
+            displayUnit: qsTr("個");
+        }
+    }
 
     //--------------------------------------------------
     // function

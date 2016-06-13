@@ -5,7 +5,7 @@ Text {
     Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.right
-        width: 800
+        width: 600
         height: 1
         color: "gray"
     }

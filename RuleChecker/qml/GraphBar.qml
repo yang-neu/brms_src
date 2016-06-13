@@ -40,9 +40,8 @@ Text {
                 from: "red"
                 to: thisTrip00.color;
                 running: false;
-                duration: 500;
+                duration: 1000;
                 //loops: 5 //Animation.Infinite;
-
             }
 
         }

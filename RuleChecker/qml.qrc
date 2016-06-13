@@ -9,7 +9,8 @@
         <file>qml/ProgressBarWithText.qml</file>
         <file>qml/GraphBar.qml</file>
         <file>qml/GraphAxis.qml</file>
-        <file>qml/profile01SuddenAccel.qml</file>
+        <file>qml/NumericalData.qml</file>
         <file>qml/res/Caution.png</file>
+        <file>qml/profile01SuddenAccel.qml</file>
     </qresource>
 </RCC>

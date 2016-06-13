@@ -137,7 +137,7 @@ void BrmsAdaptor::updateAccelInfo()
     {
         srand((unsigned)time(NULL));
 
-        double data = (rand()%22+1)*0.1;
+        double data = (rand()%15+8)*0.1;
         double count = (rand()%50+1);
 
         //printf("accel=%d count=%d\n",data, count);
