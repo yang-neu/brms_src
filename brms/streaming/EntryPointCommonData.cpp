@@ -1,7 +1,6 @@
-
 #include <sys/stat.h>
-#include <sys/time.h> 
-#include <time.h> 
+#include <sys/time.h>
+#include <time.h>
 
 #include "EntryPointCommonData.h"
 #include "../ClipsRuleMgr.h"
@@ -10,64 +9,67 @@
 #include "../DBAccessor.h"
 
 
+//Read data from FIFO
 pthread_mutex_t EntryPointCommonData::m_mutex = PTHREAD_MUTEX_INITIALIZER;
-EntryPointCommonData::EntryPointCommonData():
-	m_globalName("AccelSpeedInfoList")
+EntryPointCommonData::EntryPointCommonData()
 {
 
 }
 
 void EntryPointCommonData::updateAll()
 {
-	DATA_OBJECT outputValue;
+    DATA_OBJECT outputValue;
+    DATA_OBJECT insdata;
     void *theMultifield;
-	int datatype;
+    void *myInstancePtr;
+    int datatype;
     int i=0;
-	
-	//get fact address of gloable
-	EnvGetDefglobalValue(m_theEnv,m_globalName,&outputValue);
-	
-	if (GetpType(&outputValue) != MULTIFIELD) return;
+
+    //get pointer of FIFO
+    myInstancePtr=EnvFindInstance(m_theEnv,NULL,"FIFO",TRUE);
+
+    //get data from FIFO
+    SetType(insdata,INSTANCE_ADDRESS);
+    SetValue(insdata,myInstancePtr);
+    EnvSend(m_theEnv,&insdata,"getData",NULL,&outputValue);
+
+    if (GetpType(&outputValue) != MULTIFIELD) return;
     theMultifield = GetValue(outputValue);
-	//void *factPtr = DOToPointer(outputValue);
-	
-    //long long MFLength = GetDOLength(outputValue);
-	long end = GetDOEnd(outputValue);
 
-	pthread_mutex_lock(&m_mutex);
-	FieldAndValue tmp;
+    long end = GetDOEnd(outputValue);
 
-	for(i = GetDOBegin(outputValue); i <= end; i++)
-		{
+    pthread_mutex_lock(&m_mutex);
+    FieldAndValue tmp;
+
+    for(i = GetDOBegin(outputValue); i <= end; i++)
+        {
             datatype = GetMFType(theMultifield,i);
-			if(datatype == FLOAT){
+            if(datatype == FLOAT){
                 tmp.name = "common";
-				tmp.type = 0;
+                tmp.type = 0;
                 tmp.data.f_value = ValueToDouble(GetMFValue(theMultifield,i));
-				v_fd.push_back(tmp);
-				cout<<"EntryPointOutput::updateAll, fvalue:"<<tmp.data.f_value<<endl;
-			}
-			else if(datatype == INTEGER){
+                v_fd.push_back(tmp);
+                cout<<"EntryPointOutput::updateAll, fvalue:"<<tmp.data.f_value<<endl;
+            }
+            else if(datatype == INTEGER){
                 tmp.name = "common";
-				tmp.type = 1;
+                tmp.type = 1;
                 tmp.data.i_value = (int)ValueToLong(GetMFValue(theMultifield,i));
-				v_fd.push_back(tmp);
-				cout<<"EntryPointOutput::updateAll, ivalue:"<<tmp.data.i_value<<endl;
-			}
+                v_fd.push_back(tmp);
+                cout<<"EntryPointOutput::updateAll, ivalue:"<<tmp.data.i_value<<endl;
+            }
             else if(datatype == SYMBOL || datatype == STRING){
                 tmp.name = "common";
-				tmp.type = 2;
+                tmp.type = 2;
                 string tmpstr = ValueToString(GetMFValue(theMultifield,i));
-				memcpy(tmp.data.s_value, tmpstr.c_str(), tmpstr.length() + 1);
-				v_fd.push_back(tmp);
-				cout<<"EntryPointOutput::updateAll, svalue:"<<tmpstr<<endl;
-			}else{
-				cout<<"EntryPointOutput::updateAll, Wrong data type!"<<endl;
-			}
-		}
-	
-    //clear the global value
-    //EnvGetDefglobalValue(m_theEnv,m_globalName,&outputValue);
+                memcpy(tmp.data.s_value, tmpstr.c_str(), tmpstr.length() + 1);
+                v_fd.push_back(tmp);
+                cout<<"EntryPointOutput::updateAll, svalue:"<<tmpstr<<endl;
+            }else{
+                cout<<"EntryPointOutput::updateAll, Wrong data type!"<<endl;
+            }
+        }
+
 
     pthread_mutex_unlock(&m_mutex);
 
@@ -77,10 +79,9 @@ void EntryPointCommonData::updateAll()
 FieldDataVec EntryPointCommonData::getCommonData()
 {
      pthread_mutex_lock(&m_mutex);
-	 FieldDataVec v_fd_tmp = v_fd;
-	 v_fd.clear();
+     FieldDataVec v_fd_tmp = v_fd;
+     v_fd.clear();
      pthread_mutex_unlock(&m_mutex);
-	return v_fd_tmp;
+     return v_fd_tmp;
 }
-
 
