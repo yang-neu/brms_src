@@ -1,5 +1,5 @@
 ;==================================================
-; Class(AccelSpeedInfo.clp)
+; Class(AccelPeakInfo.clp)
 ; Add by liusiping@2016/06/10
 ;==================================================
 (defclass container (is-a USER)
@@ -62,28 +62,34 @@
 )
   
 ;==================================================
-; Template(AccelSpeedInfo.clp)
+; Template(AccelPeakInfo.clp)
 ; Add by liusiping@2016/06/08
 ;==================================================
-(deftemplate MAIN::AccelSpeedInfo
+(deftemplate MAIN::AccelPeakInfo
 	(slot acceleration
 		(type FLOAT)
 		(default 0.0))
 	(slot count
 		(type INTEGER)
 		(default 0)))
+		
+(deftemplate MAIN::AccelRawData
+	(slot acceleration
+		(type FLOAT)
+		(default 0.0)))
+		
 
 (defglobal MAIN
-	?*AccelSpeedInfoList* = (create$))
+	?*AccelPeakInfoList* = (create$))
 
 ;==================================================
-; Rule(AccelSpeedInfo.clp)
+; Rule(AccelPeakInfo.clp)
 ; Add by liusiping@2016/06/08
 ;==================================================
 ;(defrule MAIN::SetFactList "Save fact list info to file."
 ;   (declare (salience 902))
 ;   =>
-;   (save-facts "FactListInfo.txt" local AccelSpeedInfo))
+;   (save-facts "FactListInfo.txt" local AccelPeakInfo))
    
    
 (defrule MAIN::GetFactList "Get all fact from config file."
@@ -98,20 +104,19 @@
    (make-instance FIFO of container))
    
    
-(defrule MAIN::GetAccelSpeedInfo "Get all info of accel speed from fact list."
+(defrule MAIN::GetAccelPeakInfo "Get all info of accel Peak from fact list."
    (declare (salience 900))
-   ?AccelSpeedInfoAddrList <- (AccelSpeedInfo)
+   ?AccelPeakInfoAddrList <- (AccelPeakInfo)
    =>
-   (bind ?AccelInfoList (fact-slot-value ?AccelSpeedInfoAddrList acceleration))
-   (bind ?CountInfoList (fact-slot-value ?AccelSpeedInfoAddrList count))
-   (bind ?*AccelSpeedInfoList* (insert$ ?*AccelSpeedInfoList* 1 ?AccelInfoList ?CountInfoList))
-   (retract ?AccelSpeedInfoAddrList)
-   (printout t "Accel speed info is:"  ?*AccelSpeedInfoList* crlf))
+   (bind ?AccelInfoList (fact-slot-value ?AccelPeakInfoAddrList acceleration))
+   (bind ?CountInfoList (fact-slot-value ?AccelPeakInfoAddrList count))
+   (bind ?*AccelPeakInfoList* (insert$ ?*AccelPeakInfoList* 1 ?AccelInfoList ?CountInfoList))
+   (printout t "Accel Peak info is:"  ?*AccelPeakInfoList* crlf))
    
    
 (defrule MAIN::writeToFIFO "Save global var to FIFO"
    (declare (salience 890))
    =>
-   (send [FIFO] putData ?*AccelSpeedInfoList*)
-   (bind ?*AccelSpeedInfoList* (create$))
-   (printout t "Accel speed info is:"  ?*AccelSpeedInfoList* crlf))
+   (send [FIFO] putData ?*AccelPeakInfoList*)
+   (bind ?*AccelPeakInfoList* (create$))
+   (printout t "Accel Peak info is:"  ?*AccelPeakInfoList* crlf))
