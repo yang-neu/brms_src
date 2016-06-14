@@ -892,6 +892,11 @@ bool BRMS::setupSession(string &sessionID)
 	//InputSource Stream for simulator
 	pmgr->getSession(sessionID)->registEntryPoint("InputSource Stream", pStream);
 	pStream->initialize("InputSource Stream");
+
+    //add by liusiping @ 2016/06/10
+	pStream = new EntryPointCommonData();
+	pmgr->getSession(sessionID)->registEntryPoint("Common Data Stream", pStream);
+	pStream->initialize("Common Data Stream");
 	
 	pStream = new SignalEntryPoint();
 	pmgr->getSession(sessionID)->registEntryPoint("Receiving Data Stream", pStream);
@@ -905,11 +910,6 @@ bool BRMS::setupSession(string &sessionID)
 	pmgr->getSession(sessionID)->registEntryPoint("Data Output Stream", pStream);
 	pStream->initialize("Data Output Stream");
  
-    //add by liusiping @ 2016/06/10
-	pStream = new EntryPointCommonData();
-	pmgr->getSession(sessionID)->registEntryPoint("Common Data Stream", pStream);
-	pStream->initialize("Common Data Stream");
-	
 	return true;
 }
 extern "C" void SetupClipsUserFunc(CLIPS_USER_FP newEntryPoint,Ext_FuncInfo *extFuncTable, int cnt);
@@ -1249,6 +1249,11 @@ void BRMS::onIG()
 	if (m_timeliner != NULL)
 		m_timeliner->Start();
 
+    //add by liusiping @ 2016/06/14
+    ClipsSessionMgr *pmgr = ClipsSessionMgr::get();
+    EntryPointCommonData *pStream = dynamic_cast<EntryPointCommonData *>(pmgr->getSession(m_sessionID)->getEntryPoint("Common Data Stream"));
+    pStream->loadFactFile();
+
 }
 void BRMS::offIG()
 {
@@ -1263,7 +1268,14 @@ void BRMS::offIG()
         ctrl->stop();
 	if (m_timeliner != NULL)
 		m_timeliner->Stop();
+
+    //add by liusiping @ 2016/06/14
+    ClipsSessionMgr *pmgr = ClipsSessionMgr::get();
+    EntryPointCommonData *pStream = dynamic_cast<EntryPointCommonData *>(pmgr->getSession(m_sessionID)->getEntryPoint("Common Data Stream"));
+    pStream->saveFactToFile();
+	
 }
+
 void BRMS::dbgSwich(bool flag)
 {
     if (m_inputSource != NULL)

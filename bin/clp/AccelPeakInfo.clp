@@ -62,7 +62,7 @@
 )
   
 ;==================================================
-; Template(AccelPeakInfo.clp)
+; Template&global(AccelPeakInfo.clp)
 ; Add by liusiping@2016/06/08
 ;==================================================
 (deftemplate MAIN::AccelPeakInfo
@@ -92,10 +92,10 @@
 ;   (save-facts "FactListInfo.txt" local AccelPeakInfo))
    
    
-(defrule MAIN::GetFactList "Get all fact from config file."
-   (declare (salience 910))
-   =>
-   (load-facts "FactListInfo.txt"))
+;(defrule MAIN::GetFactList "Get all fact from config file."
+;   (declare (salience 910))
+;   =>
+;   (load-facts "FactListInfo.txt"))
    
    
 (defrule MAIN::CreateInstance "Create instance of class container."
@@ -120,3 +120,20 @@
    (send [FIFO] putData ?*AccelPeakInfoList*)
    (bind ?*AccelPeakInfoList* (create$))
    (printout t "Accel Peak info is:"  ?*AccelPeakInfoList* crlf))
+   
+  
+;==================================================
+; Function
+;==================================================
+(deffunction MAIN::SaveFactList()
+	(printout t "***SaveFactList start***"  crlf)
+	(bind ?tmp (save-facts "FactListInfo.txt" local AccelRawData))
+	(printout t "***SaveFactList result is:***" ?tmp crlf)
+	(do-for-all-facts ((?factlist AccelRawData)) TRUE
+	  (retract ?factlist))
+)
+
+(deffunction MAIN::LoadFactList()
+	(printout t "***LoadFactList start***"  crlf)
+	(bind ?tmp (load-facts "FactListInfo.txt"))
+	(printout t "***LoadFactList result is:***" ?tmp crlf))

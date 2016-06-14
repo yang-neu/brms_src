@@ -21,6 +21,8 @@ public:
 
     EntryPointCommonData();
 	void updateAll();
+	bool loadFactFile();
+	bool saveFactToFile();
     FieldDataVec getCommonData();
 private:
     static pthread_mutex_t m_mutex;
