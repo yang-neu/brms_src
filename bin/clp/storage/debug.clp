@@ -4,6 +4,16 @@
 (defmodule MAIN (export ?ALL))
 (defmodule SpecificAgenda (import MAIN ?ALL))
 
+(deftemplate MAIN::AccelList
+	(slot from (default entryPoint))
+	(slot name (default "Profile 1"))
+	
+	;?,?,Accel
+	(multislot ValuList))
+
+(defglobal SpecificAgenda ?*cnt* = 1)
+
+
 (deftemplate MAIN::EventSpeed
 	(slot from (default entryPoint))
 	(slot name)
@@ -45,6 +55,11 @@
 	
 	;1:x 2:x 3:speed 4:x 5:time
 	(assert (EventSpeedList (speedList 1 2 3.2 4 0.5 )))	
+	(assert (EventSpeedList (speedList 1 2 3.6 4 0.7 )))	
+	(assert (EventSpeedList (speedList 1 2 3.6 4 0.8 )))	
+	(assert (EventSpeedList (speedList 1 2 3.6 4 0.9 )))	
+	(assert (EventSpeedList (speedList 1 2 3.6 4 1.1 )))	
+	(assert (AccelList (ValuList 7 8)))
 	(printout t "Here is main::init" crlf)
 )
 
