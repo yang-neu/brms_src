@@ -57,13 +57,13 @@ Window {
             y:20;
             spacing: 32;
 
-            GraphAxis{ text: qsTr("30 ") }
-            GraphAxis{ text: qsTr("25 ") }
-            GraphAxis{ text: qsTr("20 ") }
-            GraphAxis{ text: qsTr("15 ") }
-            GraphAxis{ text: qsTr("10 ") }
-            GraphAxis{ text: qsTr(" 5 ") }
-            GraphAxis{ text: qsTr(" 0 ")
+            GraphAxis{ text: qsTr("300 ") }
+            GraphAxis{ text: qsTr("250 ") }
+            GraphAxis{ text: qsTr("200 ") }
+            GraphAxis{ text: qsTr("150 ") }
+            GraphAxis{ text: qsTr("100 ") }
+            GraphAxis{ text: qsTr(" 50 ") }
+            GraphAxis{ text: qsTr("  0 ")
                 Row {
                     id: verticalAxis
                     x: 40;
@@ -108,17 +108,126 @@ Window {
                 color: parent.color
             }
         }
+        Rectangle {
+            id: standardRange
+            x : ((9-7) * (graphBar09.width + verticalAxis.spacing)) + 5; //0.9~1.4
+            y : 360;
+            width: ((14-9+1) * (graphBar09.width + verticalAxis.spacing)) + 5 //0.9~1.4
+            height: 29
+            border.width: 2
+            border.color: "green"
+            color: "transparent"
+            radius: 5
+        }
     }
 
-    Column {
+    ColumnLayout {
+        x: 50
+        y: 440
+        RowLayout {
+            spacing: 10
+            Rectangle {
+                width: 20
+                height: 20
+                color: "steelblue"
+            }
+            Text {
+                text: qsTr("これまでのドライブのデータ")
+                font.pixelSize: 14
+            }
+            Rectangle {
+                width: 90
+                height: 20
+                border.width: 2
+                border.color: "green"
+                color: "transparent"
+                radius: 5
+            }
+            Text {
+                text: qsTr("これまでのデータからの標準範囲")
+                font.pixelSize: 14
+            }
+        }
+        RowLayout {
+            spacing: 10
+            Rectangle {
+                width: 20
+                height: 20
+                color: "orange"
+            }
+            Text {
+                text: qsTr("今回でのドライブのデータ")
+                font.pixelSize: 14
+            }
+            Rectangle {
+                width: 20
+                height: 20
+                color: "red"
+            }
+            Text {
+                text: qsTr("最新のデータ")
+                font.pixelSize: 14
+            }
+            Image {
+                source: "res/Caution.png" ;
+            }
+            Text {
+                text: qsTr("今回のドライブでの異常値")
+                font.pixelSize: 14
+            }
+        }
+    }
+
+    ColumnLayout {
         x: 700
         y: 0
         spacing: 20;
 
-        Text{
-            text: qsTr("■診断結果");
-            font.pixelSize: 14
+        ColumnLayout {
+            Text{
+                text: qsTr("■診断結果");
+                font.pixelSize: 14
+            }
+            Rectangle {
+                width: 300
+                height: 100
+                border.width: 3
+                border.color: profile01SuddenAccel.color // or "blue"
+                color: "transparent"
+                radius: 10
+
+                Image {
+                    source: "res/state_SuddenAccel.png"
+
+                    Text {
+                       anchors.left: parent.right
+                       anchors.bottom: parent.bottom
+                       text: qsTr("急加速しがち")
+                       color: "red"
+                    }
+                }
+            }
+            Rectangle {
+                width: 300
+                height: 100
+                border.width: 3
+                border.color: "blue" //or profile01SuddenAccel.color
+                color: "transparent"
+                radius: 10
+
+                Image {
+                    source: "res/state_NormalAccel.png"
+
+                    Text {
+                       anchors.left: parent.right
+                       anchors.bottom: parent.bottom
+                       text: qsTr("急加速しない")
+                       color: "red"
+                    }
+                }
+            }
         }
+
         Text{
             text: qsTr("■入力情報");
             font.pixelSize: 14
