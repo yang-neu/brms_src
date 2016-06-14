@@ -894,9 +894,13 @@ bool BRMS::setupSession(string &sessionID)
 	pStream->initialize("InputSource Stream");
 
     //add by liusiping @ 2016/06/10
-	pStream = new EntryPointCommonData();
-	pmgr->getSession(sessionID)->registEntryPoint("Common Data Stream", pStream);
-	pStream->initialize("Common Data Stream");
+    pStream = new EntryPointCommonData();
+    pmgr->getSession(sessionID)->registEntryPoint("Common Data Stream", pStream);
+    pStream->initialize("Common Data Stream");
+    //add by liusiping @ 2016/06/14
+    EntryPointCommonData *pStreamCommon = dynamic_cast<EntryPointCommonData *>(pmgr->getSession(m_sessionID)->getEntryPoint("Common Data Stream"));
+    pStreamCommon->loadFactFile();
+
 	
 	pStream = new SignalEntryPoint();
 	pmgr->getSession(sessionID)->registEntryPoint("Receiving Data Stream", pStream);
