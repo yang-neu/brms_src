@@ -102,6 +102,7 @@ void *Controller::schedulerProc(void *para)
 					//cout<<"schedulerProc: 500ms fire end"<<endl;
 					
 					pmgr->getSession(g_sessionID)->getEntryPoint("Data Output Stream")->updateAll();
+					
 					break;
 			case FIRE_EVENT_ID_10000ms :
 					//cout<<"schedulerProc: 10000ms fire begin"<<endl;
@@ -109,6 +110,7 @@ void *Controller::schedulerProc(void *para)
 					//cout<<"schedulerProc: 10000ms fire end"<<endl;
 					
 					pmgr->getSession(g_sessionID)->getEntryPoint("Data Output Stream")->updateAll();
+
 					break;
 			default:
 					cout<<"schedulerProc: default"<<endl;
@@ -140,6 +142,9 @@ void *Controller::schedulerProc(void *para)
 				//cout<<"schedulerProc: 500ms fire end"<<endl;
 
                 pmgr->getSession(g_sessionID)->getEntryPoint("Data Output Stream")->updateAll();
+
+				//add by liusiping @ 2016/06/10
+				pmgr->getSession(g_sessionID)->getEntryPoint("Common Data Stream")->updateAll();
                 break;
             case WAIT_OBJECT_0+1:
 				//cout<<"schedulerProc: 10000ms fire begin"<<endl;
@@ -147,6 +152,9 @@ void *Controller::schedulerProc(void *para)
 				//cout<<"schedulerProc: 10000ms fire end"<<endl;
 
                 pmgr->getSession(g_sessionID)->getEntryPoint("Data Output Stream")->updateAll();
+
+				//add by liusiping @ 2016/06/10
+				pmgr->getSession(g_sessionID)->getEntryPoint("Common Data Stream")->updateAll();
 
                 break;
 

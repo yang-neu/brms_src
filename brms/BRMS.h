@@ -5,6 +5,8 @@
 #include <vector>
 #include <pthread.h>
 #include "interface/BrmsInterface.h"
+#include "DBAccessor.h"
+
 using namespace std;
 typedef struct {
 	float speed;
@@ -82,6 +84,9 @@ public:
     bool initialize(int argc,char *argv[], string &sessionID,  RouterInterface *router);
 	//RuleEngine *getEngine() { return m_RuleEng; }
 	
+    //add by liusiping @ 2016/06/10
+    virtual vector<FieldAndValue> getCommonData();
+
 	//BrmsInterface implement
 	//virtual int getSceneResult() { return 0;}
 	virtual double getSpeed() ;
