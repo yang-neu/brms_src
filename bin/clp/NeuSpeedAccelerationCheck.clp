@@ -4,30 +4,78 @@
 (defglobal SpecificAgenda ?*AccWindow* = (create$))  ;****[] width is the MaxWindow ;Read previouse data from data at IGON,Save current data at IGOFF-
 (defglobal SpecificAgenda ?*SudenWindow* = (create$))  ;****[] width is the MaxWindow ;Read previouse data from data at IGON,Save current data at IGOFF-
 
-(defglobal SpecificAgenda ?*MaxWindow* = 50) ;100
-(defglobal SpecificAgenda ?*MaxSampling* = 50) ;500
+(defglobal SpecificAgenda ?*MaxWindow* = 50) ;500
+(defglobal SpecificAgenda ?*MaxSampling* = 10) ;100
 (defglobal SpecificAgenda ?*AccSamplingCnt* = 0) 
 (defglobal SpecificAgenda ?*AccSamplingCntB* = 0) ;IGOFF->save2file IGON->read previous from file
 (defglobal SpecificAgenda ?*AccSudCnt* = 0)			;急加速しがちCount
 (defglobal SpecificAgenda ?*PreAccel* = 0)			;前回までの最大値
 (defglobal SpecificAgenda ?*TauCnt* = 0)
-(defglobal SpecificAgenda ?*AccelLimit* = 0.1)     ;加速シーンの閾値
+(defglobal SpecificAgenda ?*AccelLimit* = 0.1)     ;加速シーンの閾値 0.75
+(defglobal SpecificAgenda ?*SudAccelLimit* = 1.75)     ;急加速の閾値 1.75
+
+
+(deftemplate MAIN::Profile1Status
+	(slot speed
+		(type INTEGER))
+	(slot accel
+		(type INTEGER))
+
+	(slot VihicleState		;車両状態
+		(type STRING)
+		(default "未定義"))
+	(slot AccelJudegment
+		(type STRING)
+		(default "状態未判定"))  ;急加速しがち/急加速しない
+	(slot MaxAccelofScene
+		(type INTEGER))
+	(slot TotalofSampling
+		(type INTEGER))
+	(slot currentSampling
+		(type INTEGER))
+	(slot PercentageofSudAcc
+		(type INTEGER))
+	(slot AverageSpeed
+		(type INTEGER))
+	(slot CurrentAveSpeed
+		(type INTEGER))
+	(slot Sigma					;分散値
+		(type INTEGER))
+	(slot Cnt3Sima
+		(type INTEGER))
+)
+
+(defglobal MAIN
+	?*Profile1Data* = (assert (AccelStatus)))
 
 ;==================================================
 ; Function(NewSpeedAccelerationCheck.clp)
 ;==================================================
+(deffunction SpecificAgenda::MakeHistgram ()
+
+	(bind ?AccSud 0)
+	(bind ?width (length$ ?*SudenWindow*))
+	(if (= ?width 0) then
+		(return 0))
+		
+	(foreach ?data ?*AccWindow*
+		(bind ?AccelLevel (mod (integer (* (- ?data 0.8) 10)) 10)
+	)
+	(return (/ ?Accel ?width))
+	
+)
+
 (deffunction SpecificAgenda::cntAccSudPercent ()
 
 	(bind ?AccSud 0)
 	(bind ?width (length$ ?*SudenWindow*))
 	(if (= ?width 0) then
 		(return 0))
-	else
-		(foreach ?data ?*SudenWindow*
-			(bind ?AccSud (+ ?AccSud ?data))
-		)
-		(return (/ ?AccSud ?width))
+	
+	(foreach ?data ?*SudenWindow*
+		(bind ?AccSud (+ ?AccSud ?data))
 	)
+	(return (/ ?AccSud ?width))
 )
 
 (deffunction SpecificAgenda::averageAccel()
@@ -99,13 +147,13 @@
 	(printout qt "++++++++getMaxValueofAccelScene " ?*PreAccel* crlf)
 )
 	
-(defrule SpecificAgenda::leaveAccelScene
+(defrule SpecificAgenda::leaveAccelScene　　;加速シーンから抜く
 	(declare (salience 900))
 	
 	(EventAcceleration (from entryPoint) (name "Calculation Stream") (acceleration ?acceleration&:(<= ?acceleration ?*AccelLimit*)))
 	=>
 	(if (> ?*PreAccel* 0) then
-		;加速シーンから抜く
+		;加速度最大値がある場合
 		
 		;Sampling Counter++
 		(bind ?*AccSamplingCnt* (+ ?*AccSamplingCnt* 1))
@@ -122,6 +170,7 @@
 				(bind ?Accsud 0) ;急加速あまりしない:0
 			)
 			;the previous acceleration is the max of this secen
+			;'τ＜-3、3＜τならば、はずれ値（いつもと違う状態）として判定し平均値の更新はしない
 			(makeDataWindow ?*PreAccel* ?Accsud)
 			(bind ?*PreAccel* 0)
 			
@@ -129,9 +178,10 @@
 			;25％以上であれば、
 			(if (> (cntAccSudPercent) 0.25) then
 				;ドライバー特性を"急加速しがち"
-				
+				(bind ?*Profile1Data* (modify ?*Profile1Data* (AccelJudegment "急加速しがち"))))
 			else
 				;急加速あまりしない
+				(bind ?*Profile1Data* (modify ?*Profile1Data* (AccelJudegment "急加速しない"))))
 			)
 		 
 		)
@@ -142,7 +192,7 @@
 (defrule SpecificAgenda::getAccelTau
 	(declare (salience 800))
 
-	(EventAcceleration (from entryPoint) (name "Calculation Stream") (acceleration ?acceleration&:(<= ?acceleration 0.01)))
+	(EventAcceleration (from entryPoint) (name "Calculation Stream") (acceleration ?acceleration&:(<= ?acceleration ?*AccelLimit*)))
 	;且つ、ドライバー特性　<>　未確定
 	=>
 	
