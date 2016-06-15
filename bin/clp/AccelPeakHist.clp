@@ -154,6 +154,7 @@
 (deffunction MAIN::LoadFactList()
 	(printout t "***LoadFactList start***"  crlf)
 	(bind ?tmp (load-facts "FactListInfo.txt"))
+	(printout t "***LoadFactList result is:***" ?tmp crlf)
 	(do-for-all-facts ((?factlist AccelPeakRawData)) TRUE
 	  (bind ?value (fact-slot-value ?factlist acceleration))
 	  (assert (AccelPeakRawDataWithFlag(acceleration ?value)))
