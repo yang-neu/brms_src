@@ -157,6 +157,6 @@
 	(printout t "***LoadFactList result is:***" ?tmp crlf)
 	(do-for-all-facts ((?factlist AccelPeakRawData)) TRUE
 	  (bind ?value (fact-slot-value ?factlist acceleration))
-	  (assert (AccelPeakRawDataWithFlag(acceleration ?value)))
+	  (assert (AccelPeakRawDataWithFlag(acceleration ?value)(preFlag 1)))
 	  (retract ?factlist))
 )
