@@ -1,5 +1,5 @@
 ;==================================================
-; Class(AccelPeakInfo.clp)
+; Class(AccelPeakHist.clp)
 ; Add by liusiping@2016/06/10
 ;==================================================
 (defclass container (is-a USER)
@@ -64,10 +64,10 @@
 )
   
 ;==================================================
-; Template&global(AccelPeakInfo.clp)
+; Template&global(AccelPeakHist.clp)
 ; Add by liusiping@2016/06/08
 ;==================================================
-(deftemplate MAIN::AccelPeakInfo
+(deftemplate MAIN::AccelPeakHist
 	(slot acceleration
 		(type FLOAT)
 		(default 0.0))
@@ -75,23 +75,33 @@
 		(type INTEGER)
 		(default 0)))
 		
-(deftemplate MAIN::AccelRawData
+(deftemplate MAIN::AccelPeakRawData
 	(slot acceleration
 		(type FLOAT)
 		(default 0.0)))
 		
+(deftemplate MAIN::AccelPeakRawDataWithFlag
+	(slot acceleration
+		(type FLOAT)
+		(default 0.0))
+	(slot preFlag
+		(type INTEGER)
+		(default 0)		;0:this time data  >0: previouse data
+	)	
+)
+		
 
 (defglobal MAIN
-	?*AccelPeakInfoList* = (create$))
+	?*AccelPeakHistList* = (create$))
 
 ;==================================================
-; Rule(AccelPeakInfo.clp)
+; Rule(AccelPeakHist.clp)
 ; Add by liusiping@2016/06/08
 ;==================================================
 ;(defrule MAIN::SetFactList "Save fact list info to file."
 ;   (declare (salience 902))
 ;   =>
-;   (save-facts "FactListInfo.txt" local AccelPeakInfo))
+;   (save-facts "FactListInfo.txt" local AccelPeakHist))
    
    
 ;(defrule MAIN::GetFactList "Get all fact from config file."
@@ -106,24 +116,24 @@
    (make-instance FIFO of container))
    
    
-(defrule MAIN::GetAccelPeakInfo "Get all info of accel Peak from fact list."
+(defrule MAIN::GetAccelPeakHist "Get all info of accel Peak from fact list."
    (declare (salience 900))
-   ?AccelPeakInfoAddrList <- (AccelPeakInfo)
+   ?AccelPeakHistAddrList <- (AccelPeakHist)
    =>
-   (bind ?AccelInfoList (fact-slot-value ?AccelPeakInfoAddrList acceleration))
-   (bind ?CountInfoList (fact-slot-value ?AccelPeakInfoAddrList count))
-   (bind ?*AccelPeakInfoList* (insert$ ?*AccelPeakInfoList* 1 ?AccelInfoList ?CountInfoList))
-   (printout t "Accel Peak info is:"  ?*AccelPeakInfoList* crlf))
+   (bind ?AccelInfoList (fact-slot-value ?AccelPeakHistAddrList acceleration))
+   (bind ?CountInfoList (fact-slot-value ?AccelPeakHistAddrList count))
+   (bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 ?AccelInfoList ?CountInfoList))
+   (printout t "Accel Peak info is:"  ?*AccelPeakHistList* crlf))
    
    
 (defrule MAIN::writeToFIFO "Save global var to FIFO"
    (declare (salience 890))
-   (test (<> (length$ ?*AccelPeakInfoList*) 0))
+   (test (<> (length$ ?*AccelPeakHistList*) 0))
    =>
    (bind ?id 1)
-   (send [FIFO] putData ?*AccelPeakInfoList* ?id)
-   (bind ?*AccelPeakInfoList* (create$))
-   (printout t "Accel Peak info is:"  ?*AccelPeakInfoList* crlf))
+   (send [FIFO] putData ?*AccelPeakHistList* ?id)
+   (bind ?*AccelPeakHistList* (create$))
+   (printout t "Accel Peak info is:"  ?*AccelPeakHistList* crlf))
    
   
 ;==================================================
@@ -131,13 +141,21 @@
 ;==================================================
 (deffunction MAIN::SaveFactList()
 	(printout t "***SaveFactList start***"  crlf)
-	(bind ?tmp (save-facts "FactListInfo.txt" local AccelRawData))
+	(do-for-all-facts ((?factlist AccelPeakRawDataWithFlag)) TRUE
+	  (bind ?value (fact-slot-value ?factlist acceleration))
+	  (assert (AccelPeakRawData(acceleration ?value)))
+	  (retract ?factlist))
+	(bind ?tmp (save-facts "FactListInfo.txt" local AccelPeakRawData))
 	(printout t "***SaveFactList result is:***" ?tmp crlf)
-	(do-for-all-facts ((?factlist AccelRawData)) TRUE
+	(do-for-all-facts ((?factlist AccelPeakRawData)) TRUE
 	  (retract ?factlist))
 )
 
 (deffunction MAIN::LoadFactList()
 	(printout t "***LoadFactList start***"  crlf)
 	(bind ?tmp (load-facts "FactListInfo.txt"))
-	(printout t "***LoadFactList result is:***" ?tmp crlf))
+	(do-for-all-facts ((?factlist AccelPeakRawData)) TRUE
+	  (bind ?value (fact-slot-value ?factlist acceleration))
+	  (assert (AccelPeakRawDataWithFlag(acceleration ?value)))
+	  (retract ?factlist))
+)
