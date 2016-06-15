@@ -116,6 +116,7 @@
    
 (defrule MAIN::writeToFIFO "Save global var to FIFO"
    (declare (salience 890))
+   (test (<> (length$ ?*AccelPeakInfoList*) 0))
    =>
    (send [FIFO] putData ?*AccelPeakInfoList*)
    (bind ?*AccelPeakInfoList* (create$))
