@@ -41,7 +41,7 @@
 	(printout t "***getData end***"  crlf)
 )
 
-(defmessage-handler container putData (?inputData) 
+(defmessage-handler container putData (?inputData ?id) 
     (printout t "***setData start***"  crlf)
 	(if (= ?self:count 10) then
 		(printout t "***FIFO is full!***" crlf)
@@ -50,15 +50,17 @@
 		(if(> ?self:start 10) then (bind ?self:start 1))
 		(bind ?self:end (+ ?self:end 1))
 		(if(> ?self:end 10) then (bind ?self:end 1))
+		(bind ?inputData (insert$ ?inputData 1 ?id))
 		(dynamic-put ?jarname ?inputData)
 	else
 		(bind ?jarname (nth$ ?self:end ?self:jarlist))
 		(bind ?self:end (+ ?self:end 1))
 		(if(> ?self:end 10) then (bind ?self:end 1))
 		(bind ?self:count (+ ?self:count 1))
+		(bind ?inputData (insert$ ?inputData 1 ?id))
 		(dynamic-put ?jarname ?inputData)
 	)	
-	(printout t "***setData start***"  crlf)
+	(printout t "***setData end***"  crlf)
 )
   
 ;==================================================
@@ -118,7 +120,8 @@
    (declare (salience 890))
    (test (<> (length$ ?*AccelPeakInfoList*) 0))
    =>
-   (send [FIFO] putData ?*AccelPeakInfoList*)
+   (bind ?id 1)
+   (send [FIFO] putData ?*AccelPeakInfoList* ?id)
    (bind ?*AccelPeakInfoList* (create$))
    (printout t "Accel Peak info is:"  ?*AccelPeakInfoList* crlf))
    
