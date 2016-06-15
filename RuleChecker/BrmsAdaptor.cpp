@@ -44,6 +44,7 @@ void BrmsAdaptor::timerEvent(QTimerEvent *event)
 
 void BrmsAdaptor::updateAll()
 {
+    m_brms->getCommonData();
     emit aChanged(m_brms->getA());
     emit accelChanged(m_brms->getAccel());
     emit distanceChanged(m_brms->getDistance());
