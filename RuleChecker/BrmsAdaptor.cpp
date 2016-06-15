@@ -44,7 +44,47 @@ void BrmsAdaptor::timerEvent(QTimerEvent *event)
 
 void BrmsAdaptor::updateAll()
 {
-    m_brms->getCommonData();
+     int i;
+
+     FieldAndValue data;
+
+     int data_i;
+
+     float data_f;
+
+     FieldDataVec tmp = m_brms->getCommonData();
+
+     if(tmp.empty())
+
+     {
+        cout << "++++++++++Do nothing!" << endl;
+         //do nothing
+
+     }
+
+     else{
+
+         for (i=0;i<10;i++)
+
+         {
+
+             data=tmp[i];
+
+             if(data.type == 0){
+
+                 data_f=(float)data.data.f_value;
+
+             }else if (data.type == 1){
+
+                 data_i=(int)data.data.i_value;
+
+             }
+             cout << "Accel : " << data_f << " count : " << data_i << endl;
+
+         }
+
+     }
+
     emit aChanged(m_brms->getA());
     emit accelChanged(m_brms->getAccel());
     emit distanceChanged(m_brms->getDistance());

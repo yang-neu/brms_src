@@ -36,7 +36,8 @@ SOURCES += ../brms/BRMS.cpp \
     ../brms/streaming/EntryPointUser.cpp \
     ../brms/streaming/SignalEntryPoint.cpp \
     ../brms/thirdpart/duktape.c \
-    ../brms/timeliner/timeliner.cpp
+    ../brms/timeliner/timeliner.cpp \
+    $$PWD/streaming/EntryPointCommonData.cpp
 
 HEADERS +=../brms/BRMS.h \
     ../brms/ClipsRuleMgr.h \
@@ -99,6 +100,7 @@ HEADERS +=../brms/BRMS.h \
     ../brms/utility/ShiftStateParkingUtility.h \
     ../brms/utility/ShiftStateCANUtility.h \
     ../brms/timeliner/timeliner.hpp \
-    $$PWD/thirdpart/duk_config.h
+    $$PWD/thirdpart/duk_config.h \
+    $$PWD/streaming/EntryPointCommonData.h
 
 OTHER_FILES +=
