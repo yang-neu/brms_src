@@ -1,7 +1,9 @@
 ;==================================================
-; Class(AccelPeakInfo.clp)
+; Class(AccelPeakHist.clp)
 ; Add by liusiping@2016/06/10
 ;==================================================
+(defglobal MAIN ?*AccelPeakWindow* = (create$))  ;****[] width is the MaxWindow ;Read previouse data from data at IGON,Save current data at IGOFF-
+
 (defclass container (is-a USER)
 (slot start
 	(type INTEGER)
@@ -62,38 +64,127 @@
 )
   
 ;==================================================
-; Template(AccelPeakInfo.clp)
+; Template(AccelPeakHist.clp)
 ; Add by liusiping@2016/06/08
 ;==================================================
-(deftemplate MAIN::AccelPeakInfo
+(deftemplate MAIN::AccelPeakHist
 	(slot acceleration
 		(type FLOAT)
 		(default 0.0))
 	(slot count
 		(type INTEGER)
-		(default 0)))
+		(default 0))
+	)
+)
 		
-(deftemplate MAIN::AccelRawData
+(deftemplate MAIN::AccelPeakRawData
 	(slot acceleration
 		(type FLOAT)
 		(default 0.0)))
+
+(deftemplate MAIN::AccelPeakRawDataWithFlag
+	(slot acceleration
+		(type FLOAT)
+		(default 0.0))
+	(slot preFlag
+		(type INTEGER)
+		(default 0)		;0:this time data  >0: previouse data
+	)	
+)
 		
 
 (defglobal MAIN
-	?*AccelPeakInfoList* = (create$))
+	?*AccelPeakHistList* = (create$))
 
 ;==================================================
-; Rule(AccelPeakInfo.clp)
+; Fuction(AccelPeakHist.clp)
+; 
+;==================================================	
+(deffunction assertAccelPeakHist ()
+	(assert (AccelPeakHist (acceleration 0.7)))
+	(assert (AccelPeakHist (acceleration 0.8)))
+	(assert (AccelPeakHist (acceleration 0.9)))
+	(assert (AccelPeakHist (acceleration 1.0)))
+	(assert (AccelPeakHist (acceleration 1.1)))
+	(assert (AccelPeakHist (acceleration 1.2)))
+	(assert (AccelPeakHist (acceleration 1.3)))
+	(assert (AccelPeakHist (acceleration 1.4)))
+	(assert (AccelPeakHist (acceleration 1.5)))
+	(assert (AccelPeakHist (acceleration 1.6)))
+	(assert (AccelPeakHist (acceleration 1.7)))
+	(assert (AccelPeakHist (acceleration 1.8)))
+	(assert (AccelPeakHist (acceleration 1.9)))
+	(assert (AccelPeakHist (acceleration 2.0)))
+	(assert (AccelPeakHist (acceleration 2.1)))
+	(assert (AccelPeakHist (acceleration 2.2)))
+	(assert (AccelPeakHist (acceleration 2.3)))
+)
+
+(deffunction MakePreHistgram ()
+
+	(if (not (any-factp ((?a AccelPeakHist)) TRUE)) then (assertAccelPeakHist))
+		
+	(do-for-all-facts ((?a AccelPeakRawDataWithFlag) (> ?a:preFlag 0))
+		
+		(if (< ?a:acceleration 0.8) then
+			(bind ?f 0.7)
+		 else (if (> ?a:acceleration 2.2) then (bind ?f 2.3))
+		 else (bind ?f ?a:acceleration)
+		)
+		
+		(foreach ?p (find-all-facts ((?x AccelPeakHist)) TRUE)
+			
+			(if (= (round (* (fact-slot-value ?p acceleration) 10)) (round (* ?f 10))) then
+				(modify ?p (count (+ (fact-slot-value ?p count) 1)))
+			)
+		)
+	)
+	
+	;Add to FIFO
+	;Clear AccelPeakHist Facts
+	(foreach ?p (find-all-facts ((?x AccelPeakHist)) TRUE)
+		
+		(if (> (fact-slot-value ?p acceleration) then
+		)
+)
+	
+(deffunction MakeCurHistgram ()
+
+	(if (not (any-factp ((?a AccelPeakHist)) TRUE)) then (assertAccelPeakHist))
+		
+	(do-for-all-facts ((?a AccelPeakRawDataWithFlag) (= ?a:preFlag 0))
+		
+		(if (< ?a:acceleration 0.8) then
+			(bind ?f 0.7)
+		 else (if (> ?a:acceleration 2.2) then (bind ?f 2.3))
+		 else (bind ?f ?a:acceleration)
+		)
+		
+		(foreach ?p (find-all-facts ((?x AccelPeakHist)) TRUE)
+			
+			(if (= (round (* (fact-slot-value ?p acceleration) 10)) (round (* ?f 10))) then
+				(modify ?p (count (+ (fact-slot-value ?p count) 1)))
+			)
+		)
+	)
+	
+	;Add to FIFO
+	;Clear AccelPeakHist Facts
+)
+
+	
+;==================================================
+; Rule(AccelPeakHist.clp)
 ; Add by liusiping@2016/06/08
 ;==================================================
 ;(defrule MAIN::SetFactList "Save fact list info to file."
 ;   (declare (salience 902))
 ;   =>
-;   (save-facts "FactListInfo.txt" local AccelPeakInfo))
+;   (save-facts "FactListInfo.txt" local AccelPeakHist))
    
    
 (defrule MAIN::GetFactList "Get all fact from config file."
-   (declare (salience 910))
+   (declare (salience 980))
    =>
    (load-facts "FactListInfo.txt"))
    
@@ -104,19 +195,42 @@
    (make-instance FIFO of container))
    
    
-(defrule MAIN::GetAccelPeakInfo "Get all info of accel Peak from fact list."
+(defrule MAIN::GetAccelPeakHist "Get all info of accel Peak from fact list."
    (declare (salience 900))
-   ?AccelPeakInfoAddrList <- (AccelPeakInfo)
+   ?AccelPeakHistAddrList <- (AccelPeakHist)
    =>
-   (bind ?AccelInfoList (fact-slot-value ?AccelPeakInfoAddrList acceleration))
-   (bind ?CountInfoList (fact-slot-value ?AccelPeakInfoAddrList count))
-   (bind ?*AccelPeakInfoList* (insert$ ?*AccelPeakInfoList* 1 ?AccelInfoList ?CountInfoList))
-   (printout t "Accel Peak info is:"  ?*AccelPeakInfoList* crlf))
+   (bind ?AccelInfoList (fact-slot-value ?AccelPeakHistAddrList acceleration))
+   (bind ?CountInfoList (fact-slot-value ?AccelPeakHistAddrList count))
+   (bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 ?AccelInfoList ?CountInfoList))
+   (printout t "Accel Peak info is:"  ?*AccelPeakHistList* crlf))
    
    
 (defrule MAIN::writeToFIFO "Save global var to FIFO"
    (declare (salience 890))
    =>
-   (send [FIFO] putData ?*AccelPeakInfoList*)
-   (bind ?*AccelPeakInfoList* (create$))
-   (printout t "Accel Peak info is:"  ?*AccelPeakInfoList* crlf))
+   (send [FIFO] putData ?*AccelPeakHistList*)
+   (bind ?*AccelPeakHistList* (create$))
+   (printout t "Accel Peak info is:"  ?*AccelPeakHistList* crlf))
+   
+   
+(defrule MAIN::RestoreAccelPeakWindow "Restore the raw Accelation Peak data from file to memory"
+   (declare (salience 950))
+   ?AccelPeak <- (AccelPeakRawData)
+   =>
+   (bind ?data (fact-slot-value ?AccelPeak acceleration))
+   (bind ?len (length$ ?*AccelPeakWindow*))
+   (bind ?*AccelPeakWindow* (insert$ ?*AccelPeakWindow* (+ ?len 1) ?data))
+   (printout t ?*AccelPeakWindow* crlf)
+)
+
+ (defrule RestoreAccelPeakWindowM
+  (declare (salience 950))
+   ?AccelPeak <- (AccelPeakRawData)
+   =>
+   ; (bind ?data (fact-slot-value ?AccelPeak acceleration))
+   ; (bind ?len (length$ ?*AccelPeakWindow*))
+   ; (bind ?*AccelPeakWindow* (insert$ ?*AccelPeakWindow* (+ ?len 1) ?data))
+   ; (printout t ?*AccelPeakWindow* crlf)
+   
+   (printout t (fact-index ?AccelPeak) crlf))
+)
