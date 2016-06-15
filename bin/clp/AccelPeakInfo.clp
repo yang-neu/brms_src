@@ -144,8 +144,9 @@
 	;Clear AccelPeakHist Facts
 	(foreach ?p (find-all-facts ((?x AccelPeakHist)) TRUE)
 		
-		(if (> (fact-slot-value ?p acceleration) then
+		(if (> (fact-slot-value ?p acceleration) 0)then
 		)
+	)
 )
 	
 (deffunction MakeCurHistgram ()
@@ -170,6 +171,11 @@
 	
 	;Add to FIFO
 	;Clear AccelPeakHist Facts
+	(foreach ?p (find-all-facts ((?x AccelPeakHist)) TRUE)
+		
+		(if (> (fact-slot-value ?p acceleration) 0)then
+		)
+	)
 )
 
 	

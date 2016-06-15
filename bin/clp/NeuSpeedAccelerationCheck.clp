@@ -1,8 +1,8 @@
 ﻿;==================================================
 ; Global value(NewSpeedAccelerationCheck.clp)
 ;==================================================
-(defglobal SpecificAgenda ?*AccWindow* = (create$))  ;****[] width is the MaxWindow ;Read previouse data from data at IGON,Save current data at IGOFF-
-(defglobal SpecificAgenda ?*SudenWindow* = (create$))  ;****[] width is the MaxWindow ;Read previouse data from data at IGON,Save current data at IGOFF-
+; (defglobal SpecificAgenda ?*AccWindow* = (create$))  ;****[] width is the MaxWindow ;Read previouse data from data at IGON,Save current data at IGOFF-
+; (defglobal SpecificAgenda ?*SudenWindow* = (create$))  ;****[] width is the MaxWindow ;Read previouse data from data at IGON,Save current data at IGOFF-
 
 (defglobal SpecificAgenda ?*MaxWindow* = 50) ;500
 (defglobal SpecificAgenda ?*MaxSampling* = 10) ;100
@@ -51,82 +51,113 @@
 ;==================================================
 ; Function(NewSpeedAccelerationCheck.clp)
 ;==================================================
-(deffunction SpecificAgenda::MakeHistgram ()
-
-	(bind ?AccSud 0)
-	(bind ?width (length$ ?*SudenWindow*))
-	(if (= ?width 0) then
-		(return 0))
-		
-	(foreach ?data ?*AccWindow*
-		(bind ?AccelLevel (mod (integer (* (- ?data 0.8) 10)) 10)
-	)
-	(return (/ ?Accel ?width))
-	
-)
-
 (deffunction SpecificAgenda::cntAccSudPercent ()
 
 	(bind ?AccSud 0)
-	(bind ?width (length$ ?*SudenWindow*))
+	(bind ?width (count-facts AccelPeakRawDataWithFlag))
 	(if (= ?width 0) then
 		(return 0))
 	
-	(foreach ?data ?*SudenWindow*
-		(bind ?AccSud (+ ?AccSud ?data))
+	(find-all-facts ?f (?x AccelPeakRawDataWithFlag) TRUE
+		(bind ?a (fact-slot-value ?f acceleration))
+		(if (> ?a ?*SudAccelLimit*) then
+			(bind ?AccSud (+ ?AccSud 1))
+		)
 	)
 	(return (/ ?AccSud ?width))
 )
 
+; (deffunction SpecificAgenda::cntAccSudPercent ()
+
+	; (bind ?AccSud 0)
+	; (bind ?width (length$ ?*SudenWindow*))
+	; (if (= ?width 0) then
+		; (return 0))
+	
+	; (foreach ?data ?*SudenWindow*
+		; (bind ?AccSud (+ ?AccSud ?data))
+	; )
+	; (return (/ ?AccSud ?width))
+; )
+
 (deffunction SpecificAgenda::averageAccel()
 
 	(bind ?Accel 0)
-	(bind ?width (length$ ?*AccWindow*))
+	(bind ?width (count-facts AccelPeakRawDataWithFlag))
 	(if (= ?width 0) then
 		(return 0))
 	
-	(foreach ?data ?*AccWindow*
-		(bind ?Accel (+ ?Accel ?data))
+	(find-all-facts ?f (?x AccelPeakRawDataWithFlag) TRUE
+		(bind ?a (fact-slot-value ?f acceleration))
+		(bind ?Accel (+ ?Accel ?a))
 	)
 	(return (/ ?Accel ?width))
 )
 
+; (deffunction SpecificAgenda::averageAccel()
+
+	; (bind ?Accel 0)
+	; (bind ?width (length$ ?*AccWindow*))
+	; (if (= ?width 0) then
+		; (return 0))
+	
+	; (foreach ?data ?*AccWindow*
+		; (bind ?Accel (+ ?Accel ?data))
+	; )
+	; (return (/ ?Accel ?width))
+; )
+
 (deffunction SpecificAgenda::accelSigma()
 
 	(bind ?aver (averageAccel()))
-	(bind ?width (length$ ?*AccWindow*))
+	(bind ?width (count-facts AccelPeakRawDataWithFlag))
 	(if (= ?width 0) then
 		(return 0))
 
 	(bind ?bigSigma 0)
-	(foreach ?data ?*AccWindow*
-		(bind ?bigSigma (+ ?bigSigma (* (- ?data ?aver) (- ?data ?aver))))
+	(find-all-facts ?f (?x AccelPeakRawDataWithFlag) TRUE
+		(bind ?a (fact-slot-value ?f acceleration))
+		(bind ?bigSigma (+ ?bigSigma (* (- ?a ?aver) (- ?a ?aver))))
 	)
 	(return (sqrt(/ ?bigSigma ?width)))
 )
 
-
-
-(deffunction SpecificAgenda::makeDataWindow (?Accel ?Sud)
-	(bind ?width (length$ ?*AccWindow*))
-	(if (< ?width ?*MaxWindow*) then
-		(bind ?*AccWindow* (insert$ ?*AccWindow* (+ ?width 1) ?Accel))
-		(bind ?*SudenWindow* (insert$ ?*SudenWindow* (+ ?width 1) ?Sud))
-	else ;keep the width of window
-		(bind ?*AccWindow* (delete$ ?*AccWindow* 1 1))
-		(bind ?*AccWindow* (insert$ ?*AccWindow* (+ ?width 1) ?Accel))
-		(bind ?*SudenWindow* (delete$ ?*SudenWindow* 1 1))
-		(bind ?*SudenWindow* (insert$ ?*SudenWindow* (+ ?width 1) ?Sud))
+(deffunction SpecificAgenda::makeDataWindow (?Accel)
+	(assert (AccelPeakRawDataWithFlag (acceleration ?Accel)))
+	(bind ?width (count-facts AccelPeakRawDataWithFlag))
+	(if (> ?width ?*MaxWindow*) then
+		;delete the oldest one
+		(foreach ?f (find-fact ((?x AccelPeakRawDataWithFlag)) TRUE)
+			(retract ?f)
+		)
 	)
 	
-	(printout t "-----AccWindow : " ?*AccWindow* crlf)
-	(printout qt "-----AccWindow : " ?*AccWindow* crlf)
-	(printout t "-----SudenWindow : " ?*SudenWindow* crlf)
-	(printout qt "-----SudenWindow : " ?*SudenWindow* crlf)
+;	(printout t "-----AccWindow : " ?*AccWindow* crlf)
+;	(printout qt "-----AccWindow : " ?*AccWindow* crlf)
+
 )
 
-; (deffunction SpecificAgenda::count-facts-2 (?template)
-; (length (find-all-facts ((?fct ?template)) TRUE)))
+
+; (deffunction SpecificAgenda::makeDataWindow (?Accel ?Sud)
+	; (bind ?width (length$ ?*AccWindow*))
+	; (if (< ?width ?*MaxWindow*) then
+		; (bind ?*AccWindow* (insert$ ?*AccWindow* (+ ?width 1) ?Accel))
+		; (bind ?*SudenWindow* (insert$ ?*SudenWindow* (+ ?width 1) ?Sud))
+	; else ;keep the width of window
+		; (bind ?*AccWindow* (delete$ ?*AccWindow* 1 1))
+		; (bind ?*AccWindow* (insert$ ?*AccWindow* (+ ?width 1) ?Accel))
+		; (bind ?*SudenWindow* (delete$ ?*SudenWindow* 1 1))
+		; (bind ?*SudenWindow* (insert$ ?*SudenWindow* (+ ?width 1) ?Sud))
+	; )
+	
+	; (printout t "-----AccWindow : " ?*AccWindow* crlf)
+	; (printout qt "-----AccWindow : " ?*AccWindow* crlf)
+	; (printout t "-----SudenWindow : " ?*SudenWindow* crlf)
+	; (printout qt "-----SudenWindow : " ?*SudenWindow* crlf)
+; )
+
+ (deffunction SpecificAgenda::count-facts (?template)
+ (length (find-all-facts ((?fct ?template)) TRUE)))
 
 ;==================================================
 ; Rule(NewSpeedAccelerationCheck.clp)
