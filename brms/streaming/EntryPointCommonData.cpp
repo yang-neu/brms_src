@@ -85,3 +85,43 @@ FieldDataVec EntryPointCommonData::getCommonData()
      return v_fd_tmp;
 }
 
+bool EntryPointCommonData::loadFactFile()
+{
+    int result;
+    char * fun_name="LoadFactList";
+    DATA_OBJECT outputValue;
+
+    result = EnvFunctionCall(m_theEnv,fun_name,NULL,&outputValue);
+
+    if(result == 0)
+	{
+	    return TRUE;
+	}
+    else
+	{
+	    //an error occurred while opening the file
+	    return FALSE;
+	}
+
+}
+
+bool EntryPointCommonData::saveFactToFile()
+{
+    int result;
+    char * fun_name="SaveFactList";
+    DATA_OBJECT outputValue;
+
+    result = EnvFunctionCall(m_theEnv,fun_name,NULL,&outputValue);
+
+    if(result == 0)
+	{
+	    return TRUE;
+	}
+    else
+	{
+	    //an error occurred while opening the file
+	    return FALSE;
+	}
+}
+
+
