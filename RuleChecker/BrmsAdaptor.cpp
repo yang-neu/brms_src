@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <QString>
 #include "BrmsAdaptor.h"
+#include "stdlib.h" //rand() for Debug
+#include "time.h" //time() for Debug
 
 BrmsAdaptor::BrmsAdaptor( QObject *parent) :
     QObject(parent), m_Interval(100),m_TimerID(0), isDebug(false), flagIG(true)
@@ -38,7 +40,10 @@ void BrmsAdaptor::init(int argc, char *argv[])
 void BrmsAdaptor::timerEvent(QTimerEvent *event)
 {
     if (event->timerId() == m_TimerID)
+    {
         updateAll();
+        updateAccelInfo();
+    }
 }
 
 
@@ -127,4 +132,63 @@ void BrmsAdaptor::updateAll()
     emit followStopStateChanged(QString(QString::fromUtf8(m_brms->getFollowStopState().c_str(), strlen(m_brms->getFollowStopState().c_str()))));
     emit followStopCountChanged(m_brms->getFollowStopCount());
 }
+
+void BrmsAdaptor::updateAccelInfo()
+{
+    int i;
+    int data_i;
+    float data_f;
+
+    vector<FieldAndValue> data = m_brms->getCommonData();
+    if(data.empty())
+    {
+        //nothing to do
+    }
+    else{
+        for (i=0; i<data.size(); i++)
+        {
+            if(data[i].type == 0){
+                data_f=(float)data[i].data.f_value;
+            }else if (data[i].type == 1){
+                data_i=(int)data[i].data.i_value;
+            }
+
+            emit accelInfoChanged("old", data_f, data_i, "caution");
+        }
+
+     }
+
+
+    //評価用データ for Debug
+    /*{
+        QVector<double> accelInfo;
+        accelInfo << 1.7 << 24 << 1.8 << 31 << 1.9 << 3 << 2.0 << 2 << 2.1 << 1 <<
+                     1.6 << 128 << 1.5 << 71 << 1.4 << 20 << 1.3 << 89 << 1.2 << 11 <<
+                     1.1 << 90 << 1.0 << 34 << 0.9 << 5 << 0.8 << 76 << 0.4 << 54 ;
+
+        //accelInfoChangedシグナルを送信
+        while(accelInfo.length()) {
+            double data = accelInfo.takeFirst();
+            int count = accelInfo.takeFirst();
+            emit accelInfoChanged("old", data, count, "caution");
+        }
+    }*/
+
+    //ランダムで今回のTrip加速度を生成 for Debug
+    {
+        srand((unsigned)time(NULL));
+
+        double data = (rand()%15+8)*0.1;
+        double count = (rand()%50+1);
+
+        //printf("accel=%d count=%d\n",data, count);
+        if(data>=1.8) {
+            emit accelInfoChanged("this", data, count, "caution");
+        }else{
+            emit accelInfoChanged("this", data, count, "none");
+        }
+    }
+
+}
+
 

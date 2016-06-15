@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QTimerEvent>
 #include "../brms/BRMS.h"
+#include <vector>
+#include <QVector>
 
 class BrmsAdaptor : public QObject, RouterInterface
 {
@@ -87,6 +89,8 @@ signals:
     void frontCarChanged(QString str);
     void driveSceneChanged(QString str);
 
+    void accelInfoChanged(QString state, double data, int count, QString caution);
+
     void suddenAccelChanged(QString str);
     void suddenAccelStateChanged(QString str);
     void suddenAccelCountChanged(int count);
@@ -132,6 +136,7 @@ protected:
     int m_Interval;
     void timerEvent(QTimerEvent *event);
     void updateAll();
+    void updateAccelInfo();
 
     BRMS *m_brms;
 };

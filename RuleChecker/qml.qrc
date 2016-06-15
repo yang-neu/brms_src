@@ -7,5 +7,12 @@
         <file>qml/FlickableScrollBar.qml</file>
         <file>qml/main.qml</file>
         <file>qml/ProgressBarWithText.qml</file>
+        <file>qml/GraphBar.qml</file>
+        <file>qml/GraphAxis.qml</file>
+        <file>qml/NumericalData.qml</file>
+        <file>qml/res/Caution.png</file>
+        <file>qml/res/state_NormalAccel.png</file>
+        <file>qml/res/state_SuddenAccel.png</file>
+        <file>qml/profile01SuddenAccel.qml</file>
     </qresource>
 </RCC>
