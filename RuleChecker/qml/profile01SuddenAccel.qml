@@ -303,6 +303,43 @@ Window {
         }
     }
 
+
+    Item { //For Debug
+        visible: true
+
+        Rectangle {
+            id: debugBar
+            x:0
+            y:profile01SuddenAccel.height  - igOff.buttonHeight - 20
+            width: profile01SuddenAccel.width
+            height: 2
+            color: "blue"
+        }
+
+        property int igOffId: 0
+        ButtonWithText{
+            id: igOff
+            x: profile01SuddenAccel.width - buttonWidth -10
+            y: profile01SuddenAccel.height - buttonHeight - 10
+            buttonWidth: 100;
+            buttonHeight: 40;
+            buttonText: qsTr("IG OFF");
+            onButtonPressed:{
+                brms.switchIG = 0;
+                if (igOffId == 0)
+                {
+                    igOffId = 1;
+                    igOff.buttonText = qsTr("IG ON");
+                }
+                else
+                {
+                    igOffId = 0;
+                    igOff.buttonText = qsTr("IG OFF");
+                }
+            }
+        }
+    }
+
     //--------------------------------------------------
     // function
     //--------------------------------------------------
