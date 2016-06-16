@@ -46,11 +46,14 @@
 )
 
 (defglobal MAIN
-	?*Profile1Data* = (assert (AccelStatus)))
+	?*Profile1Data* = (assert (Profile1Status)))
 
 ;==================================================
 ; Function(NewSpeedAccelerationCheck.clp)
 ;==================================================
+ (deffunction SpecificAgenda::count-facts (?template)
+ (length (find-all-facts ((?fct ?template)) TRUE)))
+
 (deffunction SpecificAgenda::cntAccSudPercent ()
 
 	(bind ?AccSud 0)
@@ -58,7 +61,7 @@
 	(if (= ?width 0) then
 		(return 0))
 	
-	(find-all-facts ?f (?x AccelPeakRawDataWithFlag) TRUE
+	(foreach ?f (find-all-facts ((?x AccelPeakRawDataWithFlag)) TRUE)
 		(bind ?a (fact-slot-value ?f acceleration))
 		(if (> ?a ?*SudAccelLimit*) then
 			(bind ?AccSud (+ ?AccSud 1))
@@ -87,7 +90,7 @@
 	(if (= ?width 0) then
 		(return 0))
 	
-	(find-all-facts ?f (?x AccelPeakRawDataWithFlag) TRUE
+	(foreach ?f (find-all-facts ((?x AccelPeakRawDataWithFlag)) TRUE)
 		(bind ?a (fact-slot-value ?f acceleration))
 		(bind ?Accel (+ ?Accel ?a))
 	)
@@ -109,13 +112,13 @@
 
 (deffunction SpecificAgenda::accelSigma()
 
-	(bind ?aver (averageAccel()))
+	(bind ?aver (averageAccel))
 	(bind ?width (count-facts AccelPeakRawDataWithFlag))
 	(if (= ?width 0) then
 		(return 0))
 
 	(bind ?bigSigma 0)
-	(find-all-facts ?f (?x AccelPeakRawDataWithFlag) TRUE
+	(foreach ?f (find-all-facts ((?x AccelPeakRawDataWithFlag)) TRUE)
 		(bind ?a (fact-slot-value ?f acceleration))
 		(bind ?bigSigma (+ ?bigSigma (* (- ?a ?aver) (- ?a ?aver))))
 	)
@@ -156,8 +159,6 @@
 	; (printout qt "-----SudenWindow : " ?*SudenWindow* crlf)
 ; )
 
- (deffunction SpecificAgenda::count-facts (?template)
- (length (find-all-facts ((?fct ?template)) TRUE)))
 
 ;==================================================
 ; Rule(NewSpeedAccelerationCheck.clp)
@@ -202,7 +203,7 @@
 			)
 			;the previous acceleration is the max of this secen
 			;'τ＜-3、3＜τならば、はずれ値（いつもと違う状態）として判定し平均値の更新はしない
-			(makeDataWindow ?*PreAccel* ?Accsud)
+			(makeDataWindow ?*PreAccel*)
 			(bind ?*PreAccel* 0)
 			
 			;get total of Accsud and judge with 25％以上であれば
@@ -228,8 +229,8 @@
 	=>
 	
 	(bind ?sigma (accelSigma))
-	(bind ?aver (averageAccel()))
-	(bind ?tau ((/ (- ?acceleration ?aver) ?sigma)))
+	(bind ?aver (averageAccel))
+	(bind ?tau (/ (- ?acceleration ?aver) ?sigma))
 	
 	;τ>3　
 	(if (> ?tau 3) then (bind ?*TauCnt* (+ ?*TauCnt* 1)))
