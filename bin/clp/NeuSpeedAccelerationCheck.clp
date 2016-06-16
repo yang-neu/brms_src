@@ -4,7 +4,7 @@
 ; (defglobal SpecificAgenda ?*AccWindow* = (create$))  ;****[] width is the MaxWindow ;Read previouse data from data at IGON,Save current data at IGOFF-
 ; (defglobal SpecificAgenda ?*SudenWindow* = (create$))  ;****[] width is the MaxWindow ;Read previouse data from data at IGON,Save current data at IGOFF-
 
-(defglobal SpecificAgenda ?*MaxWindow* = 50) ;500
+(defglobal SpecificAgenda ?*MaxWindow* = 500) ;500
 (defglobal SpecificAgenda ?*MaxSampling* = 10) ;100
 (defglobal SpecificAgenda ?*AccSamplingCnt* = 0) 
 (defglobal SpecificAgenda ?*AccSamplingCntB* = 0) ;IGOFF->save2file IGON->read previous from file
@@ -29,16 +29,18 @@
 		(default "状態未判定"))  ;急加速しがち/急加速しない
 	(slot MaxAccelofScene
 		(type INTEGER))
-	(slot TotalofSampling
+	(slot previousSampling
 		(type INTEGER))
 	(slot currentSampling
 		(type INTEGER))
 	(slot PercentageofSudAcc
 		(type INTEGER))
-	(slot AverageSpeed
-		(type INTEGER))
+	(slot previousAveSpeed
+		(type INTEGER)
+		(default 0))
 	(slot CurrentAveSpeed
-		(type INTEGER))
+		(type INTEGER)
+		(default 0))
 	(slot Sigma					;分散値
 		(type INTEGER))
 	(slot Cnt3Sima
@@ -135,9 +137,7 @@
 		)
 	)
 	
-;	(printout t "-----AccWindow : " ?*AccWindow* crlf)
-;	(printout qt "-----AccWindow : " ?*AccWindow* crlf)
-
+	(printout t "++++++++AccWindow Size/MaxWindow : " ?width "/" ?*MaxWindow* crlf)
 )
 
 
@@ -173,10 +173,8 @@
 	;Get the max accelration of the secen
 	(if (>= ?acceleration ?*PreAccel*) then
 		(bind ?*PreAccel* ?acceleration)
-		;(bind ?Accsud 0)
-		;(makeDataWindow ?*PreAccel* ?Accsud)
+		(printout t "++++++++getMaxValueofAccelScene " ?*PreAccel* crlf)
 	)
-	(printout qt "++++++++getMaxValueofAccelScene " ?*PreAccel* crlf)
 )
 	
 (defrule SpecificAgenda::leaveAccelScene　　;加速シーンから抜く
@@ -186,37 +184,79 @@
 	=>
 	(if (> ?*PreAccel* 0) then
 		;加速度最大値がある場合
+				
+		(makeDataWindow ?*PreAccel*)
 		
+		(MakeCurHistgram)
+			
+			
 		;Sampling Counter++
-		(bind ?*AccSamplingCnt* (+ ?*AccSamplingCnt* 1))
+		;(bind ?*AccSamplingCnt* (+ ?*AccSamplingCnt* 1))
+		(bind ?AccSamplingCnt (count-facts AccelPeakRawDataWithFlag))
+		
+		(printout t "++++++++leaveAccelScene-AccSamplingCnt/MaxSampling " ?AccSamplingCnt "/" ?*MaxSampling* crlf)
+		
+		;加速シーンの最大加速度
+		(bind ?*Profile1Data* (modify ?*Profile1Data* (MaxAccelofScene ?*PreAccel*)))
+		
+		;これまでのサンプル数
+		(bind ?preSampleCnt (length (find-all-facts ((?x AccelPeakRawDataWithFlag)) (> ?x:preFlag 0))))
+		(bind ?*Profile1Data* (modify ?*Profile1Data* (previousSampling ?preSampleCnt)))
+		
+		;今回のサンプル数
+		(bind ?curSampleCnt (length (find-all-facts ((?x AccelPeakRawDataWithFlag)) (= ?x:preFlag 0))))
+		(bind ?*Profile1Data* (modify ?*Profile1Data* (currentSampling ?curSampleCnt)))
+		
+		;急加速の割合
+		(bind ?percent (cntAccSudPercent))
+		(bind ?*Profile1Data* (modify ?*Profile1Data* (PercentageofSudAcc ?percent)))
+		
+		;これまでの平均
+		(if (> ?preSampleCnt 0) then
+			
+			(bind ?Accel 0)
+			(foreach ?f (find-all-facts ((?x AccelPeakRawDataWithFlag)) (> ?x:preFlag 0))
+				(bind ?a (fact-slot-value ?f acceleration))
+				(bind ?Accel (+ ?Accel ?a))
+			)
+			(bind ?*Profile1Data* (modify ?*Profile1Data* (previousAveSpeed (/ ?Accel ?preSampleCnt))))
+		else
+			(bind ?*Profile1Data* (modify ?*Profile1Data* (previousAveSpeed 0)))
+		)
+			
+		;今回の平均
+		(if (> ?curSampleCnt 0) then
+			(bind ?Accel 0)
+			(foreach ?f (find-all-facts ((?x AccelPeakRawDataWithFlag)) (= ?x:preFlag 0))
+				(bind ?a (fact-slot-value ?f acceleration))
+				(bind ?Accel (+ ?Accel ?a))
+			)
+			(bind ?*Profile1Data* (modify ?*Profile1Data* (currentAveSpeed (/ ?Accel ?curSampleCnt))))
+		else
+			(bind ?*Profile1Data* (modify ?*Profile1Data* (currentAveSpeed 0)))
+		)		
 		
 		;必要サンプリング数に達して以降、サンプリング値が更新されるたびに、以下の判定をする。
 		;加速情報[ ] > 1.7m/s^2 が何％成立しているか判定し、
-		(if (> (+ ?*AccSamplingCnt* ?*AccSamplingCntB*) ?*MaxSampling*) then 
-			(if (> ?acceleration 1.72) then
-		
-				(bind ?Accsud 1) ;急加速しがち:1,
-			
-			else
-		 
-				(bind ?Accsud 0) ;急加速あまりしない:0
-			)
+		(if (> ?AccSamplingCnt ?*MaxSampling*) then 
+
 			;the previous acceleration is the max of this secen
 			;'τ＜-3、3＜τならば、はずれ値（いつもと違う状態）として判定し平均値の更新はしない
-			(makeDataWindow ?*PreAccel*)
-			(bind ?*PreAccel* 0)
-			
+
+
 			;get total of Accsud and judge with 25％以上であれば
 			;25％以上であれば、
 			(if (> (cntAccSudPercent) 0.25) then
 				;ドライバー特性を"急加速しがち"
-				(bind ?*Profile1Data* (modify ?*Profile1Data* (AccelJudegment "急加速しがち"))))
+				(bind ?*Profile1Data* (modify ?*Profile1Data* (AccelJudegment "急加速しがち")))
 			else
 				;急加速あまりしない
-				(bind ?*Profile1Data* (modify ?*Profile1Data* (AccelJudegment "急加速しない"))))
+				(bind ?*Profile1Data* (modify ?*Profile1Data* (AccelJudegment "急加速しない")))
 			)
 		 
 		)
+		
+		(bind ?*PreAccel* 0)
 	)
 )
 
@@ -235,12 +275,24 @@
 	;τ>3　
 	(if (> ?tau 3) then (bind ?*TauCnt* (+ ?*TauCnt* 1)))
 	
+	(printout t "++++++++getAccelTau tau/TauCnt: " ?tau "/" ?*TauCnt* crlf)
+	
+	;分散値
+	(bind ?*Profile1Data* (modify ?*Profile1Data* (Sigma ?sigma)))
+	(bind ?*Profile1Data* (modify ?*Profile1Data* (Cnt3Sima ?*TauCnt*)))
+		
+	;3σ外数
+
 	(if (> ?*TauCnt* 3) then
 	;3回達成と"いつもと違う"と判定する。
 	
-		(bind ?*TauCnt* = 0)
+		;(bind ?*TauCnt* = 0)
 	
 	)
+	
+	(bind ?id 2)
+   　(send [FIFO] putData ?*Profile1Data* ?id)
+   　(printout t "++++++Insert Profile1 data to FIFO:"  ?*Profile1Data* crlf))
 )
 
 ; (defrule SpecificAgenda::MakeAccelerationList
