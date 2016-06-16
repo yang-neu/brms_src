@@ -29,6 +29,7 @@ Window {
     property int maxCountNumThisTrip: 0;
     property double graphDisplayRate: 1;
 
+    property int igOffId: 0
 
     Component.onCompleted: {
         //Nothing to do
@@ -316,7 +317,6 @@ Window {
             color: "blue"
         }
 
-        property int igOffId: 0
         ButtonWithText{
             id: igOff
             x: profile01SuddenAccel.width - buttonWidth -10
