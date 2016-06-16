@@ -25,6 +25,10 @@ Window {
     property double m_A: 3;
     property double m_A1: 3;
 
+    property int maxCountNumOldTrip: 0;
+    property int maxCountNumThisTrip: 0;
+    property double graphDisplayRate: 1;
+
 
     Component.onCompleted: {
         //Nothing to do
@@ -39,6 +43,9 @@ Window {
         }
         onAccelInfoChanged: {
             //localfunc.printConsoleLog("accel=" + data + ", count=" + count);
+
+            localfunc.setGraphDisplayRate(state, count);
+
             localfunc.displayGraph(state, data, count, caution);
         }
 
@@ -55,19 +62,23 @@ Window {
         Column {
             x:10;
             y:20;
-            spacing: 32;
+            spacing: 28;
 
-            GraphAxis{ text: qsTr("300 ") }
-            GraphAxis{ text: qsTr("250 ") }
-            GraphAxis{ text: qsTr("200 ") }
-            GraphAxis{ text: qsTr("150 ") }
-            GraphAxis{ text: qsTr("100 ") }
-            GraphAxis{ text: qsTr(" 50 ") }
-            GraphAxis{ text: qsTr("  0 ")
+            GraphAxis{ text: qsTr((500*graphDisplayRate).toString()) }
+            GraphAxis{ text: qsTr((450*graphDisplayRate).toString()) }
+            GraphAxis{ text: qsTr((400*graphDisplayRate).toString()) }
+            GraphAxis{ text: qsTr((350*graphDisplayRate).toString()) }
+            GraphAxis{ text: qsTr((300*graphDisplayRate).toString()) }
+            GraphAxis{ text: qsTr((250*graphDisplayRate).toString()) }
+            GraphAxis{ text: qsTr((200*graphDisplayRate).toString()) }
+            GraphAxis{ text: qsTr((150*graphDisplayRate).toString()) }
+            GraphAxis{ text: qsTr((100*graphDisplayRate).toString()) }
+            GraphAxis{ text: qsTr((50*graphDisplayRate).toString()) }
+            GraphAxis{ text: qsTr((0*graphDisplayRate).toString())
                 Row {
                     id: verticalAxis
                     x: 40;
-                    y: 20;
+                    y: 22;
                     spacing: 10;
                     //GraphBar {id: graphBar01; text: qsTr("0.1") }
                     //GraphBar {id: graphBar02; text: qsTr("0.2") }
@@ -93,14 +104,16 @@ Window {
                     GraphBar {id: graphBar22; text: qsTr("2.2") }
                 }
             }
+
+
         }
 
         Rectangle {
-            id: suddenAccelBar
+            id: graphSuddenAccelBar
             x : ((17-7) * (graphBar17.width + verticalAxis.spacing)) + 45; //1.7以上は急加速
             y : 15;
             width: 3
-            height: 350
+            height: 515
             color: "purple"
             Text {
                 x:10
@@ -109,9 +122,9 @@ Window {
             }
         }
         Rectangle {
-            id: standardRange
+            id: graphStandardRange
             x : ((9-7) * (graphBar09.width + verticalAxis.spacing)) + 5; //0.9~1.4
-            y : 360;
+            y : 538;
             width: ((14-9+1) * (graphBar09.width + verticalAxis.spacing)) + 5 //0.9~1.4
             height: 29
             border.width: 2
@@ -119,64 +132,66 @@ Window {
             color: "transparent"
             radius: 5
         }
+        ColumnLayout {
+            id: graphCaption
+            x: 70
+            y: 610
+            RowLayout {
+                spacing: 10
+                Rectangle {
+                    width: 20
+                    height: 20
+                    color: "steelblue"
+                }
+                Text {
+                    text: qsTr("これまでのドライブのデータ")
+                    font.pixelSize: 14
+                }
+                Rectangle {
+                    width: 90
+                    height: 20
+                    border.width: 2
+                    border.color: "green"
+                    color: "transparent"
+                    radius: 5
+                }
+                Text {
+                    text: qsTr("これまでのデータからの標準範囲")
+                    font.pixelSize: 14
+                }
+            }
+            RowLayout {
+                spacing: 10
+                Rectangle {
+                    width: 20
+                    height: 20
+                    color: "orange"
+                }
+                Text {
+                    text: qsTr("今回でのドライブのデータ")
+                    font.pixelSize: 14
+                }
+                Rectangle {
+                    width: 20
+                    height: 20
+                    color: "red"
+                }
+                Text {
+                    text: qsTr("最新のデータ")
+                    font.pixelSize: 14
+                }
+                Image {
+                    source: "res/Caution.png" ;
+                }
+                Text {
+                    text: qsTr("今回のドライブでの異常値")
+                    font.pixelSize: 14
+                }
+            }
+        }
     }
 
-    ColumnLayout {
-        x: 50
-        y: 440
-        RowLayout {
-            spacing: 10
-            Rectangle {
-                width: 20
-                height: 20
-                color: "steelblue"
-            }
-            Text {
-                text: qsTr("これまでのドライブのデータ")
-                font.pixelSize: 14
-            }
-            Rectangle {
-                width: 90
-                height: 20
-                border.width: 2
-                border.color: "green"
-                color: "transparent"
-                radius: 5
-            }
-            Text {
-                text: qsTr("これまでのデータからの標準範囲")
-                font.pixelSize: 14
-            }
-        }
-        RowLayout {
-            spacing: 10
-            Rectangle {
-                width: 20
-                height: 20
-                color: "orange"
-            }
-            Text {
-                text: qsTr("今回でのドライブのデータ")
-                font.pixelSize: 14
-            }
-            Rectangle {
-                width: 20
-                height: 20
-                color: "red"
-            }
-            Text {
-                text: qsTr("最新のデータ")
-                font.pixelSize: 14
-            }
-            Image {
-                source: "res/Caution.png" ;
-            }
-            Text {
-                text: qsTr("今回のドライブでの異常値")
-                font.pixelSize: 14
-            }
-        }
-    }
+
 
     ColumnLayout {
         x: 700
@@ -391,10 +406,43 @@ Window {
                 break;
 
             default:
+                localfunc.printConsoleLog("data=" + data.toFixed(1) + ": out of range")
                 break;
             }
 
             return;
+        }
+
+        function setGraphDisplayRate(state, count) {
+            if("old" === state) {
+                maxCountNumOldTrip = maxCountNumOldTrip > count ? maxCountNumOldTrip:count;
+            }else if ("this" === state) {
+                maxCountNumThisTrip = maxCountNumThisTrip > count ? maxCountNumThisTrip:count;
+            }
+
+            //graphDisplayRate = ((maxCountNumOldTrip + maxCountNumThisTrip)/500).toFixed(3);
+            graphDisplayRate = ((maxCountNumOldTrip + maxCountNumThisTrip)-((maxCountNumOldTrip + maxCountNumThisTrip)%20)+20)/500; //20刻みで表示
+
+            //localfunc.printConsoleLog("graphDisplayRate=" + graphDisplayRate);
+            //localfunc.printConsoleLog("---");
+            //localfunc.printConsoleLog("maxCountNumOldTrip=" + maxCountNumOldTrip + ", maxCountNumThisTrip=" + maxCountNumThisTrip);
+
+
+            graphBar08.scaleRate = 1/graphDisplayRate;
+            graphBar09.scaleRate = 1/graphDisplayRate;
+            graphBar10.scaleRate = 1/graphDisplayRate;
+            graphBar11.scaleRate = 1/graphDisplayRate;
+            graphBar12.scaleRate = 1/graphDisplayRate;
+            graphBar13.scaleRate = 1/graphDisplayRate;
+            graphBar14.scaleRate = 1/graphDisplayRate;
+            graphBar15.scaleRate = 1/graphDisplayRate;
+            graphBar16.scaleRate = 1/graphDisplayRate;
+            graphBar17.scaleRate = 1/graphDisplayRate;
+            graphBar18.scaleRate = 1/graphDisplayRate;
+            graphBar19.scaleRate = 1/graphDisplayRate;
+            graphBar20.scaleRate = 1/graphDisplayRate;
+            graphBar21.scaleRate = 1/graphDisplayRate;
+            graphBar22.scaleRate = 1/graphDisplayRate;
         }
 
     }

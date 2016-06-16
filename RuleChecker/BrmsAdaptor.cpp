@@ -95,9 +95,9 @@ void BrmsAdaptor::updateAll()
 
 void BrmsAdaptor::updateAccelInfo()
 {
-    int i;
-    int data_i;
-    float data_f;
+    int i = 0;
+    int data_i = 0;
+    float data_f = 0;
 
     vector<FieldAndValue> data = m_brms->getCommonData();
     if(data.empty())
