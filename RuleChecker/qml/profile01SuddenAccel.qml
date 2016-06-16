@@ -12,9 +12,6 @@ Window {
     height: 768;
     color: "#eeeeee";
 
-    property double speedMax: 250;
-    property double aMax: 3;
-
     property int samplingNmuK: 0;
     property double aTripMax: 0;
     property double aTripAve: 0;
@@ -22,13 +19,13 @@ Window {
     property double aTripVariance: 0;
 
     property double m_Speed: 250;
-    property double m_A: 3;
-    property double m_A1: 3;
+    property string driveScene:"AddSpeedRunning";
 
     property int maxCountNumOldTrip: 0;
     property int maxCountNumThisTrip: 0;
     property double graphDisplayRate: 1;
 
+    property int igOffId: 0
 
     Component.onCompleted: {
         //Nothing to do
@@ -37,10 +34,8 @@ Window {
     Connections {
         target: brms;
         onSpeedChanged:m_Speed = speed.toFixed(2);
-        onAChanged: {
-            m_A = a.toFixed(2);
-            m_A1 = m_A>0 ? m_A: 0-m_A;
-        }
+        onDriveSceneChanged: driveScene = str;
+
         onAccelInfoChanged: {
             //localfunc.printConsoleLog("accel=" + data + ", count=" + count);
 
@@ -254,7 +249,7 @@ Window {
         }
         NumericalData {
             displayText: qsTr("車両状態");
-            displayData: (0).toString();
+            displayData: qsTr(driveScene);
             displayUnit: qsTr("");
         }
         Text{
@@ -300,6 +295,42 @@ Window {
             displayText: qsTr("3σ外");
             displayData: (0).toString();
             displayUnit: qsTr("個");
+        }
+    }
+
+
+    Item { //For Debug
+        visible: true
+
+        Rectangle {
+            id: debugBar
+            x:0
+            y:profile01SuddenAccel.height  - igOff.buttonHeight - 20
+            width: profile01SuddenAccel.width
+            height: 2
+            color: "blue"
+        }
+
+        ButtonWithText{
+            id: igOff
+            x: profile01SuddenAccel.width - buttonWidth -10
+            y: profile01SuddenAccel.height - buttonHeight - 10
+            buttonWidth: 100;
+            buttonHeight: 40;
+            buttonText: qsTr("IG OFF");
+            onButtonPressed:{
+                brms.switchIG = 0;
+                if (igOffId == 0)
+                {
+                    igOffId = 1;
+                    igOff.buttonText = qsTr("IG ON");
+                }
+                else
+                {
+                    igOffId = 0;
+                    igOff.buttonText = qsTr("IG OFF");
+                }
+            }
         }
     }
 
