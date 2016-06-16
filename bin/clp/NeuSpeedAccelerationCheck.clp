@@ -1,11 +1,8 @@
 ﻿;==================================================
 ; Global value(NewSpeedAccelerationCheck.clp)
 ;==================================================
-; (defglobal SpecificAgenda ?*AccWindow* = (create$))  ;****[] width is the MaxWindow ;Read previouse data from data at IGON,Save current data at IGOFF-
-; (defglobal SpecificAgenda ?*SudenWindow* = (create$))  ;****[] width is the MaxWindow ;Read previouse data from data at IGON,Save current data at IGOFF-
-
-(defglobal SpecificAgenda ?*MaxWindow* = 500) ;500
-(defglobal SpecificAgenda ?*MaxSampling* = 10) ;100
+(defglobal MAIN ?*MaxWindow* = 500) ;500
+(defglobal MAIN ?*MaxSampling* = 10) ;100
 (defglobal SpecificAgenda ?*AccSamplingCnt* = 0) 
 (defglobal SpecificAgenda ?*AccSamplingCntB* = 0) ;IGOFF->save2file IGON->read previous from file
 (defglobal SpecificAgenda ?*AccSudCnt* = 0)			;急加速しがちCount
@@ -24,7 +21,7 @@
 	(slot VihicleState		;車両状態
 		(type STRING)
 		(default "未定義"))
-	(slot AccelJudegment
+	(slot AccelJudgement
 		(type STRING)
 		(default "状態未判定"))  ;急加速しがち/急加速しない
 	(slot MaxAccelofScene
@@ -38,17 +35,17 @@
 	(slot previousAveSpeed
 		(type INTEGER)
 		(default 0))
-	(slot CurrentAveSpeed
+	(slot currentAveSpeed
 		(type INTEGER)
 		(default 0))
 	(slot Sigma					;分散値
 		(type INTEGER))
 	(slot Cnt3Sima
 		(type INTEGER))
+	(slot diffAlways
+		(type INTEGER)
+		(default 0))  			;0:いつも通り　　1:いつもと違う
 )
-
-(defglobal MAIN
-	?*Profile1Data* = (assert (Profile1Status)))
 
 ;==================================================
 ; Function(NewSpeedAccelerationCheck.clp)
@@ -72,18 +69,6 @@
 	(return (/ ?AccSud ?width))
 )
 
-; (deffunction SpecificAgenda::cntAccSudPercent ()
-
-	; (bind ?AccSud 0)
-	; (bind ?width (length$ ?*SudenWindow*))
-	; (if (= ?width 0) then
-		; (return 0))
-	
-	; (foreach ?data ?*SudenWindow*
-		; (bind ?AccSud (+ ?AccSud ?data))
-	; )
-	; (return (/ ?AccSud ?width))
-; )
 
 (deffunction SpecificAgenda::averageAccel()
 
@@ -99,18 +84,7 @@
 	(return (/ ?Accel ?width))
 )
 
-; (deffunction SpecificAgenda::averageAccel()
 
-	; (bind ?Accel 0)
-	; (bind ?width (length$ ?*AccWindow*))
-	; (if (= ?width 0) then
-		; (return 0))
-	
-	; (foreach ?data ?*AccWindow*
-		; (bind ?Accel (+ ?Accel ?data))
-	; )
-	; (return (/ ?Accel ?width))
-; )
 
 (deffunction SpecificAgenda::accelSigma()
 
@@ -141,23 +115,6 @@
 )
 
 
-; (deffunction SpecificAgenda::makeDataWindow (?Accel ?Sud)
-	; (bind ?width (length$ ?*AccWindow*))
-	; (if (< ?width ?*MaxWindow*) then
-		; (bind ?*AccWindow* (insert$ ?*AccWindow* (+ ?width 1) ?Accel))
-		; (bind ?*SudenWindow* (insert$ ?*SudenWindow* (+ ?width 1) ?Sud))
-	; else ;keep the width of window
-		; (bind ?*AccWindow* (delete$ ?*AccWindow* 1 1))
-		; (bind ?*AccWindow* (insert$ ?*AccWindow* (+ ?width 1) ?Accel))
-		; (bind ?*SudenWindow* (delete$ ?*SudenWindow* 1 1))
-		; (bind ?*SudenWindow* (insert$ ?*SudenWindow* (+ ?width 1) ?Sud))
-	; )
-	
-	; (printout t "-----AccWindow : " ?*AccWindow* crlf)
-	; (printout qt "-----AccWindow : " ?*AccWindow* crlf)
-	; (printout t "-----SudenWindow : " ?*SudenWindow* crlf)
-	; (printout qt "-----SudenWindow : " ?*SudenWindow* crlf)
-; )
 
 
 ;==================================================
@@ -189,29 +146,24 @@
 		
 		(MakeCurHistgram)
 			
-			
-		;Sampling Counter++
-		;(bind ?*AccSamplingCnt* (+ ?*AccSamplingCnt* 1))
+	
 		(bind ?AccSamplingCnt (count-facts AccelPeakRawDataWithFlag))
 		
 		(printout t "++++++++leaveAccelScene-AccSamplingCnt/MaxSampling " ?AccSamplingCnt "/" ?*MaxSampling* crlf)
 		
 		;加速シーンの最大加速度
-		(bind ?*Profile1Data* (modify ?*Profile1Data* (MaxAccelofScene ?*PreAccel*)))
 		
 		;これまでのサンプル数
 		(bind ?preSampleCnt (length (find-all-facts ((?x AccelPeakRawDataWithFlag)) (> ?x:preFlag 0))))
-		(bind ?*Profile1Data* (modify ?*Profile1Data* (previousSampling ?preSampleCnt)))
 		
 		;今回のサンプル数
 		(bind ?curSampleCnt (length (find-all-facts ((?x AccelPeakRawDataWithFlag)) (= ?x:preFlag 0))))
-		(bind ?*Profile1Data* (modify ?*Profile1Data* (currentSampling ?curSampleCnt)))
 		
 		;急加速の割合
 		(bind ?percent (cntAccSudPercent))
-		(bind ?*Profile1Data* (modify ?*Profile1Data* (PercentageofSudAcc ?percent)))
 		
 		;これまでの平均
+		(bind ?preAccAvr 0)
 		(if (> ?preSampleCnt 0) then
 			
 			(bind ?Accel 0)
@@ -219,25 +171,24 @@
 				(bind ?a (fact-slot-value ?f acceleration))
 				(bind ?Accel (+ ?Accel ?a))
 			)
-			(bind ?*Profile1Data* (modify ?*Profile1Data* (previousAveSpeed (/ ?Accel ?preSampleCnt))))
-		else
-			(bind ?*Profile1Data* (modify ?*Profile1Data* (previousAveSpeed 0)))
-		)
+			(bind ?preAccAvr (/ ?Accel ?preSampleCnt))
+			)
 			
 		;今回の平均
+		(bind ?curAccAvr 0)
 		(if (> ?curSampleCnt 0) then
 			(bind ?Accel 0)
 			(foreach ?f (find-all-facts ((?x AccelPeakRawDataWithFlag)) (= ?x:preFlag 0))
 				(bind ?a (fact-slot-value ?f acceleration))
 				(bind ?Accel (+ ?Accel ?a))
 			)
-			(bind ?*Profile1Data* (modify ?*Profile1Data* (currentAveSpeed (/ ?Accel ?curSampleCnt))))
-		else
-			(bind ?*Profile1Data* (modify ?*Profile1Data* (currentAveSpeed 0)))
+			(bind ?curAccAvr (/ ?Accel ?curSampleCnt))
 		)		
+
 		
 		;必要サンプリング数に達して以降、サンプリング値が更新されるたびに、以下の判定をする。
 		;加速情報[ ] > 1.7m/s^2 が何％成立しているか判定し、
+		
 		(if (> ?AccSamplingCnt ?*MaxSampling*) then 
 
 			;the previous acceleration is the max of this secen
@@ -248,58 +199,100 @@
 			;25％以上であれば、
 			(if (> (cntAccSudPercent) 0.25) then
 				;ドライバー特性を"急加速しがち"
-				(bind ?*Profile1Data* (modify ?*Profile1Data* (AccelJudegment "急加速しがち")))
+				(bind ?Judge "急加速しがち")
 			else
 				;急加速あまりしない
-				(bind ?*Profile1Data* (modify ?*Profile1Data* (AccelJudegment "急加速しない")))
+				(bind ?Judge "急加速しない")
 			)
 		 
 		)
+		
+		;分散値
+		(bind ?sigma (accelSigma))
+		(bind ?aver (averageAccel))
+
+		;3σ外数
+		(bind ?tau (/ (- ?acceleration ?aver) ?sigma))
+		
+		;|τ|>3　
+		(if (> (abs ?tau) 3) then (bind ?*TauCnt* (+ ?*TauCnt* 1)))
+		
+		(printout t "++++++++getAccelTau tau/TauCnt: " ?tau "/" ?*TauCnt* crlf)
+		
+			
+		(bind ?diffAlways 0)
+		(if (and (> ?*TauCnt* 3) ?*ready*) then
+		;3回達成と"いつもと違う"と判定する。
+			
+			(bind ?diffAlways 1)	
+		)
+		
+		(bind ?p1 (assert (Profile1Status   (MaxAccelofScene ?*PreAccel*) 
+									(previousSampling ?preSampleCnt) 
+									(currentSampling ?curSampleCnt)
+									(PercentageofSudAcc ?percent)
+									(previousAveSpeed ?preAccAvr)
+									(currentAveSpeed ?curAccAvr)
+									(AccelJudgement ?Judge)
+									(Sigma ?sigma)
+									(Cnt3Sima ?*TauCnt*)
+									(diffAlways ?diffAlways)
+									)))
+
+		(foreach ?n (fact-slot-names ?p1)
+			(bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 (fact-slot-value ?p1 ?n)))
+		)
+		
+		
+		
+		(bind ?id 2)
+	   　(send [FIFO] putData ?*AccelPeakHistList* ?id)
+	   　(printout t "++++++Insert Profile1 data to FIFO:"  ?*AccelPeakHistList* crlf)
 		
 		(bind ?*PreAccel* 0)
 	)
 )
 
 
-(defrule SpecificAgenda::getAccelTau
-	(declare (salience 800))
+; (defrule SpecificAgenda::getAccelTau
+	; (declare (salience 800))
 
-	(EventAcceleration (from entryPoint) (name "Calculation Stream") (acceleration ?acceleration&:(<= ?acceleration ?*AccelLimit*)))
-	;且つ、ドライバー特性　<>　未確定
-	=>
+	; (EventAcceleration (from entryPoint) (name "Calculation Stream") (acceleration ?acceleration&:(<= ?acceleration ?*AccelLimit*)))
+	; ;且つ、ドライバー特性　<>　未確定
+	; =>
 	
-	(bind ?sigma (accelSigma))
-	(bind ?aver (averageAccel))
-	(bind ?tau (/ (- ?acceleration ?aver) ?sigma))
+	; (bind ?sigma (accelSigma))
+	; (bind ?aver (averageAccel))
+	; (bind ?tau (/ (- ?acceleration ?aver) ?sigma))
 	
-	;τ>3　
-	(if (> (abs ?tau) 3) then (bind ?*TauCnt* (+ ?*TauCnt* 1)))
+	; ;τ>3　
+	; (if (> (abs ?tau) 3) then (bind ?*TauCnt* (+ ?*TauCnt* 1)))
 	
-	(printout t "++++++++getAccelTau tau/TauCnt: " ?tau "/" ?*TauCnt* crlf)
+	; (printout t "++++++++getAccelTau tau/TauCnt: " ?tau "/" ?*TauCnt* crlf)
 	
-	;分散値
-	(bind ?*Profile1Data* (modify ?*Profile1Data* (Sigma ?sigma)))
-	(bind ?*Profile1Data* (modify ?*Profile1Data* (Cnt3Sima ?*TauCnt*)))
+	; ;分散値
+	; (bind ?*Profile1Data* (modify ?*Profile1Data* (Sigma ?sigma)))
+	; (bind ?*Profile1Data* (modify ?*Profile1Data* (Cnt3Sima ?*TauCnt*)))
 		
-	;3σ外数
+	; ;3σ外数
 
-	(if (> ?*TauCnt* 3) then
-	;3回達成と"いつもと違う"と判定する。
+	; (if (> ?*TauCnt* 3) then
+	; ;3回達成と"いつもと違う"と判定する。
 	
-		;(bind ?*TauCnt* = 0)
+		; ;(bind ?*TauCnt* = 0)
 	
-	)
+	; )
 	
-	(foreach ?n (fact-slot-names ?*Profile1Data*)
-		(bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 (fact-slot-value ?*Profile1Data* ?n))
-	)
+	; (foreach ?n (fact-slot-names ?*Profile1Data*)
+		; (bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 (fact-slot-value ?*Profile1Data* ?n)))
+	; )
 	
 	
 	
-	(bind ?id 2)
-   　(send [FIFO] putData ?*AccelPeakHistList* ?id)
-   　(printout t "++++++Insert Profile1 data to FIFO:"  ?*AccelPeakHistList* crlf))
-)
+	; (bind ?id 2)
+   ; 　(send [FIFO] putData ?*AccelPeakHistList* ?id)
+   ; 　(printout t "++++++Insert Profile1 data to FIFO:"  ?*AccelPeakHistList* crlf)
+; )
 
 ; (defrule SpecificAgenda::MakeAccelerationList
 	; (declare (salience 980))
