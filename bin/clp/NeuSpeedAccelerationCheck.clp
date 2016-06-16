@@ -273,7 +273,7 @@
 	(bind ?tau (/ (- ?acceleration ?aver) ?sigma))
 	
 	;τ>3　
-	(if (> ?tau 3) then (bind ?*TauCnt* (+ ?*TauCnt* 1)))
+	(if (> (abs ?tau) 3) then (bind ?*TauCnt* (+ ?*TauCnt* 1)))
 	
 	(printout t "++++++++getAccelTau tau/TauCnt: " ?tau "/" ?*TauCnt* crlf)
 	
