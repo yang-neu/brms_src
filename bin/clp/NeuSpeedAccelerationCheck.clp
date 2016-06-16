@@ -290,9 +290,15 @@
 	
 	)
 	
+	(foreach ?n (fact-slot-names ?*Profile1Data*)
+		(bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 (fact-slot-value ?*Profile1Data* ?n))
+	)
+	
+	
+	
 	(bind ?id 2)
-   　(send [FIFO] putData ?*Profile1Data* ?id)
-   　(printout t "++++++Insert Profile1 data to FIFO:"  ?*Profile1Data* crlf))
+   　(send [FIFO] putData ?*AccelPeakHistList* ?id)
+   　(printout t "++++++Insert Profile1 data to FIFO:"  ?*AccelPeakHistList* crlf))
 )
 
 ; (defrule SpecificAgenda::MakeAccelerationList
