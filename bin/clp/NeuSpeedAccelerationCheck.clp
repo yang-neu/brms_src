@@ -120,12 +120,11 @@
 ;==================================================
 ; Rule(NewSpeedAccelerationCheck.clp)
 ;==================================================
-(defrule SpecificAgenda::getMaxValueofAccelScene
+(defrule SpecificAgenda::getMaxValueofAccelScene "加速度0.85越えによる加速走行推移"
 	(declare (salience 900))
 	
-	(EventAcceleration (from entryPoint) (name "Calculation Stream") (acceleration ?acceleration&:(> ?acceleration ?*AccelLimit*))) ;0.75
-		;本来はDriveScene(加速)で判定するべき、Debugため仮に>0.xで判定
-		;?b <- (EventDriveScene (from entryPoint) (name "Current Scene Stream") (driveScene ACCEL) (value1 ~?acceleration))
+	(EventAcceleration (from entryPoint) (name "Calculation Stream") (acceleration ?acceleration&:(> ?acceleration 0.85)))
+	(EventDriveScene (from entryPoint) (name "Current Scene Stream") (driveScene ACCEL))
 	=>
 	;Get the max accelration of the secen
 	(if (>= ?acceleration ?*PreAccel*) then
@@ -137,7 +136,8 @@
 (defrule SpecificAgenda::leaveAccelScene　　;加速シーンから抜く
 	(declare (salience 900))
 	
-	(EventAcceleration (from entryPoint) (name "Calculation Stream") (acceleration ?acceleration&:(<= ?acceleration ?*AccelLimit*)))
+	(EventDriveScene (from entryPoint) (name "Current Scene Stream") (beforeDriveScene ACCEL)) 
+	(EventAcceleration (from entryPoint) (name "Calculation Stream") (acceleration ?acceleration&:(< ?acceleration 0.75)))
 	=>
 	(if (> ?*PreAccel* 0) then
 		;加速度最大値がある場合
@@ -253,82 +253,5 @@
 	)
 )
 
-
-; (defrule SpecificAgenda::getAccelTau
-	; (declare (salience 800))
-
-	; (EventAcceleration (from entryPoint) (name "Calculation Stream") (acceleration ?acceleration&:(<= ?acceleration ?*AccelLimit*)))
-	; ;且つ、ドライバー特性　<>　未確定
-	; =>
-	
-	; (bind ?sigma (accelSigma))
-	; (bind ?aver (averageAccel))
-	; (bind ?tau (/ (- ?acceleration ?aver) ?sigma))
-	
-	; ;τ>3　
-	; (if (> (abs ?tau) 3) then (bind ?*TauCnt* (+ ?*TauCnt* 1)))
-	
-	; (printout t "++++++++getAccelTau tau/TauCnt: " ?tau "/" ?*TauCnt* crlf)
-	
-	; ;分散値
-	; (bind ?*Profile1Data* (modify ?*Profile1Data* (Sigma ?sigma)))
-	; (bind ?*Profile1Data* (modify ?*Profile1Data* (Cnt3Sima ?*TauCnt*)))
-		
-	; ;3σ外数
-
-	; (if (> ?*TauCnt* 3) then
-	; ;3回達成と"いつもと違う"と判定する。
-	
-		; ;(bind ?*TauCnt* = 0)
-	
-	; )
-	
-	; (foreach ?n (fact-slot-names ?*Profile1Data*)
-		; (bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 (fact-slot-value ?*Profile1Data* ?n)))
-	; )
-	
-	
-	
-	; (bind ?id 2)
-   ; 　(send [FIFO] putData ?*AccelPeakHistList* ?id)
-   ; 　(printout t "++++++Insert Profile1 data to FIFO:"  ?*AccelPeakHistList* crlf)
-; )
-
-; (defrule SpecificAgenda::MakeAccelerationList
-	; (declare (salience 980))
-	; ?afterS <- (EventSpeed (from entryPoint) (name "Current Receiving Data Stream") (type VEHICLE_SPEED_SP1)); (time ?time2))
-	; ?latest <- (EventSpeed (from entryPoint) (name "latestHistory Stream") (type VEHICLE_SPEED_SP1))
-	; ?dataList <- (EventSpeedList (from entryPoint) (name "Receiving Data Stream"))
-	; ?accList <- (AccelList (from entryPoint) (name "Profile 1"))
-	; =>
-	; (bind ?beforeS (fact-slot-value ?dataList speedList))
-
-	
-	; (if (and (multifieldp ?beforeS) (>= (length$ ?beforeS) 5)) then
-		; (bind ?speed1 (fact-slot-value ?afterS speed))
-		; (bind ?time1 (fact-slot-value ?afterS time))
-	    ; (printout t "multifieldp ?beforeS" ?beforeS crlf)
-		; (printout t "len = " (length$ ?beforeS) crlf)
-		; (bind ?speed2 (nth$ 3 ?beforeS))
-		; (bind ?time2 (nth$ 5 ?beforeS))
-		; (bind ?acceleration (getAccelerationValue ?speed1 ?speed2 (- ?time1 ?time2)))
-		; (makeDataWindow ?acceleration)
-		; (format t "==== speed : %4.1f, accel : %3.2f%n"  ?speed1 ?acceleration)
-	; )
-
-	; (printout t "here is SpecificAgenda::MakeAccelerationList" crlf)	
-
-; )
-
-
-; (defrule SpecificAgenda::CntList
-	; (declare (salience 980))
-	; ?list <- (EventSpeed )
-	; =>
-	; (bind ?cnt (count-facts-2 EventSpeed))
-	; (printout t "here is SpecificAgenda::CntListList" crlf)	
-	; (printout t "cnt = " ?cnt  crlf)	
-	; (bind ?*cnt* (+ ?*cnt* 1))
-; )
 
 
