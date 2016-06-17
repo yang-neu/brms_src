@@ -93,11 +93,13 @@ void BrmsAdaptor::updateAll()
     emit followStopCountChanged(m_brms->getFollowStopCount());
 }
 
+QString gTripDataKind = "old";
 void BrmsAdaptor::updateAccelInfo()
 {
     int i = 0;
     int data_i = 0;
     float data_f = 0;
+
 
     vector<FieldAndValue> data = m_brms->getCommonData();
     if(data.empty())
@@ -109,11 +111,14 @@ void BrmsAdaptor::updateAccelInfo()
         if(1 == (int)data[0].data.i_value){
             for (i=1; i<data.size(); i++)
             {
-                data_f=(float)data[i].data.f_value;
-                data_i=(int)data[++i].data.i_value;
-                emit accelInfoChanged("old", data_f, data_i, "none");
+                data_f=(float)data[i].data.f_value; //[1]accell
+                data_i=(int)data[++i].data.i_value; //[2]count
+                emit accelInfoChanged(gTripDataKind, data_f, data_i, "none");
                 //cout << "Accel : " << data_f << " count : " << data_i << endl;
             }
+            cout << "-----" << endl;
+            gTripDataKind="this";
+
         }else if(2 == (int)data[0].data.i_value){
             for (i=1; i<data.size(); i++)
             {
@@ -134,6 +139,7 @@ void BrmsAdaptor::updateAccelInfo()
                 emit analysisResultChanged(aMax, oldNum, thisNum, rate, oldAve, thisAve, variance, count);
                 emit accelCharacteristicChanged(state);
             }
+            cout << "-----" << endl;
         }
 
      }
