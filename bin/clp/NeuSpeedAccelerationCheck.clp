@@ -127,9 +127,10 @@
 	(EventDriveScene (from entryPoint) (name "Current Scene Stream") (driveScene ACCEL))
 	=>
 	;Get the max accelration of the secen
+	(printout t "++++++++getMaxValueofAccelScene Current： " ?acceleration crlf)
 	(if (>= ?acceleration ?*PreAccel*) then
 		(bind ?*PreAccel* ?acceleration)
-		(printout t "++++++++getMaxValueofAccelScene " ?*PreAccel* crlf)
+		(printout t "++++++++getMaxValueofAccelScene Max： " ?*PreAccel* crlf)
 	)
 )
 	
