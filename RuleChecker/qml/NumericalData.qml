@@ -9,10 +9,12 @@ Text {
     font.pixelSize: 14
 
     Text {
-        x: 159;
+        x: 180;
         y: 0;
+        width: 50;
         text: displayData;
         font.pixelSize: 14
+        horizontalAlignment: Text.AlignRight
     }
     Text {
         x: 238;
