@@ -116,11 +116,6 @@ void BrmsAdaptor::updateAccelInfo()
                 emit accelInfoChanged(gTripDataKind, data_f, data_i, "none");
                 //cout << "Accel : " << data_f << " count : " << data_i << endl;
             }
-<<<<<<< HEAD
-            cout << "Accel : " << data_f << " count : " << data_i << endl;
-
-            emit accelInfoChanged("old", data_f, data_i, "caution");
-=======
             cout << "-----" << endl;
             gTripDataKind="this";
 
@@ -145,7 +140,6 @@ void BrmsAdaptor::updateAccelInfo()
                 emit accelCharacteristicChanged(state);
             }
             cout << "-----" << endl;
->>>>>>> 加速度頻度プロファイルHMI試作
         }
 
      }
