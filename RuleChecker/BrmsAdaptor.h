@@ -91,7 +91,7 @@ signals:
 
     void accelInfoChanged(QString state, double data, int count, QString caution);
     void analysisResultChanged(double aMax, int oldNum, int thisNum, int rate, double oldAve, double thisAve, double variance, int count);
-    void accelCharacteristicChanged(int state);
+    void accelCharacteristicChanged(QString state);
 
     void suddenAccelChanged(QString str);
     void suddenAccelStateChanged(QString str);

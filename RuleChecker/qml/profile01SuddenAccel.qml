@@ -59,7 +59,7 @@ Window {
             aTripOutOf3sigma = count;
         }
         onAccelCharacteristicChanged: {
-            if(0 == state) {
+            if("急加速しない" == state) {
                 stateNormalAccel.border.color = "blue"
                 stateSuddenAccel.border.color = "transparent"
             }else{
@@ -283,7 +283,7 @@ Window {
             font.pixelSize: 14
         }
         NumericalData {
-            displayText: qsTr("加速シーンの最大値");
+            displayText: qsTr("最新の加速シーンの最大値");
             displayData: aTripMax.toString();
             displayUnit: qsTr("m/s²");
         }
@@ -313,7 +313,7 @@ Window {
             displayUnit: qsTr("m/s²");
         }
         NumericalData {
-            displayText: qsTr("分算値");
+            displayText: qsTr("分散値");
             displayData: aTripVariance.toString();
             displayUnit: qsTr("(m/s²)²");
         }

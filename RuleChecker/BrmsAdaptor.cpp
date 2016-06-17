@@ -112,14 +112,28 @@ void BrmsAdaptor::updateAccelInfo()
                 data_f=(float)data[i].data.f_value;
                 data_i=(int)data[++i].data.i_value;
                 emit accelInfoChanged("old", data_f, data_i, "none");
-                cout << "Accel : " << data_f << " count : " << data_i << endl;
+                //cout << "Accel : " << data_f << " count : " << data_i << endl;
             }
         }else if(2 == (int)data[0].data.i_value){
-            cout << "***************" << endl;
+            for (i=1; i<data.size(); i++)
+            {
+                i++; //(int)data[i].data.i_value; //[1]diffAlways
+                int count =(int)data[++i].data.i_value; //[2]Cnt3Sigma
+                float variance =(float)data[++i].data.f_value; //[3]Sigma
+                float thisAve =(float)data[++i].data.f_value; //[4]currentAveSpeed
+                float oldAve =(float)data[++i].data.f_value; //[5]previousAveSpeed
+                float rate =(float)data[++i].data.f_value; //[6]PercentageofSudAcc
+                int thisNum =(int)data[++i].data.i_value; //[7]currentSampling
+                int oldNum =(int)data[++i].data.i_value; //[8]previousSampling
+                float aMax=(float)data[++i].data.f_value; // [9]MaxAccelofScene
+                QString state = (QString)data[++i].data.s_value; //[10]AccelJudgement
+                i++; //(QString)data[++i].data.s_value;//[11]VihicleState
+                i++; //(int)data[++i].data.i_value;//[12]accel
+                i++; //(int)data[++i].data.i_value;//[13]speed
 
-            //評価用データ
-            emit analysisResultChanged(2.2, 500, 123, 3, 1.62, 1.99, 3.21, 3);
-            emit accelCharacteristicChanged(0);
+                emit analysisResultChanged(aMax, oldNum, thisNum, rate, oldAve, thisAve, variance, count);
+                emit accelCharacteristicChanged(state);
+            }
         }
 
      }
@@ -162,7 +176,7 @@ void BrmsAdaptor::updateAccelInfo()
         //emit analysisResultChanged(2.2, 500, 123, 3, 1.62, 1.99, 3.21, 3);
         emit analysisResultChanged((rand()%15+8)*0.1, (rand()%500+1), (rand()%500+1), (rand()%100+1), (rand()%220+1)*0.01, (rand()%220+1)*0.01, (rand()%300+1)*0.01, (rand()%3+1));
 
-        emit accelCharacteristicChanged((rand()%2));
+        emit accelCharacteristicChanged("急加速しない");
     }*/
 
 }
