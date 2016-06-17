@@ -12,14 +12,19 @@ Window {
     height: 768;
     color: "#eeeeee";
 
-    property int samplingNmuK: 0;
-    property double aTripMax: 0;
-    property double aTripAve: 0;
-    property double aTripAve2: 0;
-    property double aTripVariance: 0;
-
     property double m_Speed: 250;
     property string driveScene:"AddSpeedRunning";
+
+    property int accelCharacteristic: 0;
+
+    property double aTripMax: 0;
+    property int oldTripSamplingNmuK: 0;
+    property int thisTripSamplingNmuK: 0;
+    property int suddenAccelRate: 0;
+    property double oldTripAccelAve: 0;
+    property double thisTripAccelAve: 0;
+    property double aTripVariance: 0;
+    property int aTripOutOf3sigma: 0;
 
     property int maxCountNumOldTrip: 0;
     property int maxCountNumThisTrip: 0;
@@ -42,6 +47,25 @@ Window {
             localfunc.setGraphDisplayRate(state, count);
 
             localfunc.displayGraph(state, data, count, caution);
+        }
+        onAnalysisResultChanged: {
+            aTripMax = aMax.toFixed(2);
+            oldTripSamplingNmuK = oldNum;
+            thisTripSamplingNmuK = thisNum;
+            suddenAccelRate = rate;
+            oldTripAccelAve = oldAve.toFixed(2);
+            thisTripAccelAve = thisAve.toFixed(2)
+            aTripVariance = variance.toFixed(2);
+            aTripOutOf3sigma = count;
+        }
+        onAccelCharacteristicChanged: {
+            if(0 == state) {
+                stateNormalAccel.border.color = "blue"
+                stateSuddenAccel.border.color = "transparent"
+            }else{
+                stateNormalAccel.border.color = "transparent"
+                stateSuddenAccel.border.color = "blue"
+            }
         }
 
     }
@@ -199,6 +223,7 @@ Window {
                 font.pixelSize: 14
             }
             Rectangle {
+                id: stateSuddenAccel
                 width: 300
                 height: 100
                 border.width: 3
@@ -218,6 +243,7 @@ Window {
                 }
             }
             Rectangle {
+                id: stateNormalAccel
                 width: 300
                 height: 100
                 border.width: 3
@@ -263,27 +289,27 @@ Window {
         }
         NumericalData {
             displayText: qsTr("これまでのサンプル数");
-            displayData: samplingNmuK.toString();
+            displayData: oldTripSamplingNmuK.toString();
             displayUnit: qsTr("個");
         }
         NumericalData {
             displayText: qsTr("今回のサンプル数");
-            displayData: samplingNmuK.toString();
+            displayData: thisTripSamplingNmuK.toString();
             displayUnit: qsTr("個");
         }
         NumericalData {
             displayText: qsTr("急加速の割合");
-            displayData: (0).toString();
+            displayData: suddenAccelRate.toString();
             displayUnit: qsTr("%");
         }
         NumericalData {
             displayText: qsTr("これまでの平均");
-            displayData: aTripAve.toString();
+            displayData: oldTripAccelAve.toString();
             displayUnit: qsTr("m/s²");
         }
         NumericalData {
             displayText: qsTr("今回の平均");
-            displayData: aTripAve.toString();
+            displayData: thisTripAccelAve.toString();
             displayUnit: qsTr("m/s²");
         }
         NumericalData {
@@ -293,7 +319,7 @@ Window {
         }
         NumericalData {
             displayText: qsTr("3σ外");
-            displayData: (0).toString();
+            displayData: aTripOutOf3sigma.toString();
             displayUnit: qsTr("個");
         }
     }

@@ -49,6 +49,7 @@ void BrmsAdaptor::timerEvent(QTimerEvent *event)
 
 void BrmsAdaptor::updateAll()
 {
+
     emit aChanged(m_brms->getA());
     emit accelChanged(m_brms->getAccel());
     emit distanceChanged(m_brms->getDistance());
@@ -102,17 +103,23 @@ void BrmsAdaptor::updateAccelInfo()
     if(data.empty())
     {
         //nothing to do
+        cout << "++++++++++Do nothing!" << endl;
     }
     else{
-        for (i=0; i<data.size(); i++)
-        {
-            if(data[i].type == 0){
+        if(1 == (int)data[0].data.i_value){
+            for (i=1; i<data.size(); i++)
+            {
                 data_f=(float)data[i].data.f_value;
-            }else if (data[i].type == 1){
-                data_i=(int)data[i].data.i_value;
+                data_i=(int)data[++i].data.i_value;
+                emit accelInfoChanged("old", data_f, data_i, "none");
+                cout << "Accel : " << data_f << " count : " << data_i << endl;
             }
+        }else if(2 == (int)data[0].data.i_value){
+            cout << "***************" << endl;
 
-            emit accelInfoChanged("old", data_f, data_i, "caution");
+            //評価用データ
+            emit analysisResultChanged(2.2, 500, 123, 3, 1.62, 1.99, 3.21, 3);
+            emit accelCharacteristicChanged(0);
         }
 
      }
@@ -129,12 +136,12 @@ void BrmsAdaptor::updateAccelInfo()
         while(accelInfo.length()) {
             double data = accelInfo.takeFirst();
             int count = accelInfo.takeFirst();
-            emit accelInfoChanged("old", data, count, "caution");
+            emit accelInfoChanged("old", data, count, "none");
         }
     }*/
 
     //ランダムで今回のTrip加速度を生成 for Debug
-    {
+    /*{
         srand((unsigned)time(NULL));
 
         double data = (rand()%15+8)*0.1;
@@ -146,7 +153,17 @@ void BrmsAdaptor::updateAccelInfo()
         }else{
             emit accelInfoChanged("this", data, count, "none");
         }
-    }
+    }*/
+
+    //ランダムで分析結果を生成 for Debug
+    /*{
+        srand((unsigned)time(NULL));
+
+        //emit analysisResultChanged(2.2, 500, 123, 3, 1.62, 1.99, 3.21, 3);
+        emit analysisResultChanged((rand()%15+8)*0.1, (rand()%500+1), (rand()%500+1), (rand()%100+1), (rand()%220+1)*0.01, (rand()%220+1)*0.01, (rand()%300+1)*0.01, (rand()%3+1));
+
+        emit accelCharacteristicChanged((rand()%2));
+    }*/
 
 }
 
