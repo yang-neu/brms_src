@@ -117,7 +117,7 @@ void BrmsAdaptor::updateAccelInfo()
         }else if(2 == (int)data[0].data.i_value){
             for (i=1; i<data.size(); i++)
             {
-                i++; //(int)data[i].data.i_value; //[1]diffAlways
+                i=i; //(int)data[i].data.i_value; //[1]diffAlways
                 int count =(int)data[++i].data.i_value; //[2]Cnt3Sigma
                 float variance =(float)data[++i].data.f_value; //[3]Sigma
                 float thisAve =(float)data[++i].data.f_value; //[4]currentAveSpeed
@@ -176,7 +176,7 @@ void BrmsAdaptor::updateAccelInfo()
         //emit analysisResultChanged(2.2, 500, 123, 3, 1.62, 1.99, 3.21, 3);
         emit analysisResultChanged((rand()%15+8)*0.1, (rand()%500+1), (rand()%500+1), (rand()%100+1), (rand()%220+1)*0.01, (rand()%220+1)*0.01, (rand()%300+1)*0.01, (rand()%3+1));
 
-        emit accelCharacteristicChanged("急加速しない");
+        emit accelCharacteristicChanged("急加速しがち");
     }*/
 
 }
