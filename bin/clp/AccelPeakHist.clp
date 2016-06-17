@@ -77,7 +77,6 @@
 	(slot count
 		(type INTEGER)
 		(default 0))
-	)
 )
 		
 (deftemplate MAIN::AccelPeakRawData
@@ -160,7 +159,7 @@
 	(bind ?id 1)
    　(send [FIFO] putData ?*AccelPeakHistList* ?id)
    　(bind ?*AccelPeakHistList* (create$))
-   　(printout t "Accel Peak info is:"  ?*AccelPeakHistList* crlf))
+   　(printout t "Accel Peak info is:"  ?*AccelPeakHistList* crlf)
 )
 	
 (deffunction MAIN::MakeCurHistgram ()
@@ -199,7 +198,7 @@
 	(bind ?id 1)
    　(send [FIFO] putData ?*AccelPeakHistList* ?id)
    　(bind ?*AccelPeakHistList* (create$))
-   　(printout t "Accel Peak info is:"  ?*AccelPeakHistList* crlf))
+   　(printout t "Accel Peak info is:"  ?*AccelPeakHistList* crlf)
 
 )
 
@@ -269,9 +268,20 @@
 		)
 	)
 	(printout t "***LoadFactList result is:***" ?exist crlf)
+	
+	(bind ?count (length (find-all-facts ((?x AccelPeakRawData)) TRUE)))
+	(if(> ?count ?*MaxWindow* ) then
+	    (bind ?iterator (- ?count ?*MaxWindow* ))
+	else
+		(bind ?iterator 0))
+		
 	(do-for-all-facts ((?factlist AccelPeakRawData)) TRUE
-	  (bind ?value (fact-slot-value ?factlist acceleration))
-	  (assert (AccelPeakRawDataWithFlag(acceleration ?value) (preFlag 1)))
-	  (retract ?factlist))
+		(if(> ?iterator 0) then
+			(bind ?iterator (- ?iterator 1))
+		else
+			(bind ?value (fact-slot-value ?factlist acceleration))
+			(assert (AccelPeakRawDataWithFlag(acceleration ?value) (preFlag 1))))
+		(retract ?factlist)
+    )
 )
 
