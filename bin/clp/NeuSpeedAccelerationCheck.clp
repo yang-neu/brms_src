@@ -249,6 +249,7 @@
 		(bind ?id 2)
 	   　(send [FIFO] putData ?*AccelPeakHistList* ?id)
 	   　(printout t "++++++Insert Profile1 data to FIFO:"  ?*AccelPeakHistList* crlf)
+		(bind ?*AccelPeakHistList* (create$))
 		
 		(bind ?*PreAccel* 0)
 	)
