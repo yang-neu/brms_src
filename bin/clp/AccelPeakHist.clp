@@ -158,8 +158,8 @@
 	)
 	(bind ?id 1)
    　(send [FIFO] putData ?*AccelPeakHistList* ?id)
-   　(bind ?*AccelPeakHistList* (create$))
    　(printout t "Accel Peak info is:"  ?*AccelPeakHistList* crlf)
+   　(bind ?*AccelPeakHistList* (create$))
 )
 	
 (deffunction MAIN::MakeCurHistgram ()
