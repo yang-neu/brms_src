@@ -193,6 +193,7 @@
 			(bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 ?AccelInfoList ?CountInfoList))
 			;(printout t "++++++Accel Peak info is:" ?*AccelPeakHistList* crlf)
 		)
+		(modify ?p (count  0))
 		
 	)
 	(bind ?id 1)
