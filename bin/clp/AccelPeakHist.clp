@@ -135,16 +135,16 @@
 (defglobal MAIN ?*ready* = FALSE)
 (defglobal MAIN ?*MaxWindow* = 500) ;500
 (defglobal MAIN ?*MaxSampling* = 10) ;100
+(defglobal MAIN ?*SudAccelLimit* = 1.75)     ;急加速の閾値 1.75
 (defglobal MAIN
 	?*AccelPeakHistList* = (create$))
 
-(defglobal SpecificAgenda ?*AccSamplingCnt* = 0) 
-(defglobal SpecificAgenda ?*AccSamplingCntB* = 0) ;IGOFF->save2file IGON->read previous from file
-(defglobal SpecificAgenda ?*AccSudCnt* = 0)			;急加速しがちCount
-(defglobal SpecificAgenda ?*PreAccel* = 0)			;前回までの最大値
-(defglobal SpecificAgenda ?*TauCnt* = 0)
-(defglobal SpecificAgenda ?*AccelLimit* = 0.1)     ;加速シーンの閾値 0.75
-(defglobal SpecificAgenda ?*SudAccelLimit* = 1.75)     ;急加速の閾値 1.75
+(defglobal MAIN ?*AccSamplingCnt* = 0) 
+(defglobal MAIN ?*AccSamplingCntB* = 0) ;IGOFF->save2file IGON->read previous from file
+(defglobal MAIN ?*AccSudCnt* = 0)			;急加速しがちCount
+(defglobal MAIN ?*PreAccel* = 0)			;前回までの最大値
+(defglobal MAIN ?*TauCnt* = 0)
+(defglobal MAIN ?*AccelLimit* = 0.1)     ;加速シーンの閾値 0.75
 ;==================================================
 ; Fuction(AccelPeakHist.clp)
 ; 
@@ -208,7 +208,7 @@
 	)
 	(bind ?id 1)
    　(send [FIFO] putData ?*AccelPeakHistList* ?id)
-   　(printout t "Accel Peak info is:"  ?*AccelPeakHistList* crlf)
+   　(printout t "+++++MakePreHistgram:"  ?*AccelPeakHistList* crlf)
    　(bind ?*AccelPeakHistList* (create$))
 )
 	
@@ -248,7 +248,7 @@
 	)
 	(bind ?id 1)
    　(send [FIFO] putData ?*AccelPeakHistList* ?id)
-   　(printout t "Accel Peak info is:"  ?*AccelPeakHistList* crlf)
+   　(printout t "+++++MakeCurHistgram:　"  ?*AccelPeakHistList* crlf)
    　(bind ?*AccelPeakHistList* (create$))
 
 )
@@ -283,6 +283,23 @@
 	)
 	(return (sqrt(/ ?bigSigma ?width)))
 )
+
+(deffunction MAIN::cntAccSudPercent ()
+
+	(bind ?AccSud 0)
+	(bind ?width (count-facts AccelPeakRawDataWithFlag))
+	(if (= ?width 0) then
+		(return 0))
+	
+	(foreach ?f (find-all-facts ((?x AccelPeakRawDataWithFlag)) TRUE)
+		(bind ?a (fact-slot-value ?f acceleration))
+		(if (> ?a ?*SudAccelLimit*) then
+			(bind ?AccSud (+ ?AccSud 1))
+		)
+	)
+	(return (/ ?AccSud ?width))
+)
+
 	
 (deffunction MAIN::MakePreStatus ()
 
@@ -300,6 +317,27 @@
 		)
 		(bind ?preAccAvr (/ ?Accel ?preSampleCnt))
 	)
+	
+	;必要サンプリング数に達して以降、サンプリング値が更新されるたびに、以下の判定をする。
+	;加速情報[ ] > 1.7m/s^2 が何％成立しているか判定し、
+	
+	(if (> ?preSampleCnt ?*MaxSampling*) then 
+
+		;the previous acceleration is the max of this secen
+		;'τ＜-3、3＜τならば、はずれ値（いつもと違う状態）として判定し平均値の更新はしない
+
+
+		;get total of Accsud and judge with 25％以上であれば
+		;25％以上であれば、
+		(if (> (cntAccSudPercent) 0.25) then
+			;ドライバー特性を"急加速しがち"
+			(bind ?Judge "急加速しがち")
+		else
+			;急加速あまりしない
+			(bind ?Judge "急加速しない")
+		)
+	 
+	)
 
 	;分散値
 	(bind ?sigma (accelSigma))
@@ -307,6 +345,7 @@
 			(bind ?p1 (assert (Profile1Status   
 									(previousSampling ?preSampleCnt) 
 									(previousAveSpeed ?preAccAvr)
+									(AccelJudgement ?Judge)
 									(Sigma ?sigma)
 									)))
 
@@ -319,24 +358,8 @@
 	
 	(bind ?id 2)
    　(send [FIFO] putData ?preStatus ?id)
-   　(printout t "++++++Insert Previous Profile1 data to FIFO:"  preStatus crlf)
+   　(printout t "++++++Insert Previous Profile1 data to FIFO:"  ?preStatus crlf)
 	
-)
-
-(deffunction SpecificAgenda::cntAccSudPercent ()
-
-	(bind ?AccSud 0)
-	(bind ?width (count-facts AccelPeakRawDataWithFlag))
-	(if (= ?width 0) then
-		(return 0))
-	
-	(foreach ?f (find-all-facts ((?x AccelPeakRawDataWithFlag)) TRUE)
-		(bind ?a (fact-slot-value ?f acceleration))
-		(if (> ?a ?*SudAccelLimit*) then
-			(bind ?AccSud (+ ?AccSud 1))
-		)
-	)
-	(return (/ ?AccSud ?width))
 )
 
 
