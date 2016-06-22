@@ -198,7 +198,7 @@ Window {
                     color: "orange"
                 }
                 Text {
-                    text: qsTr("今回でのドライブのデータ")
+                    text: qsTr("今回のドライブのデータ")
                     font.pixelSize: 14
                 }
                 Rectangle {
@@ -224,14 +224,14 @@ Window {
 
 
     ColumnLayout {
-        x: 700
+        x: 680
         y: 0
         spacing: 20;
 
         ColumnLayout {
             Text{
                 text: qsTr("■診断結果");
-                font.pixelSize: 14
+                //font.pixelSize: 14
             }
             Rectangle {
                 id: stateSuddenAccel
@@ -277,7 +277,7 @@ Window {
 
         Text{
             text: qsTr("■入力情報");
-            font.pixelSize: 14
+            //font.pixelSize: 14
         }
         NumericalData {
             displayText: qsTr("速度");
@@ -291,7 +291,7 @@ Window {
         }
         Text{
             text: qsTr("■分析結果");
-            font.pixelSize: 14
+            //font.pixelSize: 14
         }
         NumericalData {
             displayText: qsTr("最新の加速シーンの最大値");
