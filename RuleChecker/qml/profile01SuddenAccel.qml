@@ -291,7 +291,7 @@ Window {
         NumericalData {
             displayText: qsTr("車両状態");
             displayData: qsTr(driveScene);
-            displayUnit: qsTr("");
+            displayUnit: qsTr("状態");
         }
         Text{
             text: qsTr("■分析結果");
@@ -328,9 +328,9 @@ Window {
             displayUnit: qsTr("m/s²");
         }
         NumericalData {
-            displayText: qsTr("分散値");
+            displayText: qsTr("分散値"); //標準偏差
             displayData: aTripVariance.toString();
-            displayUnit: qsTr("(m/s²)²");
+            displayUnit: qsTr("m/s²");
         }
         NumericalData {
             displayText: qsTr("3σ外");
