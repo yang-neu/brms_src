@@ -96,7 +96,7 @@ void BrmsAdaptor::updateAll()
 QString gTripDataKind = "old";
 void BrmsAdaptor::updateAccelInfo()
 {
-    int i = 0;
+    unsigned int i = 0;
     int data_i = 0;
     float data_f = 0;
 
