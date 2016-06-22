@@ -58,6 +58,15 @@ Window {
             aTripVariance = variance.toFixed(2);
             aTripOutOf3sigma = count;
         }
+        onStandardRangeChanged: {
+            graphStandardRange.visible = true
+            graphStandardRange.x = (((data1.toFixed(1)*10)-7) * (graphBar09.width + verticalAxis.spacing))
+            graphStandardRange.width = (((data2.toFixed(1)*10)-9+1) * (graphBar09.width + verticalAxis.spacing))
+
+            //急加速領域
+            graphSuddenAccelBar.x = ((17-7) * (graphBar17.width + verticalAxis.spacing)) + 45; //1.7以上は急加速
+        }
+
         onAccelCharacteristicChanged: {
             if("急加速しない" == state) {
                 stateNormalAccel.border.color = "blue"
@@ -97,7 +106,7 @@ Window {
                 Row {
                     id: verticalAxis
                     x: 40;
-                    y: 22;
+                    y: 20;
                     spacing: 10;
                     //GraphBar {id: graphBar01; text: qsTr("0.1") }
                     //GraphBar {id: graphBar02; text: qsTr("0.2") }
@@ -122,6 +131,18 @@ Window {
                     GraphBar {id: graphBar21; text: qsTr("2.1") }
                     GraphBar {id: graphBar22; text: qsTr("2.2") }
                 }
+                Rectangle {
+                    id: graphStandardRange
+                    visible: false
+                    x: ((9-7) * (graphBar09.width + verticalAxis.spacing)) //0.9~1.4
+                    y: 15
+                    width: ((14-9+1) * (graphBar09.width + verticalAxis.spacing)) //0.9~1.4
+                    height: 29
+                    border.width: 2
+                    border.color: "green"
+                    color: "transparent"
+                    radius: 5
+                }
             }
 
 
@@ -140,17 +161,7 @@ Window {
                 color: parent.color
             }
         }
-        Rectangle {
-            id: graphStandardRange
-            x : ((9-7) * (graphBar09.width + verticalAxis.spacing)) + 5; //0.9~1.4
-            y : 538;
-            width: ((14-9+1) * (graphBar09.width + verticalAxis.spacing)) + 5 //0.9~1.4
-            height: 29
-            border.width: 2
-            border.color: "green"
-            color: "transparent"
-            radius: 5
-        }
+
         ColumnLayout {
             id: graphCaption
             x: 70

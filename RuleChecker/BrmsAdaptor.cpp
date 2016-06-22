@@ -100,12 +100,11 @@ void BrmsAdaptor::updateAccelInfo()
     int data_i = 0;
     float data_f = 0;
 
-
     vector<FieldAndValue> data = m_brms->getCommonData();
     if(data.empty())
     {
         //nothing to do
-        cout << "++++++++++Do nothing!" << endl;
+        //cout << "++++++++++Do nothing!" << endl;
     }
     else{
         if(1 == (int)data[0].data.i_value){
@@ -113,7 +112,12 @@ void BrmsAdaptor::updateAccelInfo()
             {
                 data_f=(float)data[i].data.f_value; //[1]accell
                 data_i=(int)data[++i].data.i_value; //[2]count
-                emit accelInfoChanged(gTripDataKind, data_f, data_i, "none");
+
+                if(data_f>=1.8) {
+                    emit accelInfoChanged(gTripDataKind, data_f, data_i, "caution");
+                }else{
+                    emit accelInfoChanged(gTripDataKind, data_f, data_i, "none");
+                }
                 //cout << "Accel : " << data_f << " count : " << data_i << endl;
             }
             cout << "-----" << endl;
@@ -136,8 +140,15 @@ void BrmsAdaptor::updateAccelInfo()
                 i++; //(int)data[++i].data.i_value;//[12]accel
                 i++; //(int)data[++i].data.i_value;//[13]speed
 
-                emit analysisResultChanged(aMax, oldNum, thisNum, rate, oldAve, thisAve, variance, count);
+                //これまでのデータからの標準範囲(±1σ)の計算
+                cout << "-Sigma="<<oldAve-variance << endl;
+                cout << "+Sigma="<<oldAve+variance << endl;
+                cout << "+3Sigma="<<oldAve+(3*variance) << endl;
+
+
+                emit analysisResultChanged(aMax, oldNum, thisNum, (rate*100), oldAve, thisAve, variance, count);
                 emit accelCharacteristicChanged(state);
+                emit standardRangeChanged(oldAve-variance, oldAve+variance);
             }
             cout << "-----" << endl;
         }
