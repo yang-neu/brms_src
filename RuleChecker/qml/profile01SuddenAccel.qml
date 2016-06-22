@@ -29,6 +29,7 @@ Window {
     property int maxCountNumOldTrip: 0;
     property int maxCountNumThisTrip: 0;
     property double graphDisplayRate: 1;
+    property double tmpDouble: 0
 
     property int igOffId: 0
 
@@ -60,8 +61,11 @@ Window {
         }
         onStandardRangeChanged: {
             graphStandardRange.visible = true
-            graphStandardRange.x = verticalAxis.x + (((data1.toFixed(1)*10)-8) * (graphBar09.width + verticalAxis.spacing)) + 11
-            graphStandardRange.width = (((data2.toFixed(1)*10)-(data1.toFixed(1)*10)+1) * (graphBar09.width + verticalAxis.spacing))
+            tmpDouble = data1.toFixed(1)<=0.8 ? 0.8 : data1.toFixed(1) //0.8以下の標準範囲を0.8に丸め込む
+            graphStandardRange.x = horizontalAxis.x + (((tmpDouble.toFixed(1)*10)-7) * (graphBar09.width + horizontalAxis.spacing))
+            graphStandardRange.width = (((data2.toFixed(1)*10)-(tmpDouble.toFixed(1)*10)+1) * (graphBar09.width + horizontalAxis.spacing))
+
+            localfunc.printConsoleLog("tmpDouble=" + tmpDouble)
         }
 
         onAccelCharacteristicChanged: {
@@ -85,11 +89,12 @@ Window {
         y:0;
 
         Column {
+            id: verticalAxis
             x:10;
             y:20;
-            spacing: 28;
+            spacing: 0;
 
-            GraphAxis{ text: qsTr((500*graphDisplayRate).toString()) }
+            GraphAxis{ text: qsTr((500*graphDisplayRate).toString()); id: verticalAxisTop }
             GraphAxis{ text: qsTr((450*graphDisplayRate).toString()) }
             GraphAxis{ text: qsTr((400*graphDisplayRate).toString()) }
             GraphAxis{ text: qsTr((350*graphDisplayRate).toString()) }
@@ -101,18 +106,18 @@ Window {
             GraphAxis{ text: qsTr((50*graphDisplayRate).toString()) }
             GraphAxis{ text: qsTr((0*graphDisplayRate).toString())
                 Row {
-                    id: verticalAxis
+                    id: horizontalAxis
                     x: 40;
-                    y: 20;
-                    spacing: 10;
+                    y: 36;
+                    spacing: 0;
                     //GraphBar {id: graphBar01; text: qsTr("0.1") }
                     //GraphBar {id: graphBar02; text: qsTr("0.2") }
                     //GraphBar {id: graphBar03; text: qsTr("0.3") }
                     //GraphBar {id: graphBar04; text: qsTr("0.4") }
                     //GraphBar {id: graphBar05; text: qsTr("0.5") }
                     //GraphBar {id: graphBar06; text: qsTr("0.6") }
-                    //GraphBar {id: graphBar07; text: qsTr("0.7-") }
-                    GraphBar {id: graphBar08; text: qsTr("≦0.8") }
+                    GraphBar {id: graphBar07; text: qsTr("＜0.8") }
+                    GraphBar {id: graphBar08; text: qsTr("0.8") }
                     GraphBar {id: graphBar09; text: qsTr("0.9") }
                     GraphBar {id: graphBar10; text: qsTr("1.0") }
                     GraphBar {id: graphBar11; text: qsTr("1.1") }
@@ -126,16 +131,16 @@ Window {
                     GraphBar {id: graphBar19; text: qsTr("1.9") }
                     GraphBar {id: graphBar20; text: qsTr("2.0") }
                     GraphBar {id: graphBar21; text: qsTr("2.1") }
-                    GraphBar {id: graphBar22; text: qsTr("2.2≦") }
-                    //GraphBar {id: graphBar23; text: qsTr("2.3+") }
+                    GraphBar {id: graphBar22; text: qsTr("2.2") }
+                    GraphBar {id: graphBar23; text: qsTr("2.2＜")}
                 }
                 Rectangle {
                     id: graphStandardRange
                     visible: false
-                    x: verticalAxis.x + ((9-8) * (graphBar09.width + verticalAxis.spacing)) + 11 //0.9~1.4
-                    y: 15
-                    width: ((14-9+1) * (graphBar09.width + verticalAxis.spacing)) //0.9~1.4
-                    height: 29
+                    x: horizontalAxis.x + ((9-7) * (graphBar09.width + horizontalAxis.spacing)) //0.9~1.4
+                    y: 30
+                    width: ((14-9+1) * (graphBar09.width + horizontalAxis.spacing)) //0.9~1.4
+                    height: graphBar09.height
                     border.width: 2
                     border.color: "green"
                     color: "transparent"
@@ -148,10 +153,10 @@ Window {
 
         Rectangle {
             id: graphSuddenAccelBar
-            x : ((17-7) * (graphBar17.width + verticalAxis.spacing)) + 60; //1.7以上は急加速
-            y : 15;
+            x : horizontalAxis.x + ((17-6) * (graphBar17.width + horizontalAxis.spacing)) + (graphBar17.width/4); //1.7以上は急加速
+            y : verticalAxis.y;
             width: 3
-            height: 515
+            height: verticalAxisTop.height/2 + (verticalAxisTop.height * 10)
             color: "purple"
             Text {
                 x:10
@@ -383,6 +388,10 @@ Window {
             //localfunc.printConsoleLog(m_A.toFixed(1));
 
             switch(data.toFixed(1)) {
+            case "0.7":
+                graphBar07.update(state, count, caution);
+                break;
+
             case "0.8":
                 graphBar08.update(state, count, caution);
                 break;
@@ -443,8 +452,13 @@ Window {
                 graphBar22.update(state, count, caution);
                 break;
 
+            case "2.3":
+                graphBar23.update(state, count, caution);
+                break;
+
             default:
-                //localfunc.printConsoleLog("data=" + data.toFixed(1) + ": out of range")
+                localfunc.printConsoleLog("data=" + data.toFixed(1) + ": out of range")
+                /*
                 if(data.toFixed(1)<=0.8) {
                     localfunc.printConsoleLog("data=" + data.toFixed(1) + ": 0.8以下は0.8に表示")
                     graphBar08.update(state, count, caution);
@@ -454,6 +468,7 @@ Window {
                 }else{
                     localfunc.printConsoleLog("data=" + data.toFixed(1) + ": Error")
                 }
+                */
                 break;
             }
 

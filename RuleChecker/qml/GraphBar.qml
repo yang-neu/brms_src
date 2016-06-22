@@ -3,6 +3,9 @@ import QtQuick 2.0
 Text {
     id: graphBar00
     text: qsTr("0.0")
+    width: 35
+    height: 30
+    horizontalAlignment: Text.AlignHCenter
 
     property double scaleRate: 1
 

@@ -3,7 +3,9 @@ import QtQuick 2.0
 Text {
     text: qsTr("Default")
     width: 30
+    height: 50
     horizontalAlignment: Text.AlignRight
+    verticalAlignment: Text.AlignVCenter
 
     Rectangle {
         anchors.verticalCenter: parent.verticalCenter
