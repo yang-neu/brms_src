@@ -108,6 +108,11 @@ void BrmsAdaptor::updateAccelInfo()
     }
     else{
         if(1 == (int)data[0].data.i_value){
+            if(0 == data.size()%2) {
+                cout << "Error: the structure of vector is incorrect" << endl;
+                return;
+            }
+
             for (i=1; i<data.size(); i=i+2)
             {
                 data_f=(float)data[i].data.f_value; //[1]accell
@@ -137,8 +142,9 @@ void BrmsAdaptor::updateAccelInfo()
                 float aMax=(float)data[i+8].data.f_value; // [9]MaxAccelofScene
                 QString state = (QString)data[i+9].data.s_value; //[10]AccelJudgement
                 //i++; //(QString)data[i+10].data.s_value;//[11]VihicleState
-                //i++; //(int)data[i+11].data.i_value;//[12]accel
-                //i++; //(int)data[i+12].data.i_value;//[13]speed
+                //i++; //(float)data[i+11].data.f_value;//[12]accel
+                //i++; //(float)data[i+12].data.f_value;//[13]speed
+                cout << "aMax="<<aMax << ", oldNum="<<oldNum << ", thisNum="<<thisNum << ", (rate*100)="<<(rate*100) << ", oldAve="<<oldAve << ", thisAve="<<thisAve << ", variance="<<variance << ", count="<<count << endl;
 
                 //これまでのデータからの標準範囲(±1σ)の計算
                 cout << "-Sigma="<<oldAve-variance << endl;
