@@ -70,9 +70,12 @@ Window {
             if("急加速しない" == state) {
                 stateNormalAccel.border.color = "blue"
                 stateSuddenAccel.border.color = "transparent"
-            }else{
+            }else if("急加速しがち" == state){
                 stateNormalAccel.border.color = "transparent"
                 stateSuddenAccel.border.color = "blue"
+            }else{ //未定義
+                stateNormalAccel.border.color = "transparent"
+                stateSuddenAccel.border.color = "transparent"
             }
         }
 
