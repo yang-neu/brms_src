@@ -33,7 +33,7 @@ Text {
         Rectangle {
             id:oldTrips00;
             color: "steelblue";
-            width: 10;
+            width: 18;
             height: 0;
             anchors.horizontalCenter: parent.horizontalCenter;
 
@@ -41,7 +41,7 @@ Text {
         Rectangle {
             id:thisTrip00;
             color: "orange";
-            width: 10;
+            width: oldTrips00.width;
             height: 0 ;
             anchors.horizontalCenter: parent.horizontalCenter;
 
