@@ -108,10 +108,10 @@ void BrmsAdaptor::updateAccelInfo()
     }
     else{
         if(1 == (int)data[0].data.i_value){
-            for (i=1; i<data.size(); i++)
+            for (i=1; i<data.size(); i=i+2)
             {
                 data_f=(float)data[i].data.f_value; //[1]accell
-                data_i=(int)data[++i].data.i_value; //[2]count
+                data_i=(int)data[i+1].data.i_value; //[2]count
 
                 if(data_f>=1.8) {
                     emit accelInfoChanged(gTripDataKind, data_f, data_i, "caution");
@@ -124,21 +124,21 @@ void BrmsAdaptor::updateAccelInfo()
             gTripDataKind="this";
 
         }else if(2 == (int)data[0].data.i_value){
-            for (i=1; i<data.size(); i++)
+            for (i=1; i<data.size(); i=i+13)
             {
-                i=i; //(int)data[i].data.i_value; //[1]diffAlways
-                int count =(int)data[++i].data.i_value; //[2]Cnt3Sigma
-                float variance =(float)data[++i].data.f_value; //[3]Sigma
-                float thisAve =(float)data[++i].data.f_value; //[4]currentAveSpeed
-                float oldAve =(float)data[++i].data.f_value; //[5]previousAveSpeed
-                float rate =(float)data[++i].data.f_value; //[6]PercentageofSudAcc
-                int thisNum =(int)data[++i].data.i_value; //[7]currentSampling
-                int oldNum =(int)data[++i].data.i_value; //[8]previousSampling
-                float aMax=(float)data[++i].data.f_value; // [9]MaxAccelofScene
-                QString state = (QString)data[++i].data.s_value; //[10]AccelJudgement
-                i++; //(QString)data[++i].data.s_value;//[11]VihicleState
-                i++; //(int)data[++i].data.i_value;//[12]accel
-                i++; //(int)data[++i].data.i_value;//[13]speed
+                //i=i; //(int)data[i].data.i_value; //[1]diffAlways
+                int count =(int)data[i+1].data.i_value; //[2]Cnt3Sigma
+                float variance =(float)data[i+2].data.f_value; //[3]Sigma
+                float thisAve =(float)data[i+3].data.f_value; //[4]currentAveSpeed
+                float oldAve =(float)data[i+4].data.f_value; //[5]previousAveSpeed
+                float rate =(float)data[i+5].data.f_value; //[6]PercentageofSudAcc
+                int thisNum =(int)data[i+6].data.i_value; //[7]currentSampling
+                int oldNum =(int)data[i+7].data.i_value; //[8]previousSampling
+                float aMax=(float)data[i+8].data.f_value; // [9]MaxAccelofScene
+                QString state = (QString)data[i+9].data.s_value; //[10]AccelJudgement
+                //i++; //(QString)data[i+10].data.s_value;//[11]VihicleState
+                //i++; //(int)data[i+11].data.i_value;//[12]accel
+                //i++; //(int)data[i+12].data.i_value;//[13]speed
 
                 //これまでのデータからの標準範囲(±1σ)の計算
                 cout << "-Sigma="<<oldAve-variance << endl;
