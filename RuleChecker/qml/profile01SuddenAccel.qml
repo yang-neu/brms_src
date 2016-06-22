@@ -236,8 +236,8 @@ Window {
             }
             Rectangle {
                 id: stateSuddenAccel
-                width: 300
-                height: 100
+                width: 320
+                height: 106
                 border.width: 3
                 border.color: profile01SuddenAccel.color // or "blue"
                 color: "transparent"
@@ -245,19 +245,19 @@ Window {
 
                 Image {
                     source: "res/state_SuddenAccel.png"
-
-                    Text {
-                       anchors.left: parent.right
-                       anchors.bottom: parent.bottom
-                       text: qsTr("急加速しがち")
-                       color: "red"
-                    }
+                }
+                Text {
+                   anchors.right: parent.right
+                   anchors.bottom: parent.bottom
+                   anchors.margins: 10
+                   text: qsTr("急加速しがち")
+                   color: "red"
                 }
             }
             Rectangle {
                 id: stateNormalAccel
-                width: 300
-                height: 100
+                width: stateSuddenAccel.width
+                height: stateSuddenAccel.height
                 border.width: 3
                 border.color: "blue" //or profile01SuddenAccel.color
                 color: "transparent"
@@ -265,13 +265,13 @@ Window {
 
                 Image {
                     source: "res/state_NormalAccel.png"
-
-                    Text {
-                       anchors.left: parent.right
-                       anchors.bottom: parent.bottom
-                       text: qsTr("急加速しない")
-                       color: "red"
-                    }
+                }
+                Text {
+                   anchors.right: parent.right
+                   anchors.bottom: parent.bottom
+                   anchors.margins: 10
+                   text: qsTr("急加速しない")
+                   color: "red"
                 }
             }
         }
