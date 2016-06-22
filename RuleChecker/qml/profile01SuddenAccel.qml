@@ -60,11 +60,8 @@ Window {
         }
         onStandardRangeChanged: {
             graphStandardRange.visible = true
-            graphStandardRange.x = (((data1.toFixed(1)*10)-7) * (graphBar09.width + verticalAxis.spacing))
-            graphStandardRange.width = (((data2.toFixed(1)*10)-9+1) * (graphBar09.width + verticalAxis.spacing))
-
-            //急加速領域
-            graphSuddenAccelBar.x = ((17-7) * (graphBar17.width + verticalAxis.spacing)) + 45; //1.7以上は急加速
+            graphStandardRange.x = verticalAxis.x + (((data1.toFixed(1)*10)-8) * (graphBar09.width + verticalAxis.spacing)) + 11
+            graphStandardRange.width = (((data2.toFixed(1)*10)-(data1.toFixed(1)*10)+1) * (graphBar09.width + verticalAxis.spacing))
         }
 
         onAccelCharacteristicChanged: {
@@ -114,8 +111,8 @@ Window {
                     //GraphBar {id: graphBar04; text: qsTr("0.4") }
                     //GraphBar {id: graphBar05; text: qsTr("0.5") }
                     //GraphBar {id: graphBar06; text: qsTr("0.6") }
-                    //GraphBar {id: graphBar07; text: qsTr("0.7") }
-                    GraphBar {id: graphBar08; text: qsTr("0.8") }
+                    //GraphBar {id: graphBar07; text: qsTr("0.7-") }
+                    GraphBar {id: graphBar08; text: qsTr("≦0.8") }
                     GraphBar {id: graphBar09; text: qsTr("0.9") }
                     GraphBar {id: graphBar10; text: qsTr("1.0") }
                     GraphBar {id: graphBar11; text: qsTr("1.1") }
@@ -129,12 +126,13 @@ Window {
                     GraphBar {id: graphBar19; text: qsTr("1.9") }
                     GraphBar {id: graphBar20; text: qsTr("2.0") }
                     GraphBar {id: graphBar21; text: qsTr("2.1") }
-                    GraphBar {id: graphBar22; text: qsTr("2.2") }
+                    GraphBar {id: graphBar22; text: qsTr("2.2≦") }
+                    //GraphBar {id: graphBar23; text: qsTr("2.3+") }
                 }
                 Rectangle {
                     id: graphStandardRange
                     visible: false
-                    x: ((9-7) * (graphBar09.width + verticalAxis.spacing)) //0.9~1.4
+                    x: verticalAxis.x + ((9-8) * (graphBar09.width + verticalAxis.spacing)) + 11 //0.9~1.4
                     y: 15
                     width: ((14-9+1) * (graphBar09.width + verticalAxis.spacing)) //0.9~1.4
                     height: 29
@@ -150,7 +148,7 @@ Window {
 
         Rectangle {
             id: graphSuddenAccelBar
-            x : ((17-7) * (graphBar17.width + verticalAxis.spacing)) + 45; //1.7以上は急加速
+            x : ((17-7) * (graphBar17.width + verticalAxis.spacing)) + 60; //1.7以上は急加速
             y : 15;
             width: 3
             height: 515
@@ -385,34 +383,6 @@ Window {
             //localfunc.printConsoleLog(m_A.toFixed(1));
 
             switch(data.toFixed(1)) {
-            case "0.1":
-                graphBar01.update(state, count, caution);
-                break;
-
-            case "0.2":
-                graphBar02.update(state, count, caution);
-                break;
-
-            case "0.3":
-                graphBar03.update(state, count, caution);
-                break;
-
-            case "0.4":
-                graphBar04.update(state, count, caution);
-                break;
-
-            case "0.5":
-                graphBar05.update(state, count, caution);
-                break;
-
-            case "0.6":
-                 graphBar06.update(state, count, caution);
-                 break;
-
-            case "0.7":
-                graphBar07.update(state, count, caution);
-                break;
-
             case "0.8":
                 graphBar08.update(state, count, caution);
                 break;
@@ -474,7 +444,16 @@ Window {
                 break;
 
             default:
-                localfunc.printConsoleLog("data=" + data.toFixed(1) + ": out of range")
+                //localfunc.printConsoleLog("data=" + data.toFixed(1) + ": out of range")
+                if(data.toFixed(1)<=0.8) {
+                    localfunc.printConsoleLog("data=" + data.toFixed(1) + ": 0.8以下は0.8に表示")
+                    graphBar08.update(state, count, caution);
+                }else if(2.2 <= data.toFixed(1)){
+                    localfunc.printConsoleLog("data=" + data.toFixed(1) + ": 2.2以上は2.2に表示")
+                    graphBar22.update(state, count, caution);
+                }else{
+                    localfunc.printConsoleLog("data=" + data.toFixed(1) + ": Error")
+                }
                 break;
             }
 
