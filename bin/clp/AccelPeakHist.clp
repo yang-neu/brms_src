@@ -94,9 +94,9 @@
 
 (deftemplate MAIN::Profile1Status
 	(slot speed
-		(type INTEGER))
+		(type FLOAT))
 	(slot accel
-		(type INTEGER))
+		(type FLOAT))
 
 	(slot VihicleState		;車両状態
 		(type STRING)
@@ -105,21 +105,21 @@
 		(type STRING)
 		(default "状態未判定"))  ;急加速しがち/急加速しない
 	(slot MaxAccelofScene
-		(type INTEGER))
+		(type FLOAT))
 	(slot previousSampling
 		(type INTEGER))
 	(slot currentSampling
 		(type INTEGER))
 	(slot PercentageofSudAcc
-		(type INTEGER))
+		(type FLOAT))
 	(slot previousAveSpeed
-		(type INTEGER)
-		(default 0))
+		(type FLOAT)
+		(default 0.0))
 	(slot currentAveSpeed
-		(type INTEGER)
-		(default 0))
+		(type FLOAT)
+		(default 0.0))
 	(slot Sigma					;分散値
-		(type INTEGER))
+		(type FLOAT))
 	(slot Cnt3Sima
 		(type INTEGER))
 	(slot diffAlways
