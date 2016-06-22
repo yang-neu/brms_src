@@ -64,8 +64,6 @@ Window {
             tmpDouble = data1.toFixed(1)<=0.8 ? 0.8 : data1.toFixed(1) //0.8以下の標準範囲を0.8に丸め込む
             graphStandardRange.x = horizontalAxis.x + (((tmpDouble.toFixed(1)*10)-7) * (graphBar09.width + horizontalAxis.spacing))
             graphStandardRange.width = (((data2.toFixed(1)*10)-(tmpDouble.toFixed(1)*10)+1) * (graphBar09.width + horizontalAxis.spacing))
-
-            localfunc.printConsoleLog("tmpDouble=" + tmpDouble)
         }
 
         onAccelCharacteristicChanged: {
@@ -94,17 +92,17 @@ Window {
             y:20;
             spacing: 0;
 
-            GraphAxis{ text: qsTr((500*graphDisplayRate).toString()); id: verticalAxisTop }
-            GraphAxis{ text: qsTr((450*graphDisplayRate).toString()) }
-            GraphAxis{ text: qsTr((400*graphDisplayRate).toString()) }
-            GraphAxis{ text: qsTr((350*graphDisplayRate).toString()) }
-            GraphAxis{ text: qsTr((300*graphDisplayRate).toString()) }
-            GraphAxis{ text: qsTr((250*graphDisplayRate).toString()) }
-            GraphAxis{ text: qsTr((200*graphDisplayRate).toString()) }
-            GraphAxis{ text: qsTr((150*graphDisplayRate).toString()) }
-            GraphAxis{ text: qsTr((100*graphDisplayRate).toString()) }
-            GraphAxis{ text: qsTr((50*graphDisplayRate).toString()) }
-            GraphAxis{ text: qsTr((0*graphDisplayRate).toString())
+            GraphAxis{ text: qsTr((500*graphDisplayRate).toFixed(0)); id: verticalAxisTop }
+            GraphAxis{ text: qsTr((450*graphDisplayRate).toFixed(0)) }
+            GraphAxis{ text: qsTr((400*graphDisplayRate).toFixed(0)) }
+            GraphAxis{ text: qsTr((350*graphDisplayRate).toFixed(0)) }
+            GraphAxis{ text: qsTr((300*graphDisplayRate).toFixed(0)) }
+            GraphAxis{ text: qsTr((250*graphDisplayRate).toFixed(0)) }
+            GraphAxis{ text: qsTr((200*graphDisplayRate).toFixed(0)) }
+            GraphAxis{ text: qsTr((150*graphDisplayRate).toFixed(0)) }
+            GraphAxis{ text: qsTr((100*graphDisplayRate).toFixed(0)) }
+            GraphAxis{ text: qsTr((50*graphDisplayRate).toFixed(0)) }
+            GraphAxis{ text: qsTr((0*graphDisplayRate).toFixed(0))
                 Row {
                     id: horizontalAxis
                     x: 40;
@@ -116,7 +114,7 @@ Window {
                     //GraphBar {id: graphBar04; text: qsTr("0.4") }
                     //GraphBar {id: graphBar05; text: qsTr("0.5") }
                     //GraphBar {id: graphBar06; text: qsTr("0.6") }
-                    GraphBar {id: graphBar07; text: qsTr("＜0.8") }
+                    GraphBar {id: graphBar07; text: qsTr("←") }
                     GraphBar {id: graphBar08; text: qsTr("0.8") }
                     GraphBar {id: graphBar09; text: qsTr("0.9") }
                     GraphBar {id: graphBar10; text: qsTr("1.0") }
@@ -132,7 +130,7 @@ Window {
                     GraphBar {id: graphBar20; text: qsTr("2.0") }
                     GraphBar {id: graphBar21; text: qsTr("2.1") }
                     GraphBar {id: graphBar22; text: qsTr("2.2") }
-                    GraphBar {id: graphBar23; text: qsTr("2.2＜")}
+                    GraphBar {id: graphBar23; text: qsTr("→")}
                 }
                 Rectangle {
                     id: graphStandardRange
@@ -476,20 +474,22 @@ Window {
         }
 
         function setGraphDisplayRate(state, count) {
+            //localfunc.printConsoleLog("setGraphDisplayRate: called")
+            //localfunc.printConsoleLog("state="  + state + ", count=" + count)
+
             if("old" === state) {
                 maxCountNumOldTrip = maxCountNumOldTrip > count ? maxCountNumOldTrip:count;
             }else if ("this" === state) {
                 maxCountNumThisTrip = maxCountNumThisTrip > count ? maxCountNumThisTrip:count;
             }
-
-            //graphDisplayRate = ((maxCountNumOldTrip + maxCountNumThisTrip)/500).toFixed(3);
-            graphDisplayRate = ((maxCountNumOldTrip + maxCountNumThisTrip)-((maxCountNumOldTrip + maxCountNumThisTrip)%20)+20)/500; //20刻みで表示
-
-            //localfunc.printConsoleLog("graphDisplayRate=" + graphDisplayRate);
-            //localfunc.printConsoleLog("---");
             //localfunc.printConsoleLog("maxCountNumOldTrip=" + maxCountNumOldTrip + ", maxCountNumThisTrip=" + maxCountNumThisTrip);
 
+            graphDisplayRate = ( (maxCountNumOldTrip + maxCountNumThisTrip) - ( (maxCountNumOldTrip + maxCountNumThisTrip)%50 )+50)/500; //50刻みで表示
+            //localfunc.printConsoleLog("graphDisplayRate=" + graphDisplayRate);
+            //localfunc.printConsoleLog("---");
 
+            //Change the scale
+            graphBar07.scaleRate = 1/graphDisplayRate;
             graphBar08.scaleRate = 1/graphDisplayRate;
             graphBar09.scaleRate = 1/graphDisplayRate;
             graphBar10.scaleRate = 1/graphDisplayRate;
@@ -505,6 +505,7 @@ Window {
             graphBar20.scaleRate = 1/graphDisplayRate;
             graphBar21.scaleRate = 1/graphDisplayRate;
             graphBar22.scaleRate = 1/graphDisplayRate;
+            graphBar23.scaleRate = 1/graphDisplayRate;
         }
 
     }
