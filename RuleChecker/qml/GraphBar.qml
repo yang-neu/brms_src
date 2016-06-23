@@ -16,7 +16,7 @@ Text {
         anchors.bottomMargin: 11
 
         transform: Scale {
-            origin.y: coution00.height + oldTrips00.height + thisTrip00.height
+            origin.y: coution00.height + oldTrips00.height + thisTrip00.height + dummy00.height
             yScale: scaleRate
         }
 
@@ -36,11 +36,13 @@ Text {
         Rectangle {
             id:oldTrips00;
             color: "steelblue";
+            border.color: "transparent"
+            //border.width: 2
             width: 18;
             height: 0;
             anchors.horizontalCenter: parent.horizontalCenter;
-
         }
+
         Rectangle {
             id:thisTrip00;
             color: "orange";
@@ -50,6 +52,7 @@ Text {
 
             onHeightChanged: {
                 animation00.running = true
+                animation01.running = true
             }
 
             PropertyAnimation {
@@ -59,11 +62,57 @@ Text {
                 from: "red"
                 to: thisTrip00.color;
                 running: false;
-                duration: 1000;
-                loops: 10 //Animation.Infinite;
+                duration: 10000;
+                loops: 1 //Animation.Infinite;
             }
-
         }
+
+        Rectangle {
+            id: dummy00;
+            color: "transparent";
+            width: 18;
+            height: 0
+            anchors.horizontalCenter: parent.horizontalCenter;
+
+            SequentialAnimation {
+                 id: animation01;
+                 running: false;
+
+                 NumberAnimation {
+                    target: dummy00;
+                    property: "height";
+                    from: 0
+                    to: ((500/scaleRate)-((oldTrips00.height+thisTrip00.height)))/2;
+                    running: false;
+                    duration: 1000;
+                    loops: 1 //Animation.Infinite;
+                    easing.type: Easing.OutQuart
+                  }
+                 NumberAnimation {
+                    target: dummy00;
+                    property: "height";
+                    from: ((500/scaleRate)-((oldTrips00.height+thisTrip00.height)))/2
+                    to: 0;
+                    running: false;
+                    duration: 3000;
+                    loops: 1 //Animation.Infinite;
+                    easing.type: Easing.OutBounce
+                  }
+            }
+        }
+
+        PropertyAnimation {
+            //ボーダー色変更
+            id: animation04;
+            target: oldTrips00;
+            property: "border.color";
+            from: "red"
+            to: "transparent";
+            running: false;
+            duration: 1000;
+            loops: 10 //Animation.Infinite;
+        }
+
     }
 
     function update(state, count, caution) {
