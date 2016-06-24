@@ -181,8 +181,8 @@
 		(bind ?accel (fact-slot-value ?a acceleration))
 		(if (< ?accel 0.8) then
 			(bind ?f 0.7)
-		 else (if (> ?accel 2.2) then (bind ?f 2.3))
-		 else (bind ?f ?accel)
+		 else (if (> ?accel 2.2) then (bind ?f 2.3)
+		 else (bind ?f ?accel))
 		)
 		
 		(foreach ?p (find-all-facts ((?x AccelPeakHist)) TRUE)
@@ -220,8 +220,8 @@
 		(bind ?accel (fact-slot-value ?a acceleration))
 		(if (< ?accel 0.8) then
 			(bind ?f 0.7)
-		 else (if (> ?accel 2.2) then (bind ?f 2.3))
-		 else (bind ?f ?accel)
+		 else (if (> ?accel 2.2) then (bind ?f 2.3)
+		 else (bind ?f ?accel))
 		)
 		
 		(foreach ?p (find-all-facts ((?x AccelPeakHist)) TRUE)
