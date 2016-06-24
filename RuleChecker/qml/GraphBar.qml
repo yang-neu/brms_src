@@ -46,13 +46,21 @@ Text {
         Rectangle {
             id:thisTrip00;
             color: "orange";
+            border.color: "transparent"
+            //border.width: 2
             width: oldTrips00.width;
             height: 0 ;
             anchors.horizontalCenter: parent.horizontalCenter;
 
             onHeightChanged: {
+                //Jump
                 animation00.running = true
                 animation01.running = true
+
+                //Border
+                //animation00.running = true
+                //animation11.running = true
+                //animation12.running = true
             }
 
             PropertyAnimation {
@@ -60,7 +68,7 @@ Text {
                 target: thisTrip00;
                 property: "color";
                 from: "red"
-                to: thisTrip00.color;
+                to: "orange";
                 running: false;
                 duration: 10000;
                 loops: 1 //Animation.Infinite;
@@ -102,12 +110,21 @@ Text {
         }
 
         PropertyAnimation {
-            //ボーダー色変更
-            id: animation04;
+            id: animation11;
             target: oldTrips00;
             property: "border.color";
             from: "red"
-            to: "transparent";
+            to: "steelblue"
+            running: false;
+            duration: 1000;
+            loops: 10 //Animation.Infinite;
+        }
+        PropertyAnimation {
+            id: animation12;
+            target: thisTrip00
+            property: "border.color";
+            from: "red"
+            to: "orange"
             running: false;
             duration: 1000;
             loops: 10 //Animation.Infinite;
