@@ -94,6 +94,7 @@ void BrmsAdaptor::updateAll()
 }
 
 QString gTripDataKind = "old";
+float threeSigma=99.9;
 void BrmsAdaptor::updateAccelInfo()
 {
     unsigned int i = 0;
@@ -108,17 +109,17 @@ void BrmsAdaptor::updateAccelInfo()
     }
     else{
         if(1 == (int)data[0].data.i_value){
-            if(0 == data.size()%2) {
-                cout << "Error: the structure of vector is incorrect" << endl;
-                return;
-            }
-
             for (i=1; i<data.size(); i=i+2)
             {
+                if(0 != data[i].type && 1 != data[i+1].type) {
+                    cout << "Error: the structure of vector is incorrect" << endl;
+                    return;
+                }
+
                 data_f=(float)data[i].data.f_value; //[1]accell
                 data_i=(int)data[i+1].data.i_value; //[2]count
 
-                if(data_f>=1.8) {
+                if(data_f>=threeSigma) {
                     emit accelInfoChanged(gTripDataKind, data_f, data_i, "caution");
                 }else{
                     emit accelInfoChanged(gTripDataKind, data_f, data_i, "none");
@@ -146,11 +147,11 @@ void BrmsAdaptor::updateAccelInfo()
                 //i++; //(float)data[i+12].data.f_value;//[13]speed
                 cout << "aMax="<<aMax << ", oldNum="<<oldNum << ", thisNum="<<thisNum << ", (rate*100)="<<(rate*100) << ", oldAve="<<oldAve << ", thisAve="<<thisAve << ", variance="<<variance << ", count="<<count << endl;
 
-                //これまでのデータからの標準範囲(±1σ)の計算
+                //これまでのデータからの標準範囲(±1σ), 3σの計算
                 cout << "-Sigma="<<oldAve-variance << endl;
                 cout << "+Sigma="<<oldAve+variance << endl;
                 cout << "+3Sigma="<<oldAve+(3*variance) << endl;
-
+                threeSigma = oldAve+(3*variance) <= 2.3 ? oldAve+(3*variance) : 2.3;
 
                 emit analysisResultChanged(aMax, oldNum, thisNum, (rate*100), oldAve, thisAve, variance, count);
                 emit accelCharacteristicChanged(state);
