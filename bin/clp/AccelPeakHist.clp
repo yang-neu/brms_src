@@ -127,6 +127,13 @@
 		(default 0))  			;0:いつも通り　　1:いつもと違う
 )
 
+(deftemplate MAIN::accelFileOprationEvent
+	(slot status         	;0: Save 1:Load
+		(type INTEGER)
+		(default 1)
+	)
+)
+
 ;==================================================
 ; Global value(AccelPeakHist.clp)
 ;==================================================
@@ -573,5 +580,20 @@
    =>
    (MakePreHistgram)
    (MakePreStatus)
+)
+
+(defrule IOAgenda::accelFileOpration
+	(declare (salience 990))
+	?f <- (accelFileOprationEvent (status ?s))
+	=>
+	(printout t "+++++IOAgenda::accelFileOpration : status = " ?s crlf)
+	(if (= ?s 1) then
+		(LoadFactList)
+	else
+		(SaveFactList)
+	)
+	
+	(retract ?f)
+	
 )
 

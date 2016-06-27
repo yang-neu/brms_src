@@ -4,6 +4,8 @@
 (defmodule MAIN (export ?ALL))
 (defmodule SpecificAgenda (import MAIN ?ALL))
 (defmodule SpecificAgenda10s (import MAIN ?ALL))
+(defmodule IOAgenda (import MAIN ?ALL))
+
 
 ;==================================================
 ; Global Variables

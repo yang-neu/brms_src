@@ -1245,18 +1245,19 @@ void BRMS::onIG()
 {
     if (m_statusIG) return;
     m_statusIG = true;
-    Controller *ctrl = Controller::get();
+/*    Controller *ctrl = Controller::get();
     if (ctrl != NULL)
         ctrl->start();
     if (m_inputSource != NULL)
         m_inputSource->startUp();
 	if (m_timeliner != NULL)
 		m_timeliner->Start();
-
+*/
     //add by liusiping @ 2016/06/14
     ClipsSessionMgr *pmgr = ClipsSessionMgr::get();
     EntryPointCommonData *pStream = dynamic_cast<EntryPointCommonData *>(pmgr->getSession(m_sessionID)->getEntryPoint("Common Data Stream"));
-    pStream->loadFactFile();
+    //pStream->loadFactFile();
+    pStream->accelFileOperation(EntryPointCommonData::LOAD);
 
 }
 void BRMS::offIG()
@@ -1264,7 +1265,7 @@ void BRMS::offIG()
     if (!m_statusIG) return;
 
     m_statusIG = false;
-    if (m_inputSource != NULL)
+/*    if (m_inputSource != NULL)
         m_inputSource->stop();
 
     Controller *ctrl = Controller::get();
@@ -1272,11 +1273,12 @@ void BRMS::offIG()
         ctrl->stop();
 	if (m_timeliner != NULL)
 		m_timeliner->Stop();
-
+*/
     //add by liusiping @ 2016/06/14
     ClipsSessionMgr *pmgr = ClipsSessionMgr::get();
     EntryPointCommonData *pStream = dynamic_cast<EntryPointCommonData *>(pmgr->getSession(m_sessionID)->getEntryPoint("Common Data Stream"));
-    pStream->saveFactToFile();
+    //pStream->saveFactToFile();
+    pStream->accelFileOperation(EntryPointCommonData::SAVE);
 	
 }
 

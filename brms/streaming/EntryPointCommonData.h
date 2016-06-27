@@ -18,12 +18,18 @@ using namespace std;
 class EntryPointCommonData:public EntryPoint
 {
 public:
+    enum FILE_OPERATION{
+        SAVE = 0,
+        LOAD
+    };
 
     EntryPointCommonData();
 	void updateAll();
 	bool loadFactFile();
 	bool saveFactToFile();
+    bool accelFileOperation(FILE_OPERATION);
     FieldDataVec getCommonData();
+
 private:
     static pthread_mutex_t m_mutex;
 	

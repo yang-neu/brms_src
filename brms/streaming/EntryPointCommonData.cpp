@@ -124,4 +124,48 @@ bool EntryPointCommonData::saveFactToFile()
 	}
 }
 
+bool EntryPointCommonData::accelFileOperation(FILE_OPERATION opr)
+{
+    DATA_OBJECT theValue;
+    void *templatePtr;
+    string accelTemp = "accelFileOprationEvent";
+    void * factPtr;
+    string moduleName = "IOAgenda";
+    void *theModule = EnvFindDefmodule(m_theEnv, moduleName.c_str());
+
+    pthread_mutex_lock(&m_mutex);
+    EnvIncrementGCLocks(m_theEnv);
+
+    templatePtr = EnvFindDeftemplate(m_theEnv,accelTemp.c_str());
+    factPtr = EnvCreateFact(m_theEnv,templatePtr);
+
+    if (factPtr == NULL)
+    {
+        cout<<" EntryPointCommonData::accelFileOperation brakePressure faild: "<<endl;
+        EnvDecrementGCLocks(m_theEnv);
+        pthread_mutex_unlock(&m_mutex);
+        return FALSE;
+    }
+    SetpType(&theValue,INTEGER);
+    SetpValue(&theValue,EnvAddLong(m_theEnv,opr));
+    EnvPutFactSlot(m_theEnv,factPtr,"status",&theValue);
+    EnvAssignFactSlotDefaults(m_theEnv,factPtr);
+    EnvAssert(m_theEnv,factPtr);
+
+
+    EnvFocus(m_theEnv, theModule);
+    int ret = EnvRun(m_theEnv,-1);
+
+    EnvDecrementGCLocks(m_theEnv);
+    pthread_mutex_unlock(&m_mutex);
+
+    if(ret > 0){
+        return TRUE;
+    }
+    else
+    {
+         cout<<" EntryPointCommonData::accelFileOperation nothing fired. "<<endl;
+         return FALSE;
+    }
+}
 
