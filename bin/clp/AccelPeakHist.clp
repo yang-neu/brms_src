@@ -188,8 +188,8 @@
 		(bind ?accel (fact-slot-value ?a acceleration))
 		(if (< ?accel 0.8) then
 			(bind ?f 0.7)
-		 else (if (> ?accel 2.2) then (bind ?f 2.3))
-		 else (bind ?f ?accel)
+		 else (if (> ?accel 2.2) then (bind ?f 2.3)
+		 else (bind ?f ?accel))
 		)
 		
 		(foreach ?p (find-all-facts ((?x AccelPeakHist)) TRUE)
@@ -227,8 +227,8 @@
 		(bind ?accel (fact-slot-value ?a acceleration))
 		(if (< ?accel 0.8) then
 			(bind ?f 0.7)
-		 else (if (> ?accel 2.2) then (bind ?f 2.3))
-		 else (bind ?f ?accel)
+		 else (if (> ?accel 2.2) then (bind ?f 2.3)
+		 else (bind ?f ?accel))
 		)
 		
 		(foreach ?p (find-all-facts ((?x AccelPeakHist)) TRUE)
@@ -482,7 +482,11 @@
 		(bind ?tau (/ (- ?acceleration ?aver) ?sigma))
 		
 		;|τ|>3　
-		(if (> (abs ?tau) 3) then (bind ?*TauCnt* (+ ?*TauCnt* 1)))
+		;(if (> (abs ?tau) 3) then (bind ?*TauCnt* (+ ?*TauCnt* 1)))
+
+		;(bind ?a (fact-slot-value ?f acceleration))
+		(if (> ?a (+ ?aver (* 3 ?sigma))) then (bind ?*TauCnt* (+ ?*TauCnt* 1)) )
+		;(printout t "a=" ?a ", acceleration=" ?acceleration ", aver=" ?aver ", sigma=" ?sigma ", 3sigma=" (+ ?aver (* 3 ?sigma)) ", TauCnt=" ?*TauCnt* crlf)
 		
 		(printout t "++++++++getAccelTau tau/TauCnt: " ?tau "/" ?*TauCnt* crlf)
 		

@@ -29,7 +29,9 @@ Window {
     property int maxCountNumOldTrip: 0;
     property int maxCountNumThisTrip: 0;
     property double graphDisplayRate: 1;
-    property double tmpDouble: 0
+
+    property double tmpDouble1: 0
+    property double tmpDouble2: 0
 
     property int igOffId: 0
 
@@ -61,9 +63,10 @@ Window {
         }
         onStandardRangeChanged: {
             graphStandardRange.visible = true
-            tmpDouble = data1.toFixed(1)<=0.8 ? 0.8 : data1.toFixed(1) //0.8以下の標準範囲を0.8に丸め込む
-            graphStandardRange.x = horizontalAxis.x + (((tmpDouble.toFixed(1)*10)-7) * (graphBar09.width + horizontalAxis.spacing))
-            graphStandardRange.width = (((data2.toFixed(1)*10)-(tmpDouble.toFixed(1)*10)+1) * (graphBar09.width + horizontalAxis.spacing))
+            tmpDouble1 = data1.toFixed(1)<=0.8 ? 0.8 : data1.toFixed(1) //0.8以下の標準範囲を0.8に丸め込む
+            tmpDouble2 = data2.toFixed(1)>=2.3 ? 2.3 : data2.toFixed(1) //2.3以上の標準範囲を2.3に丸め込む
+            graphStandardRange.x = horizontalAxis.x + (((tmpDouble1.toFixed(1)*10)-7) * (graphBar09.width + horizontalAxis.spacing))
+            graphStandardRange.width = (((tmpDouble2.toFixed(1)*10)-(tmpDouble1.toFixed(1)*10)+1) * (graphBar09.width + horizontalAxis.spacing))
         }
 
         onAccelCharacteristicChanged: {
