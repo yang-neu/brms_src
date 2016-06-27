@@ -1233,6 +1233,10 @@ int BRMS::getFollowStopCount()
 //add by liusiping @ 2016/06/10
 vector<FieldAndValue> BRMS::getCommonData()
 {
+    if(m_statusIG == false){
+        vector<FieldAndValue> v;
+        return v;
+    }
     ClipsSessionMgr *pmgr = ClipsSessionMgr::get();
     EntryPointCommonData *pStream = dynamic_cast<EntryPointCommonData *>(pmgr->getSession(m_sessionID)->getEntryPoint("Common Data Stream"));
 
@@ -1258,6 +1262,7 @@ void BRMS::onIG()
     EntryPointCommonData *pStream = dynamic_cast<EntryPointCommonData *>(pmgr->getSession(m_sessionID)->getEntryPoint("Common Data Stream"));
     //pStream->loadFactFile();
     pStream->accelFileOperation(EntryPointCommonData::LOAD);
+    cout << "EntryPointCommonData::LOAD" << endl;
 
 }
 void BRMS::offIG()
@@ -1279,6 +1284,7 @@ void BRMS::offIG()
     EntryPointCommonData *pStream = dynamic_cast<EntryPointCommonData *>(pmgr->getSession(m_sessionID)->getEntryPoint("Common Data Stream"));
     //pStream->saveFactToFile();
     pStream->accelFileOperation(EntryPointCommonData::SAVE);
+    cout << "EntryPointCommonData::SAVE" << endl;
 	
 }
 

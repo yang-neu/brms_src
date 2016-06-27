@@ -1091,7 +1091,9 @@ void SignalEntryPoint::flush(FLUSH_TYPE type)
         void *theModule = EnvFindDefmodule(m_theEnv, m_strTypeNameList[type]);
 
         EnvFocus(m_theEnv, theModule);
-        EnvRun(m_theEnv,-1);
+        nRet = EnvRun(m_theEnv,-1);
+
+        cout<<" SignalEntryPoint::flush  (" << nRet << ") fired" << endl;
 
     }
 #endif

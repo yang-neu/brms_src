@@ -264,13 +264,15 @@
 
 	(bind ?Accel 0)
 	(bind ?width (count-facts AccelPeakRawDataWithFlag))
-	(if (= ?width 0) then
+	(printout t "+++++MAIN::averageAccel width = " ?width crlf)
+	(if (not (> ?width 0)) then
 		(return 0))
 	
 	(foreach ?f (find-all-facts ((?x AccelPeakRawDataWithFlag)) TRUE)
 		(bind ?a (fact-slot-value ?f acceleration))
 		(bind ?Accel (+ ?Accel ?a))
 	)
+	(printout t "+++++MAIN::averageAccel Accel = " ?Accel crlf)
 	(return (/ ?Accel ?width))
 )
 
@@ -323,11 +325,13 @@
 			(bind ?Accel (+ ?Accel ?a))
 		)
 		(bind ?preAccAvr (/ ?Accel ?preSampleCnt))
+	else
+		(return -1)
 	)
 	
 	;必要サンプリング数に達して以降、サンプリング値が更新されるたびに、以下の判定をする。
 	;加速情報[ ] > 1.7m/s^2 が何％成立しているか判定し、
-	
+	(bind ?Judge "状態未判定")
 	(if (> ?preSampleCnt ?*MaxSampling*) then 
 
 		;the previous acceleration is the max of this secen
@@ -455,7 +459,7 @@
 		
 		;必要サンプリング数に達して以降、サンプリング値が更新されるたびに、以下の判定をする。
 		;加速情報[ ] > 1.7m/s^2 が何％成立しているか判定し、
-		
+		(bind ?Judge "状態未判定")
 		(if (> ?AccSamplingCnt ?*MaxSampling*) then 
 
 			;the previous acceleration is the max of this secen
@@ -479,8 +483,11 @@
 		(bind ?aver (averageAccel))
 
 		;3σ外数
-		(bind ?tau (/ (- ?acceleration ?aver) ?sigma))
-		
+		(if (> ?sigma 0) then
+			(bind ?tau (/ (- ?acceleration ?aver) ?sigma))
+		else
+			(bind ?tau 0)
+		)
 		;|τ|>3　
 		;(if (> (abs ?tau) 3) then (bind ?*TauCnt* (+ ?*TauCnt* 1)))
 
@@ -531,13 +538,22 @@
 ; Extenal Function
 ;==================================================
 (deffunction MAIN::SaveFactList()
-	(printout t "***SaveFactList start***"  crlf)
-	(do-for-all-facts ((?factlist AccelPeakRawDataWithFlag)) TRUE
-	  (bind ?value (fact-slot-value ?factlist acceleration))
-	  (assert (AccelPeakRawData(acceleration ?value)))
-	  (retract ?factlist))
-	(bind ?tmp (save-facts "FactListInfo.txt" local AccelPeakRawData))
-	(printout t "***SaveFactList result is:***" ?tmp crlf)
+	(bind ?l (count-facts AccelPeakRawDataWithFlag))
+	(printout t "+++++SaveFactList start*** " ?l  crlf)
+	(bind ?ret FALSE)
+	(bind ?cnt 0)
+	(while (or (not ?ret) (> ?cnt 3)) do
+		(bind ?cnt (+ ?cnt 1))
+	
+		(system "ren FactListInfo.txt FactListInfo_%date:~0,4%_%date:~5,2%_%date:~9,2%_%time:~0,2%%time:~3,2%%time:~6,2%%time:~9,3%.txt >null")
+		(do-for-all-facts ((?factlist AccelPeakRawDataWithFlag)) TRUE
+		  (bind ?value (fact-slot-value ?factlist acceleration))
+		  (assert (AccelPeakRawData(acceleration ?value)))
+		  (retract ?factlist))
+		(bind ?ret (save-facts "FactListInfo.txt" local AccelPeakRawData))
+		(printout t "+++++SaveFactList result is:***" ?ret crlf)
+	)
+	
 	(do-for-all-facts ((?factlist AccelPeakRawData)) TRUE
 	  (retract ?factlist))
 )
@@ -551,9 +567,10 @@
 			(bind ?*ready* TRUE)
 		)
 	)
-	(printout t "***LoadFactList result is:***" ?exist crlf)
 	
 	(bind ?count (length (find-all-facts ((?x AccelPeakRawData)) TRUE)))
+	(printout t "+++++LoadFactList result " ?count " is loaded *** " ?exist crlf)
+
 	(if(> ?count ?*MaxWindow* ) then
 	    (bind ?iterator (- ?count ?*MaxWindow* ))
 	else

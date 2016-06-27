@@ -25,6 +25,8 @@ void EntryPointCommonData::updateAll()
     int datatype;
     int i=0;
 
+    pthread_mutex_lock(&m_mutex);
+
     //get pointer of FIFO
     myInstancePtr=EnvFindInstance(m_theEnv,NULL,"FIFO",TRUE);
 
@@ -38,7 +40,6 @@ void EntryPointCommonData::updateAll()
 
     long end = GetDOEnd(outputValue);
 
-    pthread_mutex_lock(&m_mutex);
     FieldAndValue tmp;
 
     for(i = GetDOBegin(outputValue); i <= end; i++)
@@ -159,13 +160,14 @@ bool EntryPointCommonData::accelFileOperation(FILE_OPERATION opr)
     EnvDecrementGCLocks(m_theEnv);
     pthread_mutex_unlock(&m_mutex);
 
+    cout<<" EntryPointCommonData::accelFileOperation (" << ret << ") fired." << endl;
+
     if(ret > 0){
         return TRUE;
     }
     else
     {
-         cout<<" EntryPointCommonData::accelFileOperation nothing fired. "<<endl;
-         return FALSE;
+        return FALSE;
     }
 }
 
