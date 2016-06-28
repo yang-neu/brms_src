@@ -542,25 +542,36 @@
 	(printout t "+++++SaveFactList start*** " ?l  crlf)
 	(bind ?ret FALSE)
 	(bind ?cnt 0)
-	(while (or (not ?ret) (> ?cnt 3)) do
-		(bind ?cnt (+ ?cnt 1))
+
+	(do-for-all-facts ((?factlist AccelPeakRawDataWithFlag)) TRUE
+	  (bind ?value (fact-slot-value ?factlist acceleration))
+	  (assert (AccelPeakRawData(acceleration ?value)))
+	)
 	
+	(while (and (not ?ret) (< ?cnt 3)) do
+		(bind ?cnt (+ ?cnt 1))
 		(system "ren FactListInfo.txt FactListInfo_%date:~0,4%_%date:~5,2%_%date:~9,2%_%time:~0,2%%time:~3,2%%time:~6,2%%time:~9,3%.txt >null")
-		(do-for-all-facts ((?factlist AccelPeakRawDataWithFlag)) TRUE
-		  (bind ?value (fact-slot-value ?factlist acceleration))
-		  (assert (AccelPeakRawData(acceleration ?value)))
-		  (retract ?factlist))
 		(bind ?ret (save-facts "FactListInfo.txt" local AccelPeakRawData))
 		(printout t "+++++SaveFactList result is:***" ?ret crlf)
 	)
 	
-	(do-for-all-facts ((?factlist AccelPeakRawData)) TRUE
-	  (retract ?factlist))
+	(if ?ret then
+		(do-for-all-facts ((?factlist AccelPeakRawData)) TRUE
+			(retract ?factlist))
+		(do-for-all-facts ((?factlist AccelPeakRawDataWithFlag)) TRUE
+			(retract ?factlist))
+	)
 )
 
 (deffunction MAIN::LoadFactList()
 	(set-fact-duplication TRUE)
-	(printout t "***LoadFactList start***"  crlf)
+	(printout t "+++++LoadFactList start***"  crlf)
+	
+	(if (> (length (find-all-facts ((?x AccelPeakRawDataWithFlag)) TRUE )) 0) then 
+		(printout t "+++++LoadFactList Nothing loaded***"  crlf)
+		(return 0)
+	)
+	
 	(bind ?exist (load-facts "FactListInfo.txt"))
 	(if ?exist then
 		(if (> (length (find-all-facts ((?x AccelPeakRawData)) TRUE)) ?*MaxSampling*) then
