@@ -550,7 +550,7 @@
 	
 	(while (and (not ?ret) (< ?cnt 3)) do
 		(bind ?cnt (+ ?cnt 1))
-		(system "ren FactListInfo.txt FactListInfo_%date:~0,4%_%date:~5,2%_%date:~9,2%_%time:~0,2%%time:~3,2%%time:~6,2%%time:~9,3%.txt >null")
+		;(system "ren FactListInfo.txt FactListInfo_%date:~0,4%_%date:~5,2%_%date:~8,2%_%time:~0,2%%time:~3,2%%time:~6,2%%time:~9,3%.txt >null")
 		(bind ?ret (save-facts "FactListInfo.txt" local AccelPeakRawData))
 		(printout t "+++++SaveFactList result is:***" ?ret crlf)
 	)
