@@ -1093,7 +1093,7 @@ void SignalEntryPoint::flush(FLUSH_TYPE type)
         EnvFocus(m_theEnv, theModule);
         nRet = EnvRun(m_theEnv,-1);
 
-        cout<<" SignalEntryPoint::flush  (" << nRet << ") fired" << endl;
+        //cout<<" SignalEntryPoint::flush  (" << nRet << ") fired" << endl;
 
     }
 #endif

@@ -24,14 +24,16 @@ void IntegrationGenerateClientThread::run()
 			if(noticeDataTrans == NULL) {
 				return;
 			}
-			cout<<"情報集約タスク通知ポートと接続確立"<<endl;
+			//cout<<"情報集約タスク通知ポートと接続確立"<<endl;
+			cout<<"Info Notify port connected"<<endl;
 			// 情報生成タスク情報取得ポートとの接続(1秒間隔で無限リトライ）
 			dataTrans = connectLoop(serverIp, serverPortNo);
 			if(dataTrans == NULL) {
 				noticeDataTrans->disconnect();
 				return;
 			}
-			cout<<"情報集約タスク取得ポートと接続確立"<<endl;
+			//cout<<"情報集約タスク取得ポートと接続確立"<<endl;
+			cout<<"Info Date port connected"<<endl;
 			// 情報集約タスク情報取得ポートとの接続(1秒間隔で無限リトライ）
 			IGserverDataTrans = connectLoop(serverIp, IGserverPortNo);
 			if(IGserverDataTrans == NULL) {
@@ -39,8 +41,8 @@ void IntegrationGenerateClientThread::run()
 				dataTrans->disconnect();
 				return;
 			}
-			cout<<"情報生成タスク取得ポートと接続確立"<<endl;
-
+			//cout<<"情報生成タスク取得ポートと接続確立"<<endl;
+			cout<<"Info Create port connected"<<endl;
 			ClipsSessionMgr::get()->getSession(session)->setState(ClipsSession::SESSIONSTATE_RECVING);
 			while(!halt_) {
 				// 情報集約タスクからの通知受信

@@ -68,7 +68,7 @@ DataTrans* InfoGetBaseThread::connectLoop(string _ip, int _portNo)
 		DataTrans *connectDataTrans = new DataTrans(_ip, _portNo);
 		while(true) {
             if(connectDataTrans->connectInter() == true) {
-				cout<<"ip["<<_ip<<"] port["<<_portNo<<"] 接続確立"<<endl;
+				cout<<"ip["<<_ip<<"] port["<<_portNo<<"] connect ok!"<<endl;
 				break;
 			}
 			else {
