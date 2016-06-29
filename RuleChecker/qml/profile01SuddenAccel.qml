@@ -35,6 +35,8 @@ Window {
 
     property int igOffId: 0
 
+    property string debugbarcolor: "red";
+
     Component.onCompleted: {
         //Nothing to do
     }
@@ -80,6 +82,10 @@ Window {
                 stateNormalAccel.border.color = "transparent"
                 stateSuddenAccel.border.color = "transparent"
             }
+        }
+
+        onSocket_status_changed:{
+               debugBar.color = color
         }
 
     }
@@ -352,7 +358,7 @@ Window {
             y:profile01SuddenAccel.height  - igOff.buttonHeight - 20
             width: profile01SuddenAccel.width
             height: 2
-            color: "blue"
+            color: debugbarcolor
         }
 
         ButtonWithText{

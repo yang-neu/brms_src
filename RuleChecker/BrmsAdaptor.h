@@ -23,6 +23,7 @@ public:
     void init(int argc, char *argv[]);
     void start();
     virtual  int printFunction(void *environment,const char *logicalName,const char *str);
+    virtual int debugInfo(DEBUG_TYPE type);
    // bool switchInput() { return isDebug; }
     void setSwitchInput(bool flag) {
 
@@ -125,6 +126,8 @@ signals:
     void distanceDebugChanged(double distance);
 
     void updateMessage(QString str);
+
+    void socket_status_changed(QString color);
 public slots:
 
 protected:

@@ -12,6 +12,20 @@ BrmsAdaptor::BrmsAdaptor( QObject *parent) :
     string logicalName = "qt";
     setRouterName(logicalName);
 }
+
+int BrmsAdaptor::debugInfo(DEBUG_TYPE type)
+{
+    switch(type)
+    {
+    case SOCKET_INFO:
+        emit socket_status_changed(QString("blue"));
+        break;
+    default:
+        return -1;
+    }
+    return 0;
+}
+
 int BrmsAdaptor::printFunction(void *environment,const char *logicalName,const char *str)
 {
 //    qDebug()<<"logic Name:"<<logicalName<<" ->"<<str;

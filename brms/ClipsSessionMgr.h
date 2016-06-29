@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 //#include "streaming/EntryPoint.h"
+#include "interface/BrmsInterface.h"
 using namespace std;
 
 class ClipsRuleMgr;
@@ -35,7 +36,13 @@ public:
 	void registEntryPoint(string streamName, EntryPoint *pStream);
 	ClipsRuleMgr *getRuleMgr() { return  m_ruleMgr;}
 	void *getClipsEnv() { return m_theEnv;}
-	void setState(SessionState state) { m_state = state; }
+    void setState(SessionState state)
+    {
+        m_state = state;
+        if(NULL != m_router){
+            m_router->debugInfo(RouterInterface::SOCKET_INFO);
+        }
+    }
 	SessionState getState() { return m_state; }
 
 private:

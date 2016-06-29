@@ -13,6 +13,10 @@ using namespace std;
 class RouterInterface
 {
 public:
+    enum DEBUG_TYPE{
+        SOCKET_INFO = 0,
+    };
+
     RouterInterface() {}
     virtual string getRouterName()
     {
@@ -23,6 +27,7 @@ public:
         m_logicalName = name;
     }
     virtual int printFunction(void *environment,const char *logicalName,const char *str) = 0;
+    virtual int debugInfo(DEBUG_TYPE) = 0;
 private:
     string m_logicalName;
 };
