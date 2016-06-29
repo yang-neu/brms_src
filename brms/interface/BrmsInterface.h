@@ -15,6 +15,8 @@ class RouterInterface
 public:
     enum DEBUG_TYPE{
         SOCKET_INFO = 0,
+        CLIPS_SESSIONSTATE_IDLE,
+        CLIPS_SESSIONSTATE_RECVING,
     };
 
     RouterInterface() {}
@@ -28,6 +30,7 @@ public:
     }
     virtual int printFunction(void *environment,const char *logicalName,const char *str) = 0;
     virtual int debugInfo(DEBUG_TYPE) = 0;
+    virtual int comDataSize(unsigned int) = 0;
 private:
     string m_logicalName;
 };

@@ -17,7 +17,11 @@ int BrmsAdaptor::debugInfo(DEBUG_TYPE type)
 {
     switch(type)
     {
-    case SOCKET_INFO:
+    case CLIPS_SESSIONSTATE_IDLE:
+        emit socket_status_changed(QString("red"));
+        emit comDataSizeChanged(0);
+        break;
+    case CLIPS_SESSIONSTATE_RECVING:
         emit socket_status_changed(QString("blue"));
         break;
     default:
@@ -58,6 +62,12 @@ void BrmsAdaptor::timerEvent(QTimerEvent *event)
         updateAll();
         updateAccelInfo();
     }
+}
+
+int BrmsAdaptor::comDataSize(unsigned int size)
+{
+    emit comDataSizeChanged(size);
+    return 0;
 }
 
 

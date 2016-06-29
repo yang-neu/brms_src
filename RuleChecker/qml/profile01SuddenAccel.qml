@@ -36,6 +36,7 @@ Window {
     property int igOffId: 0
 
     property string debugbarcolor: "red";
+    property string comDataSize: "";
 
     Component.onCompleted: {
         //Nothing to do
@@ -87,6 +88,8 @@ Window {
         onSocket_status_changed:{
                debugBar.color = color
         }
+
+        onComDataSizeChanged: localfunc.displayComDataSize(size);
 
     }
 
@@ -361,6 +364,17 @@ Window {
             color: debugbarcolor
         }
 
+        Text {
+            x: 0
+            y: debugBar.y;
+            width:10
+            height: 10
+            verticalAlignment: Text.Center
+            text: qsTr(comDataSize);
+            color: "red"
+            font.pixelSize: 10
+        }
+
         ButtonWithText{
             id: igOff
             x: profile01SuddenAccel.width - buttonWidth -10
@@ -389,9 +403,17 @@ Window {
     //--------------------------------------------------
     Item {
         id: localfunc
+        property int i: 0
 
         function printConsoleLog(msg) {
             console.log(msg);
+        }
+
+        function displayComDataSize(size) {
+            comDataSize="";
+            for(i=0; i<size; i++) {
+                comDataSize = comDataSize + "!"
+            }
         }
 
         function displayGraph(state, data, count, caution) {

@@ -88,7 +88,15 @@ void IntegrationGenerateClientThread::run()
 				
 				string IArecvXml;
 				
+                //cout << "*****IAlist.size=" << IAlist.size() << endl;
+                ClipsSessionMgr::get()->getSession(session)->setSessionDataSize(IAlist.size());
+
                 if(IAlist.size() != 0) {
+                    //list<int>::iterator itr = _list.begin();
+                    //for(itr=IAlist.begin(); itr!=IAlist.end(); itr++) {
+                    //    cout << itr* << endl;
+                    //}
+
                     //cout<<"IAinfoGet start"<<endl;
 					ret = infoGet(dataTrans, IAlist, IArecvXml);
 #ifdef COM_LOG

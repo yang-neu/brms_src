@@ -40,10 +40,29 @@ public:
     {
         m_state = state;
         if(NULL != m_router){
-            m_router->debugInfo(RouterInterface::SOCKET_INFO);
+            switch(m_state) {
+            case SESSIONSTATE_IDLE:
+                m_router->debugInfo(RouterInterface::CLIPS_SESSIONSTATE_IDLE);
+                break;
+            case SESSIONSTATE_RECVING:
+                m_router->debugInfo(RouterInterface::CLIPS_SESSIONSTATE_RECVING);
+                break;
+            default:
+                break;
+            }
+
+
         }
     }
 	SessionState getState() { return m_state; }
+
+    unsigned int getSessionDataSize() {return dataSize;}
+    void setSessionDataSize(unsigned int m_dataSize) {
+        dataSize = m_dataSize;
+        if(NULL != m_router){
+            m_router->comDataSize(dataSize);
+        }
+    }
 
 private:
 	string m_sessionID;
@@ -56,6 +75,8 @@ private:
     static ofstream fw;
 #endif
 	SessionState m_state;
+
+    int dataSize = 0;
 };
 
 class ClipsSessionMgr

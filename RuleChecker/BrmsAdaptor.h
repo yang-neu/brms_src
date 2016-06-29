@@ -24,6 +24,7 @@ public:
     void start();
     virtual  int printFunction(void *environment,const char *logicalName,const char *str);
     virtual int debugInfo(DEBUG_TYPE type);
+    virtual int comDataSize(unsigned int size);
    // bool switchInput() { return isDebug; }
     void setSwitchInput(bool flag) {
 
@@ -128,6 +129,7 @@ signals:
     void updateMessage(QString str);
 
     void socket_status_changed(QString color);
+    void comDataSizeChanged(int size);
 public slots:
 
 protected:
