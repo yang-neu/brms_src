@@ -50,3 +50,5 @@ OTHER_FILES += \
     setting.pro.user \
     setting.pro.user.bbc2538 \
     RuleChecker.pro.user
+
+RC_FILE = icon.rc
