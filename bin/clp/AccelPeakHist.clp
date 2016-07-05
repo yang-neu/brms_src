@@ -134,6 +134,17 @@
 	)
 )
 
+(deftemplate MAIN::TableSpeed
+	(slot speed 
+		(type FLOAT)
+		(default 0.0))
+	(slot time
+		(type FLOAT)
+		;(default 0.0)
+		(default-dynamic (time))
+	)
+)
+
 ;==================================================
 ; Global value(AccelPeakHist.clp)
 ;==================================================

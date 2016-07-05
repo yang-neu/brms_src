@@ -51,6 +51,25 @@
 		(return 999))
 
 	(return ?value))
+	
+(deffunction SpecificAgenda::getPreviousSpeed(?base ?before)
+	(bind ?preTime (- ?base (/ ?before 1000)))
+	(printout t "+++++ preTime" ?preTime crlf)
+	(if (< ?preTime 0) then return (create$))
+	(bind ?list (find-all-facts ((?x TableSpeed)) (> ?preTime ?x:time)))
+	(bind ?len (length ?list))
+	(if (> ?len 0) then
+		;(bind ?data (subseq$ ?list ?len ?len))   ;base-beforeの直前の速度を取得
+		(foreach ?data (subseq$ ?list ?len ?len)
+			(bind ?preSpeed (fact-slot-value ?data speed))
+			(bind ?preTime (fact-slot-value ?data time))
+			(return (create$ dumy1 dumy2 ?preSpeed dumy4 ?preTime))
+		)
+	else
+		(return (create$))
+	)
+)
+	
 ;==================================================
 ; Rule(SetupCheck.clp)
 ;==================================================
@@ -157,10 +176,21 @@
 	(bind ?type (nth$ 2 ?lastest))
 	(bind ?speed (nth$ 3 ?lastest))
 	
-	(printout qt "**** 最新の速度情報を取り出す : " ?speed " ******" crlf)
+	(printout t "+++++ Get lastest speed : " ?speed " ******" crlf)
 	
 	(assert (EventSpeed (name "Current Receiving Data Stream") (speed ?speed) (time ?time) (type ?type)))
-	(bind ?*list* (modify ?*list* (speed ?speed))))
+	(bind ?*list* (modify ?*list* (speed ?speed)))
+	
+	(while (> (length$ ?dataList) 3) do
+		(bind ?time (nth$ 1 ?dataList))
+		(bind ?type (nth$ 2 ?dataList))
+		(bind ?speed (nth$ 3 ?dataList))
+		(assert (TableSpeed (speed ?speed) (time ?time) ) )
+		(bind ?dataList (delete$ ?dataList 1 3))
+		;(printout t "+++++ length of speedlist : " (length$ ?dataList) " ******" crlf)
+	)
+	
+)
 
 (defrule SpecificAgenda::最新のアクセル開度情報を取り出す
 	(declare (salience 990))
@@ -238,7 +268,8 @@
 	?latest <- (EventSpeed (from entryPoint) (name "latestHistory Stream") (type VEHICLE_SPEED_SP1))
 	(not (EventAcceleration (from entryPoint) (name "Calculation Stream")))
 	=>
-	(bind ?beforeS (EventSpeedHistory query before[500ms] ?time1 from entry-point "Driving Hitory Stream"))
+	(bind ?beforeS (getPreviousSpeed ?time1 500.00))
+	;(bind ?beforeS (EventSpeedHistory query before[500ms] ?time1 from entry-point "Driving Hitory Stream"))
 	(if (and (multifieldp ?beforeS) (>= (length$ ?beforeS) 5)) then
 		(bind ?speed1 (fact-slot-value ?afterS speed))
 		(bind ?time1 (fact-slot-value ?afterS time))
@@ -248,7 +279,7 @@
 		(bind ?acceleration (getAccelerationValue ?speed1 ?speed2 (- ?time1 ?time2)))
 		(assert (EventAcceleration (name "Calculation Stream") (acceleration ?acceleration)))
 		(format qt "==== speed : %4.1f, accel : %3.2f%n"  ?speed1 ?acceleration)
-		(printout qt "**** speed : " ?speed1 ", accel : " ?acceleration " ******" crlf)
+		(printout t "+++++ speed : " ?speed1 ", accel : " ?acceleration " ******" crlf)
 		
 		;(EventSpeedHistory insert ?afterS to entry-point "Driving Hitory Stream")
 		
