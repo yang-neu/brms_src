@@ -69,6 +69,22 @@
 		(return (create$))
 	)
 )
+(deffunction SpecificAgenda::getPreviousDistance(?base ?before)
+	(bind ?preTime (- ?base (/ ?before 1000)))
+	;(printout t "+++++ preTime" ?preTime crlf)
+	(if (< ?preTime 0) then return (create$))
+	(bind ?list (find-all-facts ((?x TableDistance)) (> ?preTime ?x:time)))
+	(bind ?len (length ?list))
+	(if (> ?len 0) then
+		(foreach ?data (subseq$ ?list ?len ?len)
+			(bind ?preDistance (fact-slot-value ?data distance))
+			(bind ?preTime (fact-slot-value ?data time))
+			(return (create$ dumy1 dumy2 ?preDistance dumy4 ?preTime))
+		)
+	else
+		(return (create$))
+	)
+)
 	
 ;==================================================
 ; Rule(SetupCheck.clp)
@@ -100,7 +116,7 @@
 	(bind ?eventSpeed (assert (EventSpeed (name "Driving Hitory Stream") (type VEHICLE_SPEED_SP1))))
 	;(EventSpeedHistory insert ?eventSpeed to entry-point "Driving Hitory Stream")
 	(bind ?eventDistance (assert (EventDistance (name "Driving Hitory Stream") (type VEHICLE_FOLLOWING_DISTANCE))))
-	(EventDistanceHistory insert ?eventDistance to entry-point "Driving Hitory Stream")
+	;(EventDistanceHistory insert ?eventDistance to entry-point "Driving Hitory Stream")
 	(bind ?eventDistanceDiff (assert (EventDistanceDiff (name "Driving Hitory Stream"))))
 	(EventDistanceDiffHistory insert ?eventDistanceDiff to entry-point "Driving Hitory Stream")
 ;yintf add 20160304
@@ -295,7 +311,8 @@
 	?latest <- (EventDistance (from entryPoint) (name "latestHistory Stream") (type VEHICLE_FOLLOWING_DISTANCE))
 	(not (EventDistanceDiff (from entryPoint) (name "Calculation Stream") (span ONE_SEC)))
 	=>
-	(bind ?beforeS (EventDistanceHistory query before[900ms] ?time1 from entry-point "Driving Hitory Stream"))
+	;(bind ?beforeS (EventDistanceHistory query before[900ms] ?time1 from entry-point "Driving Hitory Stream"))
+	(bind ?beforeS (getPreviousDistance ?time1 900.00))
 	(if (and (multifieldp ?beforeS) (>= (length$ ?beforeS) 5)) then
 		(bind ?distance1 (fact-slot-value ?afterS distance))
 		(bind ?time1 (fact-slot-value ?afterS time))
@@ -324,7 +341,8 @@
 	?afterS <- (EventDistance (from entryPoint) (name "Current Receiving Data Stream") (type VEHICLE_FOLLOWING_DISTANCE) (time ?time1))
 	(not (EventDistanceDiff (from entryPoint) (name "Calculation Stream") (span HUNDRED_MILLISEC)))
 	=>
-	(bind ?beforeS (EventDistanceHistory query before[100ms] ?time1 from entry-point "Driving Hitory Stream"))
+	;(bind ?beforeS (EventDistanceHistory query before[100ms] ?time1 from entry-point "Driving Hitory Stream"))
+	(bind ?beforeS (getPreviousDistance ?time1 100.00))
 	(if (and (multifieldp ?beforeS) (>= (length$ ?beforeS) 5)) then
 		(bind ?distance1 (fact-slot-value ?afterS distance))
 		(bind ?time1 (fact-slot-value ?afterS time))
@@ -347,7 +365,8 @@
 	?afterS <- (EventDistance (from entryPoint) (name "Current Receiving Data Stream") (type VEHICLE_FOLLOWING_DISTANCE) (time ?time1))
 	(not (EventDistanceDiff (from entryPoint) (name "Calculation Stream") (span FIVE_HUNDRED_MILLISEC)))
 	=>
-	(bind ?beforeS (EventDistanceHistory query before[500ms] ?time1 from entry-point "Driving Hitory Stream"))
+	;(bind ?beforeS (EventDistanceHistory query before[500ms] ?time1 from entry-point "Driving Hitory Stream"))
+	(bind ?beforeS (getPreviousDistance ?time1 500.00))
 	(if (and (multifieldp ?beforeS) (>= (length$ ?beforeS) 5)) then
 		(bind ?distance1 (fact-slot-value ?afterS distance))
 		(bind ?time1 (fact-slot-value ?afterS time))
