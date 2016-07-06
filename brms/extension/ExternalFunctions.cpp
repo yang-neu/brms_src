@@ -26,7 +26,7 @@ void doExpireAction(void *env, string &templateName, string &expireCondition, st
 
 Ext_FuncInfo g_extFuncTable[MAX_EXT_FUNC_CNT] =	{
 	//{	"", 					"entry-point", 				'b', NewEntryPoint, 			"entry-point"			},
-	{	"EventSpeed", 			"EventSpeedHistory", 		'm', EventSpeedHistory, 		"EventSpeedHistory"		},
+    //{	"EventSpeed", 			"EventSpeedHistory", 		'm', EventSpeedHistory, 		"EventSpeedHistory"		},
     {	"EventDistanceDiff", 	"EventDistanceDiffHistory", 'm', EventDistanceDiffHistory, 	"EventDistanceDiffHistory"	},
 	{	"EventDistance", 		"EventDistanceHistory", 	'm', EventDistanceHistory, 		"EventDistanceHistory"	},	
 	{	"EventAccelOpen", 		"EventAccelOpenHistory", 	'm', EventAccelOpenHistory, 	"EventAccelOpenHistory"	},

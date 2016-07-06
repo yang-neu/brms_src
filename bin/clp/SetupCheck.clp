@@ -98,7 +98,7 @@
 	(entry-point create "Driving Hitory Stream")
 	
 	(bind ?eventSpeed (assert (EventSpeed (name "Driving Hitory Stream") (type VEHICLE_SPEED_SP1))))
-	(EventSpeedHistory insert ?eventSpeed to entry-point "Driving Hitory Stream")
+	;(EventSpeedHistory insert ?eventSpeed to entry-point "Driving Hitory Stream")
 	(bind ?eventDistance (assert (EventDistance (name "Driving Hitory Stream") (type VEHICLE_FOLLOWING_DISTANCE))))
 	(EventDistanceHistory insert ?eventDistance to entry-point "Driving Hitory Stream")
 	(bind ?eventDistanceDiff (assert (EventDistanceDiff (name "Driving Hitory Stream"))))
@@ -380,8 +380,10 @@
 	    (bind ?time1 (nth$ 1 ?eventspeed))
 	    (bind ?speed1 (nth$ 3 ?eventspeed))
         (if (>= ?speed1 20.0) then
-    		(bind ?beforeS (EventSpeedHistory query before[500ms] ?time1 from entry-point "Driving Hitory Stream"))
-    		(bind ?moreBeforeS (EventSpeedHistory query before[1000ms] ?time1 from entry-point "Driving Hitory Stream"))
+    		;(bind ?beforeS (EventSpeedHistory query before[500ms] ?time1 from entry-point "Driving Hitory Stream"))
+    		;(bind ?moreBeforeS (EventSpeedHistory query before[1000ms] ?time1 from entry-point "Driving Hitory Stream"))
+    		(bind ?beforeS (getPreviousSpeed ?time1 500.00))
+    		(bind ?moreBeforeS (getPreviousSpeed ?time1 1000.00))
     		(if (and (multifieldp ?beforeS) (>= (length$ ?beforeS) 5) (multifieldp ?moreBeforeS) (>= (length$ ?moreBeforeS) 5)) then
     			(bind ?speed2 (nth$ 3 ?beforeS))
     			(bind ?time2 (nth$ 5 ?beforeS))
