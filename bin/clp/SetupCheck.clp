@@ -54,8 +54,9 @@
 	
 (deffunction SpecificAgenda::getPreviousSpeed(?base ?before)
 	(bind ?preTime (- ?base (/ ?before 1000)))
-	(printout t "+++++ preTime" ?preTime crlf)
+	;(printout t "+++++ preTime" ?preTime crlf)
 	(if (< ?preTime 0) then return (create$))
+	;(do-for-all-facts ((?s TableSpeed)) (> ?s:time 0.0) (printout t "[getPreviousSpeed]speed=" ?s:speed ", time="?s:time crlf "---" crlf))
 	(bind ?list (find-all-facts ((?x TableSpeed)) (> ?preTime ?x:time)))
 	(bind ?len (length ?list))
 	(if (> ?len 0) then
@@ -73,6 +74,7 @@
 	(bind ?preTime (- ?base (/ ?before 1000)))
 	;(printout t "+++++ preTime" ?preTime crlf)
 	(if (< ?preTime 0) then return (create$))
+	;(do-for-all-facts ((?s TableDistance)) (> ?s:time 0.0) (printout t "[getPreviousDistance]distance=" ?s:distance ", time="?s:time crlf "---" crlf))
 	(bind ?list (find-all-facts ((?x TableDistance)) (> ?preTime ?x:time)))
 	(bind ?len (length ?list))
 	(if (> ?len 0) then
@@ -89,6 +91,7 @@
 	(bind ?preTime (- ?base (/ ?before 1000)))
 	;(printout t "+++++ preTime" ?preTime crlf)
 	(if (< ?preTime 0) then return (create$))
+	;(do-for-all-facts ((?s TableSteeringAngle)) (> ?s:time 0.0) (printout t "[getPreviousSteeringAngle]steeringAngle=" ?s:steeringAngle ", time="?s:time crlf "---" crlf))
 	(bind ?list (find-all-facts ((?x TableSteeringAngle)) (> ?preTime ?x:time)))
 	(bind ?len (length ?list))
 	(if (> ?len 0) then
@@ -213,6 +216,9 @@
 	(assert (EventSpeed (name "Current Receiving Data Stream") (speed ?speed) (time ?time) (type ?type)))
 	(bind ?*list* (modify ?*list* (speed ?speed)))
 	
+	;10秒前のfactは削除する
+	(do-for-all-facts ((?t TableSpeed)) (< ?t:time (- ?time 10.0)) (retract ?t))
+
 	(while (> (length$ ?dataList) 3) do
 		(bind ?time (nth$ 1 ?dataList))
 		(bind ?type (nth$ 2 ?dataList))
