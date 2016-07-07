@@ -118,7 +118,7 @@
 	(bind ?eventDistance (assert (EventDistance (name "Driving Hitory Stream") (type VEHICLE_FOLLOWING_DISTANCE))))
 	;(EventDistanceHistory insert ?eventDistance to entry-point "Driving Hitory Stream")
 	(bind ?eventDistanceDiff (assert (EventDistanceDiff (name "Driving Hitory Stream"))))
-	(EventDistanceDiffHistory insert ?eventDistanceDiff to entry-point "Driving Hitory Stream")
+	;(EventDistanceDiffHistory insert ?eventDistanceDiff to entry-point "Driving Hitory Stream")
 ;yintf add 20160304
 	(bind ?eventSteeringAngle (assert (EventSteeringAngle (name "Driving Hitory Stream") (type STEERING_ANGLE))))
 	(EventSteeringAngleHistory insert ?eventSteeringAngle to entry-point "Driving Hitory Stream")
@@ -328,7 +328,7 @@
 			(TTC ?TTC)
 			(time ?time1)
 			(span ONE_SEC))))
-		(EventDistanceDiffHistory insert ?sde to entry-point "Driving Hitory Stream")
+		;(EventDistanceDiffHistory insert ?sde to entry-point "Driving Hitory Stream")
 		;(EventDistanceHistory insert ?afterS to entry-point "Driving Hitory Stream")
 		
 		(retract ?latest)
