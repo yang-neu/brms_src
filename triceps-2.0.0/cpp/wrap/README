@@ -1,3 +1,0 @@
-The interpreted languages, like Perl, have their own reference counting
-(in case of Perl, not thread-safe). So to adapt between them and Autorefs,
-there must be an intermediate wrapper object.
