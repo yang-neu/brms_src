@@ -3,8 +3,7 @@
 # Project created by QtCreator 2015-12-28T16:16:50
 #
 #-------------------------------------------------
-INCLUDEPATH +=  ../clips_core_source_630/core ../triceps-2.0.0/cpp ../triceps-2.0.0/cpp/app ../triceps-2.0.0/cpp/pw ../triceps-2.0.0/cpp/common ../triceps-2.0.0/cpp/mem ../triceps-2.0.0/cpp/sched	\
-                ../triceps-2.0.0/cpp/table ../triceps-2.0.0/cpp/type ../triceps-2.0.0/cpp/wrap
+INCLUDEPATH +=  ../clips_core_source_630/core
 #DEFINES += BRMS_LIBRARY
 DEFINES +=  _DEBUG_CLIPS_
 #DEFINES +=  _CAN_DEVICE_
@@ -13,7 +12,6 @@ SOURCES += ../brms/BRMS.cpp \
     ../brms/ClipsRuleMgr.cpp \
     ../brms/ClipsSessionMgr.cpp \
     ../brms/Controller.cpp \
-    ../brms/DBAccessor.cpp \
     ../brms/common/Message.cpp \
     ../brms/common/StringUtil.cpp \
     ../brms/common/SysTimer.cpp \
@@ -31,7 +29,6 @@ SOURCES += ../brms/BRMS.cpp \
     ../brms/signaladapter/IntegrationGenerateClientThread.cpp   \
     ../brms/signaladapter/DataTrans.cpp \
     ../brms/streaming/EntryPoint.cpp \
-    ../brms/streaming/EntryPointHistory.cpp \
     ../brms/streaming/EntryPointOutput.cpp \
     ../brms/streaming/EntryPointUser.cpp \
     ../brms/streaming/SignalEntryPoint.cpp \
@@ -43,7 +40,6 @@ HEADERS +=../brms/BRMS.h \
     ../brms/ClipsRuleMgr.h \
     ../brms/ClipsSessionMgr.h \
     ../brms/Controller.h \
-    ../brms/DBAccessor.h \
     ../brms/common/Message.h \
     ../brms/common/StringUtil.h \
     ../brms/common/SysTimer.h \
@@ -73,7 +69,6 @@ HEADERS +=../brms/BRMS.h \
     ../brms/signaladapter/DecisionAppServerThread.h \
     ../brms/signaladapter/IntegrationGenerateClientThread.h \
     ../brms/streaming/EntryPoint.h \
-    ../brms/streaming/EntryPointHistory.h \
     ../brms/streaming/EntryPointOutput.h \
     ../brms/streaming/EntryPointUser.h \
     ../brms/streaming/SignalEntryPoint.h \

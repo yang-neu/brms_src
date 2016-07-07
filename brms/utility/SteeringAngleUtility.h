@@ -5,7 +5,7 @@
 #include "../event/EventSteeringAngle.h"
 #include "../ClipsSessionMgr.h"
 #include "../streaming/SignalEntryPoint.h"
-#include "../streaming/EntryPointHistory.h"
+//#include "../streaming/EntryPointHistory.h"
 class SteeringAngleUtility :public  UtilityBase
 {
 public:
@@ -26,8 +26,8 @@ public:
         SignalEntryPoint *pSep = dynamic_cast<SignalEntryPoint *> (pmgr->getSession(m_sessionID)->getEntryPoint(m_streamingName));
 		pSep->insert(event);
 
-        EntryPointHistory *pSepH = dynamic_cast<EntryPointHistory *> (pmgr->getSession(m_sessionID)->getEntryPoint(m_streamingHName));
-        pSepH->insert(event);
+        //EntryPointHistory *pSepH = dynamic_cast<EntryPointHistory *> (pmgr->getSession(m_sessionID)->getEntryPoint(m_streamingHName));
+        //pSepH->insert(event);
 	}
 private:
 	 EventSteeringAngle *event;	

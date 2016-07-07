@@ -101,7 +101,7 @@
 		(return (create$))
 	)
 )
-
+	
 ;==================================================
 ; Rule(SetupCheck.clp)
 ;==================================================
@@ -127,7 +127,7 @@
 	; for DEBUG
 	;(watch facts EventSpeedList EventAccelOpenList EventDistanceList EventSteeringAngleList EventShiftStateList)
 	
-	(entry-point create "Driving Hitory Stream")
+	;(entry-point create "Driving Hitory Stream")
 	
 	(bind ?eventSpeed (assert (EventSpeed (name "Driving Hitory Stream") (type VEHICLE_SPEED_SP1))))
 	;(EventSpeedHistory insert ?eventSpeed to entry-point "Driving Hitory Stream")

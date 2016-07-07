@@ -22,7 +22,7 @@ equals(PLATFORM, WINDOWS) {
     QMAKE_CXXFLAGS += -std=c++11
 }
 
-LIBS += -L../bin -ltriceps -lclips -liconv
+LIBS += -L../bin -lclips -liconv
 
 TRANSLATIONS += *.ts
 CODECFORTR += UTF-8

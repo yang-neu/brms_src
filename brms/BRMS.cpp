@@ -945,7 +945,7 @@ bool BRMS::initialize(int argc,char *argv[], string &sessionID, RouterInterface 
     cout<<"=====new fact begin time:"<<asctime(timenow)<<"========"<<endl;
 #endif
     m_statusIG = true;
-    SetupClipsUserFunc((CLIPS_USER_FP)NewEntryPoint, g_extFuncTable, MAX_EXT_FUNC_CNT);
+    //SetupClipsUserFunc((CLIPS_USER_FP)NewEntryPoint, g_extFuncTable, MAX_EXT_FUNC_CNT);
 	
 	//cout<<"initialize 0"<<"DNCockpitKS"<<endl;
 	bool ret = false;

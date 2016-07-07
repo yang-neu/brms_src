@@ -19,13 +19,13 @@ extern "C"
 
 extern Ext_FuncInfo g_extFuncTable[MAX_EXT_FUNC_CNT];
 
-extern int NewEntryPoint(void* env);
-extern void EventSpeedHistory(void* env, DATA_OBJECT_PTR returnValuePtr);
-extern void EventDistanceDiffHistory(void* env, DATA_OBJECT_PTR returnValuePtr);	
-extern void EventDistanceHistory(void* env, DATA_OBJECT_PTR returnValuePtr);
+//extern int NewEntryPoint(void* env);
+//extern void EventSpeedHistory(void* env, DATA_OBJECT_PTR returnValuePtr);
+//extern void EventDistanceDiffHistory(void* env, DATA_OBJECT_PTR returnValuePtr);	
+//extern void EventDistanceHistory(void* env, DATA_OBJECT_PTR returnValuePtr);
 extern void EventAccelOpenHistory(void* env, DATA_OBJECT_PTR returnValuePtr);
 extern void EventRoadClassHistory(void* env, DATA_OBJECT_PTR returnValuePtr);	
-extern void EventSteeringAngleHistory(void* env, DATA_OBJECT_PTR returnValuePtr);
+//extern void EventSteeringAngleHistory(void* env, DATA_OBJECT_PTR returnValuePtr);
 }
 
 

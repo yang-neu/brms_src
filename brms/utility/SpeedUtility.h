@@ -5,7 +5,7 @@
 
 #include "../event/EventSpeed.h"
 #include "../ClipsSessionMgr.h"
-#include "../streaming/SignalEntryPoint.h"
+//#include "../streaming/SignalEntryPoint.h"
 using namespace std;
 
 class SpeedUtility :public UtilityBase 
@@ -30,8 +30,8 @@ public :
         SignalEntryPoint *pSep = dynamic_cast<SignalEntryPoint *> (pmgr->getSession(m_sessionID)->getEntryPoint(m_streamingName));
 		pSep->insert(speed);
 
-        EntryPointHistory *pSepH = dynamic_cast<EntryPointHistory *> (pmgr->getSession(m_sessionID)->getEntryPoint(m_streamingHName));
-        pSepH->insert(speed);
+        //EntryPointHistory *pSepH = dynamic_cast<EntryPointHistory *> (pmgr->getSession(m_sessionID)->getEntryPoint(m_streamingHName));
+        //pSepH->insert(speed);
 
 	}
 private :
