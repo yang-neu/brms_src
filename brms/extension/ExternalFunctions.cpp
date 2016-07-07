@@ -31,7 +31,7 @@ Ext_FuncInfo g_extFuncTable[MAX_EXT_FUNC_CNT] =	{
     //{	"EventDistance", 		"EventDistanceHistory", 	'm', EventDistanceHistory, 		"EventDistanceHistory"	},
 	{	"EventAccelOpen", 		"EventAccelOpenHistory", 	'm', EventAccelOpenHistory, 	"EventAccelOpenHistory"	},
     {	"EventRoadClass", 		"EventRoadClassHistory", 	'm', EventRoadClassHistory, 	"EventRoadClassHistory"	},
-    {	"EventSteeringAngle", 		"EventSteeringAngleHistory", 'm', EventSteeringAngleHistory, "EventSteeringAngleHistory"	},
+    //{	"EventSteeringAngle", 		"EventSteeringAngleHistory", 'm', EventSteeringAngleHistory, "EventSteeringAngleHistory"	},
 };
 
 //(entry-point create streamname)

@@ -85,7 +85,23 @@
 		(return (create$))
 	)
 )
-	
+(deffunction SpecificAgenda::getPreviousSteeringAngle(?base ?before)
+	(bind ?preTime (- ?base (/ ?before 1000)))
+	;(printout t "+++++ preTime" ?preTime crlf)
+	(if (< ?preTime 0) then return (create$))
+	(bind ?list (find-all-facts ((?x TableSteeringAngle)) (> ?preTime ?x:time)))
+	(bind ?len (length ?list))
+	(if (> ?len 0) then
+		(foreach ?data (subseq$ ?list ?len ?len)
+			(bind ?preSteeringAngle (fact-slot-value ?data steeringAngle))
+			(bind ?preTime (fact-slot-value ?data time))
+			(return (create$ dumy1 dumy2 ?preSteeringAngle dumy4 ?preTime))
+		)
+	else
+		(return (create$))
+	)
+)
+
 ;==================================================
 ; Rule(SetupCheck.clp)
 ;==================================================
@@ -121,7 +137,7 @@
 	;(EventDistanceDiffHistory insert ?eventDistanceDiff to entry-point "Driving Hitory Stream")
 ;yintf add 20160304
 	(bind ?eventSteeringAngle (assert (EventSteeringAngle (name "Driving Hitory Stream") (type STEERING_ANGLE))))
-	(EventSteeringAngleHistory insert ?eventSteeringAngle to entry-point "Driving Hitory Stream")
+	;(EventSteeringAngleHistory insert ?eventSteeringAngle to entry-point "Driving Hitory Stream")
 	
 	;by sun-chl add start 2016/02/29　EventShiftState　add
 	(assert (EventShiftState (name "latestHistory Stream") (type REVERSE)))
@@ -427,7 +443,8 @@
 	?latest <- (EventSteeringAngle (name "latestHistory Stream") (type STEERING_ANGLE))
 	(not (EventSteeringAngleAcceleration (from entryPoint) (name "Calculation Stream")))
 	=>
-	(bind ?beforeS (EventSteeringAngleHistory query before[100ms] ?time1 from entry-point "Driving Hitory Stream"))
+	;(bind ?beforeS (EventSteeringAngleHistory query before[100ms] ?time1 from entry-point "Driving Hitory Stream"))
+	(bind ?beforeS (getPreviousSteeringAngle ?time1 100.00))
 	(if (and (multifieldp ?beforeS) (>= (length$ ?beforeS) 5)) then
     (bind ?steeringangle1 (fact-slot-value ?afterS value))
 	(bind ?time1 (fact-slot-value ?afterS time))
