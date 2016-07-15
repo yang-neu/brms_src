@@ -106,7 +106,7 @@ void ClipsSession::initialize(int argc,char *argv, string sessionID, RouterInter
 	if (ConfigUtil::GetInstance()->GetConfigStr("CLIPSログ出力パス").length() > 0)
 	{
 		fw.open(ConfigUtil::GetInstance()->GetConfigStr("CLIPSログ出力パス").c_str(), ios::out);
-#if 0
+#if 1
 		EnvWatch(m_theEnv,"globals");
 		EnvWatch(m_theEnv, "rules");
 		EnvWatch(m_theEnv, "facts");
@@ -122,7 +122,7 @@ void ClipsSession::initialize(int argc,char *argv, string sessionID, RouterInter
 #endif
 #ifdef _PERFORMANCE_
 		//for performance
-		//EnvWatch(m_theEnv,"statistics");
+		EnvWatch(m_theEnv,"statistics");
 #endif
 	}
 

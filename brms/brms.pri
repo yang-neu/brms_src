@@ -7,7 +7,7 @@ INCLUDEPATH +=  ../clips_core_source_630/core
 #DEFINES += BRMS_LIBRARY
 DEFINES +=  _DEBUG_CLIPS_
 #DEFINES +=  _CAN_DEVICE_
-#DEFINES +=_PERFORMANCE_
+DEFINES +=_PERFORMANCE_
 SOURCES += ../brms/BRMS.cpp \
     ../brms/ClipsRuleMgr.cpp \
     ../brms/ClipsSessionMgr.cpp \

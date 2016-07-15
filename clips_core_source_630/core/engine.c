@@ -156,6 +156,7 @@ globle long long EnvRun(
    unsigned long maxInstances = 0, sumInstances = 0;
 #endif
    double endTime, startTime = 0.0;
+   double endTimeOfOneRule, startTimeOfOneRule = 0.0;
    unsigned long tempValue;
 #endif
    unsigned short i;
@@ -286,7 +287,12 @@ globle long long EnvRun(
         {
          char printSpace[60];
 
+#if MEASURE_PERFORMANCE
+         startTimeOfOneRule = gentime();
+         gensprintf(printSpace,"[%f] FIRE %4lld ",startTimeOfOneRule,rulesFired);
+#else
          gensprintf(printSpace,"FIRE %4lld ",rulesFired);
+#endif
          EnvPrintRouter(theEnv,WTRACE,printSpace);
          EnvPrintRouter(theEnv,WTRACE,ruleFiring);
          EnvPrintRouter(theEnv,WTRACE,": ");
@@ -530,6 +536,23 @@ globle long long EnvRun(
             EnvPrintRouter(theEnv,WDIALOG,".\n");
            }
         }
+     
+#if DEBUGGING_FUNCTIONS
+#if MEASURE_PERFORMANCE
+    if (EngineData(theEnv)->ExecutingRule->watchFiring)
+      {
+        char printSpace[60];
+        endTimeOfOneRule = gentime();
+        gensprintf(printSpace,"[performance] %4lld ",rulesFired);
+        EnvPrintRouter(theEnv,WTRACE,printSpace);
+        EnvPrintRouter(theEnv,WTRACE,ruleFiring);
+        EnvPrintRouter(theEnv,WTRACE,": Run time is ");
+        gensprintf(printSpace,"%f millisecond\n", (endTimeOfOneRule - startTimeOfOneRule)*1000);
+        EnvPrintRouter(theEnv,WTRACE,printSpace);
+      }
+#endif
+#endif
+
      }
 
    /*=====================================================*/

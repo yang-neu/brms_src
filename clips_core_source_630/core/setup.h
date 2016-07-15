@@ -464,6 +464,14 @@
 #define Bogus(x)
 #endif
 
+/*************************************************************/
+/* MEASURE_PERFORMANCE: If enabled, measure the performance */
+/*************************************************************/
+
+#ifndef MEASURE_PERFORMANCE
+#define MEASURE_PERFORMANCE 1
+#endif
+
 /***************************/
 /* Environment Definitions */
 /***************************/
