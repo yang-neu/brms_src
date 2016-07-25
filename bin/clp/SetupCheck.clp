@@ -204,34 +204,27 @@
 	(not (EventSpeed (from entryPoint) (name "Current Receiving Data Stream") (type VEHICLE_SPEED_SP1)))
 	=>
         (printout t "[Performance] Rule 最新の速度情報を取り出す start:   " (time) crlf)
-	(bind ?dataList (fact-slot-value ?y speedList))
-	(bind ?length (length$ ?dataList))
-	(bind ?lastest (subseq$ ?dataList (- ?length 2) ?length))
+	;(bind ?dataList (fact-slot-value ?y speedList))
+	;(bind ?length (length$ ?dataList))
+	;(bind ?lastest (subseq$ ?dataList (- ?length 2) ?length))
 	
-	(bind ?time (nth$ 1 ?lastest))
-	(bind ?type (nth$ 2 ?lastest))
-	(bind ?speed (nth$ 3 ?lastest))
+	;(bind ?time (nth$ 1 ?lastest))
+	;(bind ?type (nth$ 2 ?lastest))
+	;(bind ?speed (nth$ 3 ?lastest))
+
+	(bind ?latestS (getPreviousSpeed (time) 1.00))
+	(bind ?speed (nth$ 3 ?latestS))
+	(bind ?time (nth$ 5 ?latestS))
 	
 	(printout t "+++++ Get lastest speed : " ?speed " ******" crlf)
 	
-	(assert (EventSpeed (name "Current Receiving Data Stream") (speed ?speed) (time ?time) (type ?type)))
+	(assert (EventSpeed (name "Current Receiving Data Stream") (speed ?speed) (time ?time) (type VEHICLE_SPEED_SP1)))
 	(bind ?*list* (modify ?*list* (speed ?speed)))
-	
-	;10秒前のfactは削除する
-        (bind ?startTime (time))
-	(do-for-all-facts ((?t TableSpeed)) (< ?t:time (- ?time 10.0)) (retract ?t))
-        (printout t "[Performance] Function 10秒前のfactは削除する:Run time is " (- (time) ?startTime) crlf)
 
-        (bind ?startTime (time))
-	(while (> (length$ ?dataList) 3) do
-		(bind ?time (nth$ 1 ?dataList))
-		(bind ?type (nth$ 2 ?dataList))
-		(bind ?speed (nth$ 3 ?dataList))
-		(assert (TableSpeed (speed ?speed) (time ?time) ) )
-		(bind ?dataList (delete$ ?dataList 1 3))
-		;(printout t "+++++ length of speedlist : " (length$ ?dataList) " ******" crlf)
-	)
-        (printout t "[Performance] Function Add TableSpeed:Run time is " (- (time) ?startTime) crlf)
+	;10秒前のfactは削除する
+        ;(bind ?startTime (time))
+	;(do-for-all-facts ((?t TableSpeed)) (< ?t:time (- ?time 10.0)) (retract ?t))
+        ;(printout t "[Performance] Function 10秒前のfactは削除する:Run time is " (- (time) ?startTime) crlf)
 
 	(printout t "[Performance] Rule 最新の速度情報を取り出す end:   " (time) crlf)
 )

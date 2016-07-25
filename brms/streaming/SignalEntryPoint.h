@@ -44,6 +44,7 @@ public:
 protected:
     int flushAccel();
     int flushSpeed();
+    int flushHistorySpeed(EventSpeed *speed);
     int flushBrakePressure();
     int flushDistance();
     int flushRoadKind();
@@ -56,6 +57,7 @@ protected:
 
 private:
 	string m_speedTemplate;
+    string m_speedHistoryTemplate;
 	string m_disTemplate;
 	string m_roadClassTemplate;
 	string m_accelOpenTemplate;

@@ -16,6 +16,7 @@ pthread_mutex_t SignalEntryPoint::m_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 SignalEntryPoint::SignalEntryPoint():
 	m_speedTemplate("EventSpeedList")
+    , m_speedHistoryTemplate("TableSpeed")
 	, m_disTemplate("EventDistanceList")
 	, m_roadClassTemplate("EventRoadClassList")
 	, m_accelOpenTemplate("EventAccelOpenList")
@@ -93,16 +94,7 @@ void SignalEntryPoint::insert(EventSpeed *speed)
     
 #if 1
     EnvIncrementGCLocks(m_theEnv);
-    int bRet = SignalEntryPoint::flushSpeed();
-
-    if ( bRet > 0)
-    {
-        void *theModule = EnvFindDefmodule(m_theEnv, m_strTypeNameList[EntryPoint::FLUSH_TYPE_MODULE_SPA_500MS]);
-        EnvFocus(m_theEnv, theModule);
-        bRet = EnvRun(m_theEnv,-1);
-    }
-
-    //m_currentSpeedCnt = 1;
+    SignalEntryPoint::flushHistorySpeed(speed);
     EnvDecrementGCLocks(m_theEnv);
 #endif
 
@@ -329,10 +321,47 @@ int SignalEntryPoint::flushSpeed()
         SetpDOBegin(&theValue,1);
         SetpDOEnd(&theValue,currentSpeedCnt-1);
 
-        EnvPutFactSlot(m_theEnv,m_speedFact,"speedList",&theValue);
+        //EnvPutFactSlot(m_theEnv,m_speedFact,"speedList",&theValue);
         m_speedList.clear();
         m_currentSpeedCnt =1;
 #endif
+        EnvAssignFactSlotDefaults(m_theEnv,m_speedFact);
+        EnvAssert(m_theEnv,m_speedFact);
+        speedRet = 1;
+
+    }
+    return speedRet;
+}
+
+int SignalEntryPoint::flushHistorySpeed(EventSpeed *speed)
+{
+    int speedRet = 0;
+    DATA_OBJECT theValue;
+    void *templatePtr;
+    if (m_currentSpeedCnt > 1)
+    {
+        templatePtr = EnvFindDeftemplate(m_theEnv,m_speedHistoryTemplate.c_str());
+        m_speedFact = EnvCreateFact(m_theEnv,templatePtr);
+
+        if (m_speedFact == NULL)
+        {
+            cout<<" SignalEntryPoint::flush speed faild: "<<endl;
+            //EnvDecrementGCLocks(m_theEnv);
+            //pthread_mutex_unlock(&m_mutex);
+            return -1;
+        }
+
+        SetpType(&theValue,FLOAT);
+        SetpValue(&theValue,EnvAddDouble(m_theEnv,speed->getSpeed()));
+        EnvPutFactSlot(m_theEnv,m_speedFact,"speed",&theValue);
+
+        SetpType(&theValue,FLOAT);
+        SetpValue(&theValue,EnvAddDouble(m_theEnv,speed->getTime()));
+        EnvPutFactSlot(m_theEnv,m_speedFact,"time",&theValue);
+
+        //SetpDOBegin(&theValue,1);
+        //SetpDOEnd(&theValue,currentSpeedCnt-1);
+
         EnvAssignFactSlotDefaults(m_theEnv,m_speedFact);
         EnvAssert(m_theEnv,m_speedFact);
         speedRet = 1;
@@ -1021,7 +1050,7 @@ void SignalEntryPoint::flush(FLUSH_TYPE type)
     EnvIncrementGCLocks(m_theEnv);
 	
 
-#if 0
+#if 1
     bRet = flushSpeed();
     if(bRet == -1)
     {
