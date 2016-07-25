@@ -70,7 +70,7 @@ void SignalEntryPoint::insert(EventSpeed *speed)
 #ifndef DATA_BUFFER
 	if (m_currentSpeedCnt > LIST_MAX_COUNT)
 	{
-        //cout<<"SignalEntryPoint::insert speed more than 1000:"<<m_currentSpeedCnt<<endl;
+        cout<<"SignalEntryPoint::insert speed more than 1000:"<<m_currentSpeedCnt<<endl;
 		pthread_mutex_unlock(&m_mutex);
 		return;
 	}
@@ -90,6 +90,22 @@ void SignalEntryPoint::insert(EventSpeed *speed)
     m_speedList.push_back(*speed);
     m_currentSpeedCnt++;
 #endif
+    
+#if 1
+    EnvIncrementGCLocks(m_theEnv);
+    int bRet = SignalEntryPoint::flushSpeed();
+
+    if ( bRet > 0)
+    {
+        void *theModule = EnvFindDefmodule(m_theEnv, m_strTypeNameList[EntryPoint::FLUSH_TYPE_MODULE_SPA_500MS]);
+        EnvFocus(m_theEnv, theModule);
+        bRet = EnvRun(m_theEnv,-1);
+    }
+
+    //m_currentSpeedCnt = 1;
+    EnvDecrementGCLocks(m_theEnv);
+#endif
+
 	pthread_mutex_unlock(&m_mutex);
 	
 }
@@ -187,56 +203,75 @@ void SignalEntryPoint::insert(EventAimless *aimless)
 {
     if(aimless == NULL) return;
     pthread_mutex_lock(&m_mutex);
+#ifndef DATA_BUFFER
+    //TODO
+#else
     m_aimLessList.push_back(*aimless);
     m_currentAimCnt++;
-
+#endif
     pthread_mutex_unlock(&m_mutex);
 }
 void SignalEntryPoint::insert(EventLevelData *level)
 {
     if(level == NULL) return;
     pthread_mutex_lock(&m_mutex);
+#ifndef DATA_BUFFER
+    //TODO
+#else
     m_levelDataList.push_back(*level);
     m_currentLevelDataCnt++;
-
+#endif
     pthread_mutex_unlock(&m_mutex);
 }
 void SignalEntryPoint::insert(EventShiftState *shift)
 {
     if(shift == NULL) return;
     pthread_mutex_lock(&m_mutex);
+#ifndef DATA_BUFFER
+    //TODO
+#else
     m_shiftStateList.push_back(*shift);
     m_currentShiftStateCnt++;
-
+#endif
     pthread_mutex_unlock(&m_mutex);
 }
 void SignalEntryPoint::insert(EventDriverFace *driverFace)
 {
     if(driverFace == NULL) return;
     pthread_mutex_lock(&m_mutex);
+#ifndef DATA_BUFFER
+    //TODO
+#else
     m_driverFaceList.push_back(*driverFace);
     m_currentDriverFaceCnt++;
-
+#endif
     pthread_mutex_unlock(&m_mutex);
 }
 void SignalEntryPoint::insert(EventSteeringAngle *steeringAngle)
 {
     if(steeringAngle == NULL) return;
     pthread_mutex_lock(&m_mutex);
+#ifndef DATA_BUFFER
+    //TODO
+#else
     m_steeringAngleList.push_back(*steeringAngle);
     m_currentSteeringAngleCnt++;
-
+#endif
     pthread_mutex_unlock(&m_mutex);
 }
 void SignalEntryPoint::insert(EventBrakePressure *brakePressure)
 {
     if(brakePressure == NULL) return;
     pthread_mutex_lock(&m_mutex);
+#ifndef DATA_BUFFER
+    //TODO
+#else
     m_brakePressureList.push_back(*brakePressure);
     m_currentBrakePressureCnt++;
-
+#endif
     pthread_mutex_unlock(&m_mutex);
 }
+
 int SignalEntryPoint::flushSpeed()
 {
     int speedRet = 0;
@@ -986,7 +1021,7 @@ void SignalEntryPoint::flush(FLUSH_TYPE type)
     EnvIncrementGCLocks(m_theEnv);
 	
 
-	
+#if 0
     bRet = flushSpeed();
     if(bRet == -1)
     {
@@ -995,7 +1030,8 @@ void SignalEntryPoint::flush(FLUSH_TYPE type)
         return;
     }
     nRet +=bRet;
-
+#endif
+#if 0    
     bRet = flushRoadKind();
     if(bRet == -1)
     {
@@ -1077,7 +1113,7 @@ void SignalEntryPoint::flush(FLUSH_TYPE type)
 	m_currentRoadClassCnt = 1;
 	m_currentAccelCnt = 1;
 #endif
-
+#endif
 #ifndef DATA_BUFFER
 	void *theModule = EnvFindDefmodule(m_theEnv, m_strTypeNameList[type]);
 	
