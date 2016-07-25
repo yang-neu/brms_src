@@ -123,6 +123,7 @@ void ClipsSession::initialize(int argc,char *argv, string sessionID, RouterInter
 #ifdef _PERFORMANCE_
 		//for performance
 		EnvWatch(m_theEnv,"statistics");
+		//EnvWatch(m_theEnv, "rules");
 #endif
 	}
 

@@ -543,10 +543,10 @@ globle long long EnvRun(
       {
         char printSpace[60];
         endTimeOfOneRule = gentime();
-        gensprintf(printSpace,"[performance] %4lld ",rulesFired);
+        gensprintf(printSpace,"[performance]\t %4lld \t",rulesFired);
         EnvPrintRouter(theEnv,WTRACE,printSpace);
         EnvPrintRouter(theEnv,WTRACE,ruleFiring);
-        EnvPrintRouter(theEnv,WTRACE,": Run time is ");
+        EnvPrintRouter(theEnv,WTRACE,":\t Run time is \t");
         gensprintf(printSpace,"%f millisecond\n", (endTimeOfOneRule - startTimeOfOneRule)*1000);
         EnvPrintRouter(theEnv,WTRACE,printSpace);
       }
