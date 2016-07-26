@@ -92,7 +92,7 @@ void SignalEntryPoint::insert(EventSpeed *speed)
     m_currentSpeedCnt++;
 #endif
     
-#if 1
+#if 0
     EnvIncrementGCLocks(m_theEnv);
     SignalEntryPoint::flushHistorySpeed(speed);
     EnvDecrementGCLocks(m_theEnv);
@@ -284,6 +284,9 @@ int SignalEntryPoint::flushSpeed()
         SetpValue(&theValue,EnvAddSymbol(m_theEnv,m_streamName.c_str()));
         EnvPutFactSlot(m_theEnv,m_speedFact,"name",&theValue);
 
+        EnvAssignFactSlotDefaults(m_theEnv,m_speedFact);
+        EnvAssert(m_theEnv,m_speedFact);
+
 #ifndef DATA_BUFFER
         SetpType(&theValue,MULTIFIELD);
         SetpValue(&theValue,m_speedList);
@@ -301,6 +304,7 @@ int SignalEntryPoint::flushSpeed()
         while(iterSpeed != m_speedList.end())
         {
             EventSpeed *speed = &(*iterSpeed);
+            SignalEntryPoint::flushHistorySpeed(speed);
 
             //cout<<" SignalEntryPoint::insert(EventSpeed) time: "<<speed->getTime()<<endl;
             SetMFType(multiSpeedList,currentSpeedCnt,FLOAT);
@@ -325,8 +329,8 @@ int SignalEntryPoint::flushSpeed()
         m_speedList.clear();
         m_currentSpeedCnt =1;
 #endif
-        EnvAssignFactSlotDefaults(m_theEnv,m_speedFact);
-        EnvAssert(m_theEnv,m_speedFact);
+        //EnvAssignFactSlotDefaults(m_theEnv,m_speedFact);
+        //EnvAssert(m_theEnv,m_speedFact);
         speedRet = 1;
 
     }
