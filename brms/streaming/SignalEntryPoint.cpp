@@ -2,6 +2,9 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <time.h>
+#include <sstream>
+#include <iomanip>
+#include "../Controller.h"
 extern "C"
 {
 	#include "clips.h"
@@ -89,6 +92,12 @@ void SignalEntryPoint::insert(EventSpeed *speed)
 #else
     m_speedList.push_back(*speed);
     m_currentSpeedCnt++;
+
+    Controller *ctrl = Controller::get();
+    if (ctrl != NULL){
+        ctrl->fire();
+        cout << "++++ Fire ++++" << endl;
+    }
 #endif
 	pthread_mutex_unlock(&m_mutex);
 	
@@ -237,6 +246,48 @@ void SignalEntryPoint::insert(EventBrakePressure *brakePressure)
 
     pthread_mutex_unlock(&m_mutex);
 }
+
+int SignalEntryPoint::flushSpeedImm(){
+
+    char strAssert[100];
+
+    int speedRet = 0;
+    DATA_OBJECT theValue;
+    void *templatePtr;
+    if (m_currentSpeedCnt > 1)
+    {
+
+        void *multiSpeedList;
+        multiSpeedList = EnvCreateMultifield(m_theEnv,(m_currentSpeedCnt-1)*3);
+
+        int len = m_speedList.size();
+
+        list<EventSpeed>::iterator iterSpeed = m_speedList.end();
+        iterSpeed--;
+
+        //while(iterSpeed != m_speedList.end())
+        {
+            EventSpeed *speed = &(*iterSpeed);
+
+            memset(strAssert,0,sizeof(strAssert));
+            double dSpeed = speed->getSpeed();
+
+            sprintf(strAssert,"(TableSpeed (speed %8.2f ))" ,dSpeed);
+
+            cout << strAssert << endl;
+            EnvAssertString(m_theEnv,strAssert);
+
+            //iterSpeed++;
+        }
+        //m_speedList.clear();
+        //m_currentSpeedCnt =1;
+
+        speedRet = 1;
+
+    }
+    return speedRet;
+}
+
 int SignalEntryPoint::flushSpeed()
 {
     int speedRet = 0;
@@ -966,6 +1017,13 @@ void SignalEntryPoint::flush(FLUSH_TYPE type)
 	}
 
 	if(type >= FLUSH_TYPE_MODULE_MAX ) return;
+
+    if(type == FLUSH_TYPE_MODULE_SPA_Immediate){
+        EnvIncrementGCLocks(m_theEnv);
+        flushSpeedImm();
+        EnvDecrementGCLocks(m_theEnv);
+        return;
+    }
 
     if(type == FLUSH_TYPE_MODULE_SPA_10S)
     {

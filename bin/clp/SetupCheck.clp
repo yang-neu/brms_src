@@ -203,30 +203,27 @@
 	?y <- (EventSpeedList (from entryPoint) (name "Receiving Data Stream"))
 	(not (EventSpeed (from entryPoint) (name "Current Receiving Data Stream") (type VEHICLE_SPEED_SP1)))
 	=>
-	(bind ?dataList (fact-slot-value ?y speedList))
-	(bind ?length (length$ ?dataList))
-	(bind ?lastest (subseq$ ?dataList (- ?length 2) ?length))
+	; (bind ?dataList (fact-slot-value ?y speedList))
+	; (bind ?length (length$ ?dataList))
+	; (bind ?lastest (subseq$ ?dataList (- ?length 2) ?length))
+	; (bind ?time (nth$ 1 ?lastest))
+	; (bind ?type (nth$ 2 ?lastest))
+	; (bind ?speed (nth$ 3 ?lastest))
 	
-	(bind ?time (nth$ 1 ?lastest))
-	(bind ?type (nth$ 2 ?lastest))
-	(bind ?speed (nth$ 3 ?lastest))
+	
+	(bind ?allSpeed (find-all-facts ((?x TableSpeed)) TRUE))
+	(bind ?len (length$ ?allSpeed))
+	(bind ?latests (subseq$ ?allSpeed ?len ?len))
+	(bind ?speed (fact-slot-value (expand$ ?latests) speed))
+	(bind ?time (fact-slot-value (expand$ ?latests) time))
 	
 	(printout t "+++++ Get lastest speed : " ?speed " ******" crlf)
 	
-	(assert (EventSpeed (name "Current Receiving Data Stream") (speed ?speed) (time ?time) (type ?type)))
+	(assert (EventSpeed (name "Current Receiving Data Stream") (speed ?speed) (time ?time) ))
 	(bind ?*list* (modify ?*list* (speed ?speed)))
 	
 	;10秒前のfactは削除する
-	(do-for-all-facts ((?t TableSpeed)) (< ?t:time (- ?time 10.0)) (retract ?t))
-
-	(while (> (length$ ?dataList) 3) do
-		(bind ?time (nth$ 1 ?dataList))
-		(bind ?type (nth$ 2 ?dataList))
-		(bind ?speed (nth$ 3 ?dataList))
-		(assert (TableSpeed (speed ?speed) (time ?time) ) )
-		(bind ?dataList (delete$ ?dataList 1 3))
-		;(printout t "+++++ length of speedlist : " (length$ ?dataList) " ******" crlf)
-	)
+	;(do-for-all-facts ((?t TableSpeed)) (< ?t:time (- ?time 10.0)) (retract ?t))
 	
 )
 

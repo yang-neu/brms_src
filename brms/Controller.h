@@ -21,7 +21,8 @@ using namespace std;
 
 enum FIRE_EVENT_ID {
  	FIRE_EVENT_ID_500ms,
-	FIRE_EVENT_ID_10000ms 
+    FIRE_EVENT_ID_10000ms,
+    FIRE_EVENT_ID_Immediate
 };
 
  #ifndef _WINDOWS_PLAT_
@@ -42,10 +43,12 @@ public:
 	}
 	bool start();
 	bool stop();
+    bool fire();
 	static void *schedulerProc(void *para);
  #ifndef _WINDOWS_PLAT_
 	static void timer500msCallback(union sigval);
 	static void timer10000msCallback(union sigval);
+    static void immediateCallback(union sigval)
   #endif
 protected:
 	Controller();
@@ -62,8 +65,9 @@ private:
     timer_t m_timer10000ms;
     static int m_snd_hndl;
     static int m_rcv_hndl;
+    static int m_imm_hndl;
 #else
-    static HANDLE  m_handles[3]; //0:500ms; 1:10s; 2:stop event
+    static HANDLE  m_handles[4]; //0:500ms; 1:10s; 2:stop event ;3:fire clips immediately
 #endif
 
 	static Controller *m_instance;

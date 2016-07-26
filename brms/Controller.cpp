@@ -20,8 +20,9 @@ const char* g_sessionID = "DNCockpitKS";
 #ifndef _WINDOWS_PLAT_
 int Controller::m_snd_hndl = -1;
 int Controller::m_rcv_hndl = -1;
+int Controller::m_imm_hndl = -1;
 #else
-HANDLE  Controller::m_handles[3] = {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
+HANDLE  Controller::m_handles[4] = {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
 #endif
 //pthread_cond_t Controller::m_cond = PTHREAD_COND_INITIALIZER;
 //pthread_mutex_t Controller::m_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -39,6 +40,7 @@ Controller::Controller()
     m_handles[0] = CreateWaitableTimer(NULL, FALSE, NULL);
     m_handles[1] = CreateWaitableTimer(NULL, FALSE, NULL);
     m_handles[2] = CreateEvent(NULL,FALSE,FALSE,NULL);
+    m_handles[3] = CreateEvent(NULL,FALSE,FALSE,NULL);
 #endif
 	
 }
@@ -80,6 +82,13 @@ bool Controller::stop()
     m_status = false;
 	return true;
 }
+
+bool Controller::fire()
+{//fire CLIPS immediatly
+    SetEvent(m_handles[3]);
+    return true;
+}
+
 void *Controller::schedulerProc(void *para)
 {
 #ifndef _WINDOWS_PLAT_
@@ -129,9 +138,11 @@ void *Controller::schedulerProc(void *para)
 #else
     DWORD dwRet = 0;
     ClipsSessionMgr *pmgr = ClipsSessionMgr::get();
+    int nSize = sizeof(m_handles) / sizeof (HANDLE);
+
     while(m_status)
     {
-        dwRet = WaitForMultipleObjects(3,m_handles,FALSE,INFINITE);
+        dwRet = WaitForMultipleObjects(nSize,m_handles,FALSE,INFINITE);
 
         switch(dwRet)
         {
@@ -161,6 +172,12 @@ void *Controller::schedulerProc(void *para)
 
             case WAIT_OBJECT_0+2:
                 m_status = false;
+                break;
+
+            case WAIT_OBJECT_0 + 3:
+                //fire CLIPS immediately
+                pmgr->getSession(g_sessionID)->getEntryPoint("Receiving Data Stream")->flush(EntryPoint::FLUSH_TYPE_MODULE_SPA_Immediate);
+                cout << "+++++ Fire immediately +++++";
                 break;
         }
 

@@ -23,13 +23,16 @@ public:
 		FLUSH_TYPE_MODULE_MAIN,
 		FLUSH_TYPE_MODULE_SPA_500MS,
 		FLUSH_TYPE_MODULE_SPA_10S,
+        FLUSH_TYPE_MODULE_SPA_Immediate,
 		FLUSH_TYPE_MODULE_MAX
 	};
 		
 	const char* m_strTypeNameList[FLUSH_TYPE_MODULE_MAX] = {
 		"MAIN",
 		"SpecificAgenda",
-		"SpecificAgenda10s"
+        "SpecificAgenda10s",
+        "SpecificAgenda",
+
 	};
 	EntryPoint();
 	virtual void initialize(string streamName) { m_streamName = streamName; }

@@ -53,6 +53,7 @@ protected:
     int flushShiftState();
     int flushSteeringAngle();
 
+    int flushSpeedImm();
 
 private:
 	string m_speedTemplate;
