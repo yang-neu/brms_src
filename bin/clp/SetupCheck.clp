@@ -183,19 +183,28 @@
 	?y <- (EventSteeringAngleList (from entryPoint) (name "Receiving Data Stream"))
 	(not (EventSteeringAngle (from entryPoint) (name "Current Receiving Data Stream") (type STEERING_ANGLE)))
 	=>
-	(bind ?dataList (fact-slot-value ?y steeringAngleList))
-	(bind ?length (length$ ?dataList))
-	(bind ?lastest (subseq$ ?dataList (- ?length 2) ?length))
-	
-	
-	(bind ?time (nth$ 1 ?lastest))
-	(bind ?type (nth$ 2 ?lastest))
-	(bind ?steeringangle (nth$ 3 ?lastest))
+	;(bind ?dataList (fact-slot-value ?y steeringAngleList))
+	;(bind ?length (length$ ?dataList))
+	;(bind ?lastest (subseq$ ?dataList (- ?length 2) ?length))
+		
+	;(bind ?time (nth$ 1 ?lastest))
+	;(bind ?type (nth$ 2 ?lastest))
+	;(bind ?steeringangle (nth$ 3 ?lastest))
+
+	(bind ?allSteeringAngle (find-all-facts ((?x TableSteeringAngle)) TRUE))
+	(bind ?len (length$ ?allSteeringAngle))
+	(bind ?latests (subseq$ ?allSteeringAngle ?len ?len))
+	(bind ?steeringangle (fact-slot-value (expand$ ?latests) steeringAngle))
+	(bind ?time (fact-slot-value (expand$ ?latests) time))
 
 	(printout qt "**** 最新のハンドル舵角情報を取り出す : " ?steeringangle " ******" crlf)
 
-	(assert (EventSteeringAngle (name "Current Receiving Data Stream") (value ?steeringangle) (time ?time) (type ?type)))
-	(bind ?*list* (modify ?*list* (steeringangle ?steeringangle))))
+	(assert (EventSteeringAngle (name "Current Receiving Data Stream") (value ?steeringangle) (time ?time) (type STEERING_ANGLE)))
+	(bind ?*list* (modify ?*list* (steeringangle ?steeringangle)))
+
+	;10秒前のfactは削除する
+	;(do-for-all-facts ((?t TableSpeed)) (< ?t:time (- ?time 10.0)) (retract ?t))
+	)
 
 (defrule SpecificAgenda::最新の速度情報を取り出す
 	(declare (salience 990))

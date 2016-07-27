@@ -241,6 +241,12 @@ void SignalEntryPoint::insert(EventSteeringAngle *steeringAngle)
     m_steeringAngleList.push_back(*steeringAngle);
     m_currentSteeringAngleCnt++;
 
+    Controller *ctrl = Controller::get();
+    if (ctrl != NULL){
+        ctrl->fire();
+        //cout << "++++ Fire ++++" << endl;
+    }
+
     pthread_mutex_unlock(&m_mutex);
 }
 void SignalEntryPoint::insert(EventBrakePressure *brakePressure)
@@ -979,6 +985,39 @@ int SignalEntryPoint::flushShiftState()
     return bRet;
 }
 
+int SignalEntryPoint::flushSteeringAngleImm(){
+
+    char strAssert[100];
+    int bRet = 0;
+
+    if (m_currentSteeringAngleCnt > 1)
+    {
+        list<EventSteeringAngle>::iterator iter = m_steeringAngleList.end();
+        iter--;
+
+        //while(iter != m_steeringAngleList.end())
+        {
+            EventSteeringAngle *steering = &(*iter);
+
+            memset(strAssert,0,sizeof(strAssert));
+            double theValue = steering->getValue();
+
+            sprintf(strAssert,"(TableSteeringAngle (steeringAngle %8.2f ))" ,theValue);
+
+            //cout << strAssert << endl;
+            EnvAssertString(m_theEnv,strAssert);
+
+            //iter++;
+        }
+        //m_steeringAngleList.clear();
+        //m_currentSteeringAngleCnt =1;
+
+        bRet = 1;
+
+    }
+    return bRet;
+}
+
 int SignalEntryPoint::flushSteeringAngle()
 {
     int bRet = 0;
@@ -1010,6 +1049,8 @@ int SignalEntryPoint::flushSteeringAngle()
 
         EnvPutFactSlot(m_theEnv,m_disFact,"distanceList",&theValue);
 #else
+
+#if 0 //CLIPS Rule LHSのトリガーのためslot nameのみAssert
         void *multiSList;
         multiSList = EnvCreateMultifield(m_theEnv,(m_currentSteeringAngleCnt-1)*3);
 
@@ -1039,6 +1080,7 @@ int SignalEntryPoint::flushSteeringAngle()
         SetpDOEnd(&theValue,currentCnt-1);
 
         EnvPutFactSlot(m_theEnv,m_steeringAngleFact,"steeringAngleList",&theValue);
+#endif
         m_steeringAngleList.clear();
         m_currentSteeringAngleCnt =1;
 #endif
@@ -1067,6 +1109,7 @@ void SignalEntryPoint::flush(FLUSH_TYPE type)
         EnvIncrementGCLocks(m_theEnv);
         flushSpeedImm();
         flushDistanceImm();
+        flushSteeringAngleImm();
         EnvDecrementGCLocks(m_theEnv);
         return;
     }
