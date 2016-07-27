@@ -317,6 +317,8 @@ int SignalEntryPoint::flushSpeed()
 
         EnvPutFactSlot(m_theEnv,m_speedFact,"speedList",&theValue);
 #else
+
+#if 0 //CLIPS Rule LHSのトリガーのためslot nameのみAssert
         void *multiSpeedList;
         multiSpeedList = EnvCreateMultifield(m_theEnv,(m_currentSpeedCnt-1)*3);
 
@@ -346,6 +348,7 @@ int SignalEntryPoint::flushSpeed()
         SetpDOEnd(&theValue,currentSpeedCnt-1);
 
         EnvPutFactSlot(m_theEnv,m_speedFact,"speedList",&theValue);
+#endif
         m_speedList.clear();
         m_currentSpeedCnt =1;
 #endif
