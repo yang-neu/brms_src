@@ -250,16 +250,26 @@
 	?y <- (EventDistanceList (from entryPoint) (name "Receiving Data Stream"))
 	(not (EventDistance (from entryPoint) (name "Current Receiving Data Stream") (type VEHICLE_FOLLOWING_DISTANCE)))
 	=>
-	(bind ?dataList (fact-slot-value ?y distanceList))
-	(bind ?length (length$ ?dataList))
-	(bind ?lastest (subseq$ ?dataList (- ?length 2) ?length))
+	;(bind ?dataList (fact-slot-value ?y distanceList))
+	;(bind ?length (length$ ?dataList))
+	;(bind ?lastest (subseq$ ?dataList (- ?length 2) ?length))
 	
-	(bind ?time (nth$ 1 ?lastest))
-	(bind ?type (nth$ 2 ?lastest))
-	(bind ?distance (nth$ 3 ?lastest))
+	;(bind ?time (nth$ 1 ?lastest))
+	;(bind ?type (nth$ 2 ?lastest))
+	;(bind ?distance (nth$ 3 ?lastest))
+
+	(bind ?allDistance (find-all-facts ((?x TableDistance)) TRUE))
+	(bind ?len (length$ ?allDistance))
+	(bind ?latests (subseq$ ?allDistance ?len ?len))
+	(bind ?distance (fact-slot-value (expand$ ?latests) distance))
+	(bind ?time (fact-slot-value (expand$ ?latests) time))
 	
-	(assert (EventDistance (name "Current Receiving Data Stream") (distance ?distance) (time ?time) (type ?type)))
-	(bind ?*list* (modify ?*list* (distance ?distance))))
+	(assert (EventDistance (name "Current Receiving Data Stream") (distance ?distance) (time ?time) (type VEHICLE_FOLLOWING_DISTANCE)))
+	(bind ?*list* (modify ?*list* (distance ?distance)))
+
+	;10秒前のfactは削除する
+	;(do-for-all-facts ((?t TableDistance)) (< ?t:time (- ?time 10.0)) (retract ?t)))
+	)
 
 (defrule SpecificAgenda::最新の走行道路情報を取り出す
 	(declare (salience 990))

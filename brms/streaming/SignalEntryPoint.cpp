@@ -128,6 +128,12 @@ void SignalEntryPoint::insert(EventDistance *distance)
 #else
     m_disList.push_back(*distance);
     m_currentDisCnt++;
+
+    Controller *ctrl = Controller::get();
+    if (ctrl != NULL){
+        ctrl->fire();
+        //cout << "++++ Fire ++++" << endl;
+    }
 #endif
 	pthread_mutex_unlock(&m_mutex);
 }
@@ -360,6 +366,39 @@ int SignalEntryPoint::flushSpeed()
     return speedRet;
 }
 
+int SignalEntryPoint::flushDistanceImm(){
+
+    char strAssert[100];
+    int bRet = 0;
+
+    if (m_currentDisCnt > 1)
+    {
+        list<EventDistance>::iterator iter = m_disList.end();
+        iter--;
+
+        //while(iter != m_disList.end())
+        {
+            EventDistance *distance = &(*iter);
+
+            memset(strAssert,0,sizeof(strAssert));
+            double theValue = distance->getDistance();
+
+            sprintf(strAssert,"(TableDistance (distance %8.2f ))" ,theValue);
+
+            //cout << strAssert << endl;
+            EnvAssertString(m_theEnv,strAssert);
+
+            //iter++;
+        }
+        //m_disList.clear();
+        //m_currentDisCnt =1;
+
+        bRet = 1;
+
+    }
+    return bRet;
+}
+
 int SignalEntryPoint::flushDistance()
 {
     int distRet = 0;
@@ -391,6 +430,8 @@ int SignalEntryPoint::flushDistance()
 
         EnvPutFactSlot(m_theEnv,m_disFact,"distanceList",&theValue);
 #else
+
+#if 0 //CLIPS Rule LHSのトリガーのためslot nameのみAssert
         void *multiDisList;
         multiDisList = EnvCreateMultifield(m_theEnv,(m_currentDisCnt-1)*3);
 
@@ -420,6 +461,7 @@ int SignalEntryPoint::flushDistance()
         SetpDOEnd(&theValue,currentDisCnt-1);
 
         EnvPutFactSlot(m_theEnv,m_disFact,"distanceList",&theValue);
+#endif
         m_disList.clear();
         m_currentDisCnt =1;
 #endif
@@ -1024,6 +1066,7 @@ void SignalEntryPoint::flush(FLUSH_TYPE type)
     if(type == FLUSH_TYPE_MODULE_SPA_Immediate){
         EnvIncrementGCLocks(m_theEnv);
         flushSpeedImm();
+        flushDistanceImm();
         EnvDecrementGCLocks(m_theEnv);
         return;
     }
