@@ -96,7 +96,7 @@ void SignalEntryPoint::insert(EventSpeed *speed)
     Controller *ctrl = Controller::get();
     if (ctrl != NULL){
         ctrl->fire();
-        cout << "++++ Fire ++++" << endl;
+        //cout << "++++ Fire ++++" << endl;
     }
 #endif
 	pthread_mutex_unlock(&m_mutex);
@@ -274,7 +274,7 @@ int SignalEntryPoint::flushSpeedImm(){
 
             sprintf(strAssert,"(TableSpeed (speed %8.2f ))" ,dSpeed);
 
-            cout << strAssert << endl;
+            //cout << strAssert << endl;
             EnvAssertString(m_theEnv,strAssert);
 
             //iterSpeed++;

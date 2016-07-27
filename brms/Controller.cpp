@@ -177,7 +177,7 @@ void *Controller::schedulerProc(void *para)
             case WAIT_OBJECT_0 + 3:
                 //fire CLIPS immediately
                 pmgr->getSession(g_sessionID)->getEntryPoint("Receiving Data Stream")->flush(EntryPoint::FLUSH_TYPE_MODULE_SPA_Immediate);
-                cout << "+++++ Fire immediately +++++";
+                //cout << "+++++ Fire immediately +++++" << endl;
                 break;
         }
 
