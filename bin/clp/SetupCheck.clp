@@ -485,21 +485,21 @@
 	(declare (salience -99))
 	(EventSpeedList (from entryPoint) (name "Receiving Data Stream"))
 	=>
-	(bind ?tartgetTime (- (time) 5.0))
+	(bind ?tartgetTime (- (time) ?*TableHistorySaveTime*))
 	(do-for-all-facts ((?t TableSpeed)) (< ?t:time ?tartgetTime) (retract ?t))
 )
 (defrule SpecificAgenda::古いTableDistanceを削除する
 	(declare (salience -99))
 	(EventDistanceList (from entryPoint) (name "Receiving Data Stream"))
 	=>
-	(bind ?tartgetTime (- (time) 5.0))
+	(bind ?tartgetTime (- (time) ?*TableHistorySaveTime*))
 	(do-for-all-facts ((?t TableDistance)) (< ?t:time ?tartgetTime) (retract ?t))
 )
 (defrule SpecificAgenda::古いTableSteeringAngleを削除する
 	(declare (salience -99))
 	(EventSteeringAngleList (from entryPoint) (name "Receiving Data Stream"))
 	=>
-	(bind ?tartgetTime (- (time) 5.0))
+	(bind ?tartgetTime (- (time) ?*TableHistorySaveTime*))
 	(do-for-all-facts ((?t TableSteeringAngle)) (< ?t:time ?tartgetTime) (retract ?t))
 )
 (defrule SpecificAgenda::Receiving_Data_StreamのspeedObjectを全て削除する

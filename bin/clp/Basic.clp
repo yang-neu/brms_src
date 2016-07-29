@@ -168,6 +168,8 @@
 
 (defglobal MAIN
 	?*list* = (assert (EventOutput)))
+(defglobal MAIN
+	?*TableHistorySaveTime* = 5.0) ;1s=1.0, 60s=60.0
 
 ;==================================================
 ; Templete
