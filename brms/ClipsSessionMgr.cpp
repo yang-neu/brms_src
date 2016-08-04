@@ -43,6 +43,17 @@ int ClipsSession::queryFunction(void *environment,const char *logicalName)
 }
 int ClipsSession::printFunction(void *environment,const char *logicalName,const char *str)
 {
+#if 0
+	if(string(logicalName) == "wtrace"
+		|| strcmp(logicalName,"stdout") == 0
+		|| strcmp(logicalName,"qt") == 0
+		) {
+		//Nothing to do
+	}else{
+		cout << "logicalName=" << string(logicalName) << ": " << string(str) << endl;
+	}
+#endif
+
     if (m_router != NULL && string(logicalName) == m_router->getRouterName())
     {
 		static char log_line[1024];
