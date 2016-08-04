@@ -130,7 +130,9 @@
 	(printout t "急ハンドル判定：サンプル数未達 : サンプル数 -> " (length$ ?specificList1) crlf)
 	(printout qt "プロファイル23 急ハンドル特性判定：サンプル数未達 : サンプル数 -> " (length$ ?specificList1) crlf)
 	(printout qt "急ハンドル情報 : " ?percentage " %" crlf)
-	(bind ?*list* (modify ?*list* (suddenStAngleAccelCount (length$ ?specificList1)))))
+	;(bind ?*list* (modify ?*list* (suddenStAngleAccelCount (length$ ?specificList1))))
+	(printout eventoutput (str-cat "suddenStAngleAccelCount" " " (length$ ?specificList1)))
+	)
 
 (defrule SpecificAgenda::集計：急ハンドル情報：急ハンドル多い
 	(declare (salience 200))
@@ -141,8 +143,10 @@
 	(printout t "急ハンドル判定：急ハンドル多い" crlf)
 	(printout qt "プロファイル23 急ハンドル特性判定：急ハンドル多い : サンプル数 -> " (length$ ?specificList1) crlf)
 	(printout qt "急ハンドル情報 : " ?percentage1 " %" crlf)
-	(bind ?*list* (modify ?*list* (suddenStAngleAccel "急ハンドル多い")))
-	(bind ?*list* (modify ?*list* (suddenStAngleAccelCount (length$ ?specificList1))))
+	;(bind ?*list* (modify ?*list* (suddenStAngleAccel "急ハンドル多い")))
+	(printout eventoutput "suddenStAngleAccel 急ハンドル多い")
+	;(bind ?*list* (modify ?*list* (suddenStAngleAccelCount (length$ ?specificList1))))
+	(printout eventoutput (str-cat "suddenStAngleAccelCount" " " (length$ ?specificList1)))
 	(if (neq ?specific SUDDEN) then
 		(modify ?acce (specific SUDDEN))))
 
@@ -155,8 +159,10 @@
 	(printout t "急ハンドル判定：急ハンドル少ない" crlf)
 	(printout qt "プロファイル23 急ハンドル特性判定：急ハンドル少ない : サンプル数 -> " (length$ ?specificList1) crlf)
 	(printout qt "急ハンドル情報 : " ?percentage1 " %" crlf)
-	(bind ?*list* (modify ?*list* (suddenStAngleAccel "急ハンドル少ない")))
-	(bind ?*list* (modify ?*list* (suddenStAngleAccelCount (length$ ?specificList1))))
+	;(bind ?*list* (modify ?*list* (suddenStAngleAccel "急ハンドル少ない")))
+	(printout eventoutput "suddenStAngleAccel 急ハンドル少ない")
+	;(bind ?*list* (modify ?*list* (suddenStAngleAccelCount (length$ ?specificList1))))
+	(printout eventoutput (str-cat "suddenStAngleAccelCount" " " (length$ ?specificList1)))
 	(if (neq ?specific NORMAL)
 		then
 		(modify ?acce (specific NORMAL))))
@@ -169,7 +175,9 @@
 	=>
 	(printout t "プロファイル23 急ハンドル状態判定：いつもと同じ" crlf)
 	(printout qt "プロファイル23 急ハンドル状態判定：いつもと同じ : 二項検定結果 " ?todaySpecificState crlf)
-	(bind ?*list* (modify ?*list* (suddenStAngleAccelState "いつもと同じ"))))
+	;(bind ?*list* (modify ?*list* (suddenStAngleAccelState "いつもと同じ")))
+	(printout eventoutput "suddenStAngleAccelState いつもと同じ")
+	)
 
 (defrule SpecificAgenda::プロファイル23-状態判定：いつもと違う
 	(declare (salience 200))
@@ -179,4 +187,6 @@
 	=>
 	(printout t "プロファイル23 急ハンドル状態判定：いつもと違う" crlf)
 	(printout qt "プロファイル23 急ハンドル状態判定：いつもと違う : 二項検定結果 " ?todaySpecificState crlf)
-	(bind ?*list* (modify ?*list* (suddenStAngleAccelState "いつもと違う"))))
+	;(bind ?*list* (modify ?*list* (suddenStAngleAccelState "いつもと違う")))
+	(printout eventoutput "suddenStAngleAccelState いつもと違う")
+	)

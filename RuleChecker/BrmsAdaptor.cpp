@@ -103,7 +103,40 @@ int BrmsAdaptor::displayData(const char *str)
         emit speedChanged(string2double(data.at(1)));
     } else if("driveScene" == kind && 2 == data.size()) {
         emit driveSceneChanged(string2QString(data.at(1)));
+    } else if("distance" == kind && 2 == data.size()) {
+        emit distanceChanged(string2double(data.at(1)));
+    } else if("shiftPosition" == kind && 2 == data.size()) {
+        //emit TBD(string2double(data.at(1)));
+    } else if("steeringangle" == kind && 2 == data.size()) {
+        //emit TBD(string2double(data.at(1)));
+    } else if("accelOpen" == kind && 2 == data.size()) {
+        emit accelChanged(string2double(data.at(1)));
+    } else if("roadClassSig" == kind && 2 == data.size()) {
+        emit roadClassSigChanged(string2QString(data.at(1)));
+    } else if("roadClass" == kind && 2 == data.size()) {
+        emit roadKindChanged(string2QString(data.at(1)));
+    } else if("accel" == kind && 2 == data.size()) {
+        emit aChanged(string2double(data.at(1)));
+    } else if("TTC" == kind && 2 == data.size()) {
+        emit ttcChanged(string2double(data.at(1)));
+    } else if("steeringAngleAccel" == kind && 2 == data.size()) {
+        //emit TBD(string2double(data.at(1)));
+    } else if("suddenStAngleAccelCount" == kind && 2 == data.size()) {
+        //emit TBD(string2double(data.at(1)));
+    } else if("suddenStAngleAccelState" == kind && 2 == data.size()) {
+        //emit TBD(string2double(data.at(1)));
+    } else if("LeftTurnCount" == kind && 2 == data.size()) {
+        //emit TBD(string2double(data.at(1)));
+    } else if("LeftTurnState" == kind && 2 == data.size()) {
+        //emit TBD(string2double(data.at(1)));
+    } else if("RightTurnCount" == kind && 2 == data.size()) {
+        //emit TBD(string2double(data.at(1)));
+    } else if("RightTurnState" == kind && 2 == data.size()) {
+        //emit TBD(string2double(data.at(1)));
+    } else {
+        cout << "Warning: BrmsAdaptor::displayData knid="<<kind<<" is undefined." << endl; 
     }
+
 
     return 1;
 

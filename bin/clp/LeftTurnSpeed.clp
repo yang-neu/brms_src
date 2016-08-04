@@ -135,7 +135,9 @@
 	=>
 	(printout t "⑱左カーブスピード：サンプル数未達 : サンプル数 -> " (length$ ?specificList) crlf)
 	(printout qt "プロファイル⑱ 左カーブスピード：サンプル数未達 : サンプル数 ->" (length$ ?specificList) crlf)
-	(bind ?*list* (modify ?*list* (LeftTurnCount (length$ ?specificList)))))
+	;(bind ?*list* (modify ?*list* (LeftTurnCount (length$ ?specificList))))
+	(printout eventoutput (str-cat "LeftTurnCount" " " (length$ ?specificList)))
+	)
 
 (defrule SpecificAgenda::集計：左カーブスピード：特性未定義
 	(declare (salience 200))
@@ -144,8 +146,11 @@
 	=>
 	(printout t "⑱左カーブスピード： 判定： 特性未定義" crlf)
 	(printout qt "プロファイル⑱ 左カーブスピード： 特性判定： 特性未定義" crlf)
-	(bind ?*list* (modify ?*list* (LeftTurnState  "未定義")))
-	(bind ?*list* (modify ?*list* (LeftTurnCount (length$ ?specificList)))))
+	;(bind ?*list* (modify ?*list* (LeftTurnState  "未定義")))
+	(printout eventoutput "LeftTurnState 未定義")
+	;(bind ?*list* (modify ?*list* (LeftTurnCount (length$ ?specificList))))
+	(printout eventoutput (str-cat "LeftTurnCount" " " (length$ ?specificList)))
+	)
 
 (defrule SpecificAgenda::集計：左カーブスピード：スローインファストアウトカーブ
 	(declare (salience 200))
@@ -154,8 +159,11 @@
 	=>
 	(printout t "⑱左カーブスピード 判定： スローインファストアウトカーブ" crlf)
 	(printout qt "プロファイル⑱左カーブスピード 特性判定： スローインファストアウトカーブ" crlf)
-	(bind ?*list* (modify ?*list* (LeftTurnState "スローインファストアウトカーブ")))
-	(bind ?*list* (modify ?*list* (LeftTurnCount (length$ ?specificList)))))
+	;(bind ?*list* (modify ?*list* (LeftTurnState "スローインファストアウトカーブ")))
+	(printout eventoutput "LeftTurnState スローインファストアウトカーブ")
+	;(bind ?*list* (modify ?*list* (LeftTurnCount (length$ ?specificList))))
+	(printout eventoutput (str-cat "LeftTurnCount" " " (length$ ?specificList)))
+	)
 
 (defrule SpecificAgenda::集計：左カーブスピード：減速カーブ
 	(declare (salience 200))
@@ -164,8 +172,11 @@
 	=>
 	(printout t "⑱左カーブスピード 判定： 減速カーブ" crlf)
 	(printout qt "プロファイル⑱左カーブスピード 特性判定： 減速カーブ" crlf)
-	(bind ?*list* (modify ?*list* (LeftTurnState "減速カーブ")))
-	(bind ?*list* (modify ?*list* (LeftTurnCount (length$ ?specificList)))))
+	;(bind ?*list* (modify ?*list* (LeftTurnState "減速カーブ")))
+	(printout eventoutput "LeftTurnState 減速カーブ")
+	;(bind ?*list* (modify ?*list* (LeftTurnCount (length$ ?specificList))))
+	(printout eventoutput (str-cat "LeftTurnCount" " " (length$ ?specificList)))
+	)
 	
 (defrule SpecificAgenda::集計：左カーブスピード：非減速カーブ
 	(declare (salience 200))
@@ -174,5 +185,8 @@
 	=>
 	(printout t "⑱左カーブスピード 判定： 非減速カーブ" crlf)
 	(printout qt "プロファイル⑱左カーブスピード 特性判定： 非減速カーブ" crlf)
-	(bind ?*list* (modify ?*list* (LeftTurnState "非減速カーブ")))
-	(bind ?*list* (modify ?*list* (LeftTurnCount (length$ ?specificList)))))
+	;(bind ?*list* (modify ?*list* (LeftTurnState "非減速カーブ")))
+	(printout eventoutput "LeftTurnState 非減速カーブ")
+	;(bind ?*list* (modify ?*list* (LeftTurnCount (length$ ?specificList))))
+	(printout eventoutput (str-cat "LeftTurnCount" " " (length$ ?specificList)))
+	)
