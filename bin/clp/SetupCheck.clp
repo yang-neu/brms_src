@@ -230,6 +230,7 @@
 	
 	(assert (EventSpeed (name "Current Receiving Data Stream") (speed ?speed) (time ?time) ))
 	(bind ?*list* (modify ?*list* (speed ?speed)))
+	(printout eventoutput (str-cat "speed" " " ?speed))
 	
 	;10秒前のfactは削除する
 	;(do-for-all-facts ((?t TableSpeed)) (< ?t:time (- ?time 10.0)) (retract ?t))

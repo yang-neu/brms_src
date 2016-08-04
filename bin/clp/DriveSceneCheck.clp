@@ -55,7 +55,9 @@
 	(printout t "シフトポジションRによる後退推移：" ?driveScene " -> REVERSE" crlf)
 	(printout qt "【運転シーン】 シフトポジションRによる後退推移：" ?driveScene " -> REVERSE" crlf)
 	(change-drive-scene ?state REVERSE)
-	(bind ?*list* (modify ?*list* (driveScene "後退"))))
+	(bind ?*list* (modify ?*list* (driveScene "後退")))
+	(printout eventoutput "driveScene 後退")
+	)
 ;by sun-chl add end 2016/02/29
 ;by sun-chl chg  2016/02/29 shiftPosition add
 (defrule SpecificAgenda::車速0による停車推移
@@ -70,7 +72,9 @@
 	(printout t "【運転シーン】 車速0による停車推移：" ?driveScene " -> STOP" crlf)
 	(driveSceneChangeAction ?state ?accelSpecific ?reduceSpecific)
 	(change-drive-scene ?state STOP)
-	(bind ?*list* (modify ?*list* (driveScene "停車"))))
+	(bind ?*list* (modify ?*list* (driveScene "停車")))
+	(printout eventoutput "driveScene 停車")
+	)
 
 ;by sun-chl chg 2016/02/29 Shift Position add
 (defrule SpecificAgenda::車速が1.6越えによる発進推移
@@ -83,7 +87,9 @@
 	(printout t "車速が1.6越えによる発進推移：" ?driveScene " -> START" crlf)
 	(printout qt "【運転シーン】 車速が1.6越えによる発進推移：" ?driveScene " -> START" crlf)
 	(change-drive-scene ?state START)
-	(bind ?*list* (modify ?*list* (driveScene "発進"))))
+	(bind ?*list* (modify ?*list* (driveScene "発進")))
+	(printout eventoutput "driveScene 発進")
+	)
 
 (defrule SpecificAgenda::車速が20越えによる定常走行推移
 	(declare (salience 502))
@@ -94,7 +100,9 @@
 	(printout t "車速が20越えによる定常走行推移：" ?driveScene " -> RUNNING" crlf)
 	(printout qt "【運転シーン】 車速が20越えによる定常走行推移：" ?driveScene " -> RUNNING" crlf)
 	(change-drive-scene ?state RUNNING)
-	(bind ?*list* (modify ?*list* (driveScene "定常走行"))))
+	(bind ?*list* (modify ?*list* (driveScene "定常走行")))
+	(printout eventoutput "driveScene 定常走行")
+	)
 	
 ;sunchl add 2016/03/22
 (defrule SpecificAgenda::加速度0.85越のカウントを算出する
@@ -147,7 +155,9 @@
 	(printout t "加速度0.85越えによる加速走行推移：" ?driveScene " -> ACCEL" crlf)
 	(printout qt "【運転シーン】 加速度0.85越えによる加速走行推移：" ?driveScene " -> ACCEL" crlf)
 	(change-drive-scene ?state ACCEL)
-	(bind ?*list* (modify ?*list* (driveScene "加速走行"))))
+	(bind ?*list* (modify ?*list* (driveScene "加速走行")))
+	(printout eventoutput "driveScene 加速走行")
+	)
 
 (defrule SpecificAgenda::加速度0.75未満による定常走行推移
 	(declare (salience 501))
@@ -163,7 +173,9 @@
 	(printout qt "【運転シーン】 加速度0.75未満による定常走行推移：" ?driveScene " -> RUNNING" crlf)
 	(driveSceneChangeAction ?state ?accelSpecific ?reduceSpecific)
 	(change-drive-scene ?state RUNNING)
-	(bind ?*list* (modify ?*list* (driveScene "定常走行"))))
+	(bind ?*list* (modify ?*list* (driveScene "定常走行")))
+	(printout eventoutput "driveScene 定常走行")
+	)
 
 (defrule SpecificAgenda::アクセル開度が0による減速走行推移
 	(declare (salience 500))
@@ -177,7 +189,9 @@
 	(printout qt "【運転シーン】 アクセル開度が0による減速走行推移：" ?driveScene " -> REDUCE" crlf)
 	(driveSceneChangeAction ?state ?accelSpecific ?reduceSpecific)
 	(change-drive-scene ?state REDUCE)
-	(bind ?*list* (modify ?*list* (driveScene "減速走行"))))
+	(bind ?*list* (modify ?*list* (driveScene "減速走行")))
+	(printout eventoutput "driveScene 減速走行")
+	)
 
 (defrule SpecificAgenda::アクセル開度が0越えによる定常走行推移
 	(declare (salience 500))
@@ -191,4 +205,6 @@
 	(printout qt "【運転シーン】 アクセル開度が0越えによる定常走行推移：" ?driveScene " -> RUNNING" crlf)
 	(driveSceneChangeAction ?state ?accelSpecific ?reduceSpecific)
 	(change-drive-scene ?state RUNNING)
-	(bind ?*list* (modify ?*list* (driveScene "定常走行"))))
+	(bind ?*list* (modify ?*list* (driveScene "定常走行")))
+	(printout eventoutput "driveScene 定常走行")
+	)

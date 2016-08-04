@@ -26,6 +26,7 @@ RouterInterface* ClipsSession::m_router = NULL;
 int ClipsSession::queryFunction(void *environment,const char *logicalName)
 {
     if (strcmp(logicalName,"qt") == 0
+    	|| strcmp(logicalName,"eventoutput") == 0
 #ifdef _DEBUG_CLIPS_
 		|| (fw.good() &&
 			(strcmp(logicalName,"stdout") == 0
@@ -64,7 +65,12 @@ int ClipsSession::printFunction(void *environment,const char *logicalName,const 
 		}
 
 		return TRUE;
+
+    } else if(m_router != NULL && string(logicalName) == "eventoutput") {
+    	m_router->displayData(str);
+    	return TRUE;
     }
+
  #ifdef _DEBUG_CLIPS_
 	else if (fw.good() &&
 		(string(logicalName) == "stdout"

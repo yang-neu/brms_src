@@ -225,7 +225,8 @@
 		(retract ?p)
 	)
 	(bind ?id 1)
-   　(send [FIFO] putData ?*AccelPeakHistList* ?id)
+   　;(send [FIFO] putData ?*AccelPeakHistList* ?id)
+    (printout eventoutput (str-cat "profile01" " " ?id " " (implode$ ?*AccelPeakHistList*)))
    　(printout t "+++++MakePreHistgram:"  ?*AccelPeakHistList* crlf)
    　(bind ?*AccelPeakHistList* (create$))
 )
@@ -265,7 +266,8 @@
 		
 	)
 	(bind ?id 1)
-   　(send [FIFO] putData ?*AccelPeakHistList* ?id)
+   　;(send [FIFO] putData ?*AccelPeakHistList* ?id)
+    (printout eventoutput (str-cat "profile01" " " ?id " " (implode$ ?*AccelPeakHistList*)))
    　(printout t "+++++MakeCurHistgram:　"  ?*AccelPeakHistList* crlf)
    　(bind ?*AccelPeakHistList* (create$))
 
@@ -379,7 +381,8 @@
 	
 	
 	(bind ?id 2)
-   　(send [FIFO] putData ?preStatus ?id)
+   　;(send [FIFO] putData ?preStatus ?id)
+    (printout eventoutput (str-cat "profile01" " " ?id " " (implode$ ?preStatus))) 
    　(printout t "++++++Insert Previous Profile1 data to FIFO:"  ?preStatus crlf)
 	
 )
@@ -535,7 +538,8 @@
 		
 		
 		(bind ?id 2)
-	   　(send [FIFO] putData ?*AccelPeakHistList* ?id)
+	   　;(send [FIFO] putData ?*AccelPeakHistList* ?id)
+  	    (printout eventoutput (str-cat "profile01" " " ?id " " (implode$ ?*AccelPeakHistList*))) 
 	   　(printout t "++++++Insert Profile1 data to FIFO:"  ?*AccelPeakHistList* crlf)
 		(bind ?*AccelPeakHistList* (create$))
 		

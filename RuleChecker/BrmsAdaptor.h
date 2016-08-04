@@ -23,6 +23,7 @@ public:
     void init(int argc, char *argv[]);
     void start();
     virtual  int printFunction(void *environment,const char *logicalName,const char *str);
+    virtual  int displayData(const char *str);
     virtual int debugInfo(DEBUG_TYPE type);
     virtual int comDataSize(unsigned int size);
    // bool switchInput() { return isDebug; }
@@ -144,7 +145,7 @@ protected:
     int m_Interval;
     void timerEvent(QTimerEvent *event);
     void updateAll();
-    void updateAccelInfo();
+    void updateAccelInfo(vector<std::string> data);
 
     BRMS *m_brms;
 };

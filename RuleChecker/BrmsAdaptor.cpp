@@ -1,9 +1,11 @@
 
 #include <QDebug>
 #include <QString>
+#include <QTextCodec>
 #include "BrmsAdaptor.h"
 #include "stdlib.h" //rand() for Debug
 #include "time.h" //time() for Debug
+#include <sstream>
 
 BrmsAdaptor::BrmsAdaptor( QObject *parent) :
     QObject(parent), m_Interval(100),m_TimerID(0), isDebug(false), flagIG(true)
@@ -43,6 +45,70 @@ int BrmsAdaptor::printFunction(void *environment,const char *logicalName,const c
 #endif
     return 1;
 }
+
+int string2int(string str){
+    stringstream ss(str);
+    int ret;
+    ss<<str;
+    ss>>ret;
+    return ret;
+}
+double string2double(string str) {
+    stringstream ss(str);
+    double ret;
+    ss<<str;
+    ss>>ret;
+    return ret;
+}
+QString string2QString(string str) {
+    //QTextCodec* tc = QTextCodec::codecForLocale();
+    //QTextCodec *sjis = QTextCodec::codecForName("Shift-JIS");
+    QTextCodec *utf8 = QTextCodec::codecForName("UTF-8");
+    return QString(utf8->toUnicode(str.c_str()));
+}
+
+int BrmsAdaptor::displayData(const char *str)
+{
+//    qDebug()<<"logic Name:"<<logicalName<<" ->"<<str;
+
+    if (strlen(str) == 0)
+    {
+        //qDebug()<<"BrmsAdaptor::printFunction logic Name:"<<logicalName<<" ->"<<str;
+        return -1;
+    }
+
+
+    //strを空白区切りでdataに読み込む
+    stringstream ss(str);
+    string tmp;
+    vector<std::string> data;
+
+    while(getline(ss, tmp, ' ')) {
+        //cout << tmp << endl;
+        data.push_back(tmp);
+    }
+    ss.str("");
+    ss.clear(stringstream::goodbit);
+
+
+    //データの種別を取得する
+    string kind = data.at(0);
+    //cout << "knid="<<kind << endl;
+
+
+    //データの種別によって処理を実施する
+    if("profile01" == kind) {
+        updateAccelInfo(data);
+    } else if("speed" == kind && 2 == data.size()) {
+        emit speedChanged(string2double(data.at(1)));
+    } else if("driveScene" == kind && 2 == data.size()) {
+        emit driveSceneChanged(string2QString(data.at(1)));
+    }
+
+    return 1;
+
+}
+
 void BrmsAdaptor::start()
 {
     m_TimerID = startTimer(m_Interval);
@@ -59,8 +125,8 @@ void BrmsAdaptor::timerEvent(QTimerEvent *event)
 {
     if (event->timerId() == m_TimerID)
     {
-        updateAll();
-        updateAccelInfo();
+        //updateAll();
+        //updateAccelInfo();
     }
 }
 
@@ -119,53 +185,53 @@ void BrmsAdaptor::updateAll()
 
 QString gTripDataKind = "old";
 float threeSigma=99.9;
-void BrmsAdaptor::updateAccelInfo()
+void BrmsAdaptor::updateAccelInfo(vector<std::string> data)
 {
     unsigned int i = 0;
-    int data_i = 0;
-    float data_f = 0;
+    // data_i = 0;
+    //float data_f = 0;
 
-    vector<FieldAndValue> data = m_brms->getCommonData();
+    //vector<FieldAndValue> data = m_brms->getCommonData();
     if(data.empty())
     {
         //nothing to do
         //cout << "++++++++++Do nothing!" << endl;
     }
     else{
-        if(1 == (int)data[0].data.i_value){
-            for (i=1; i<data.size(); i=i+2)
+        if(1 == string2int(data.at(1))){
+            for (i=2; i<data.size(); i=i+2)
             {
-                if(0 != data[i].type && 1 != data[i+1].type) {
-                    cout << "Error: the structure of vector is incorrect" << endl;
-                    return;
-                }
+                //if(0 != data[i].type && 1 != data[i+1].type) {
+                //    cout << "Error: the structure of vector is incorrect" << endl;
+                //    return;
+                //}
 
-                data_f=(float)data[i].data.f_value; //[1]accell
-                data_i=(int)data[i+1].data.i_value; //[2]count
+                //data_f=(float)data[i].data.f_value; //[1]accell
+                //data_i=(int)data[i+1].data.i_value; //[2]count
 
-                if(data_f>=threeSigma) {
-                    emit accelInfoChanged(gTripDataKind, data_f, data_i, "caution");
+                if(string2double(data.at(i))>=threeSigma) {
+                    emit accelInfoChanged(gTripDataKind, string2double(data.at(i)), string2int(data.at(i+1)), "caution");
                 }else{
-                    emit accelInfoChanged(gTripDataKind, data_f, data_i, "none");
+                    emit accelInfoChanged(gTripDataKind, string2double(data.at(i)), string2int(data.at(i+1)), "none");
                 }
                 //cout << "Accel : " << data_f << " count : " << data_i << endl;
             }
             cout << "-----" << endl;
             gTripDataKind="this";
 
-        }else if(2 == (int)data[0].data.i_value){
-            for (i=1; i<data.size(); i=i+13)
+        }else if(2 == string2int(data.at(1))){
+            for (i=2; i<data.size(); i=i+13)
             {
                 //i=i; //(int)data[i].data.i_value; //[1]diffAlways
-                int count =(int)data[i+1].data.i_value; //[2]Cnt3Sigma
-                float variance =(float)data[i+2].data.f_value; //[3]Sigma
-                float thisAve =(float)data[i+3].data.f_value; //[4]currentAveSpeed
-                float oldAve =(float)data[i+4].data.f_value; //[5]previousAveSpeed
-                float rate =(float)data[i+5].data.f_value; //[6]PercentageofSudAcc
-                int thisNum =(int)data[i+6].data.i_value; //[7]currentSampling
-                int oldNum =(int)data[i+7].data.i_value; //[8]previousSampling
-                float aMax=(float)data[i+8].data.f_value; // [9]MaxAccelofScene
-                QString state = (QString)data[i+9].data.s_value; //[10]AccelJudgement
+                int count =string2int(data.at(i+1));//(int)data[i+1].data.i_value; //[2]Cnt3Sigma
+                float variance =string2double(data.at(i+2));//(float)data[i+2].data.f_value; //[3]Sigma
+                float thisAve =string2double(data.at(i+3));//(float)data[i+3].data.f_value; //[4]currentAveSpeed
+                float oldAve =string2double(data.at(i+4));//(float)data[i+4].data.f_value; //[5]previousAveSpeed
+                float rate =string2double(data.at(i+5));//(float)data[i+5].data.f_value; //[6]PercentageofSudAcc
+                int thisNum =string2int(data.at(i+6));//(int)data[i+6].data.i_value; //[7]currentSampling
+                int oldNum =string2int(data.at(i+7));//(int)data[i+7].data.i_value; //[8]previousSampling
+                float aMax=string2double(data.at(i+8));//(float)data[i+8].data.f_value; // [9]MaxAccelofScene
+                QString state = string2QString(data.at(i+9));//(QString)data[i+9].data.s_value; //[10]AccelJudgement
                 //i++; //(QString)data[i+10].data.s_value;//[11]VihicleState
                 //i++; //(float)data[i+11].data.f_value;//[12]accel
                 //i++; //(float)data[i+12].data.f_value;//[13]speed

@@ -12,8 +12,8 @@ Window {
     height: 768;
     color: "#eeeeee";
 
-    property double m_Speed: 250;
-    property string driveScene:"AddSpeedRunning";
+    property double m_Speed: 0;
+    property string driveScene:"停車";
 
     property int accelCharacteristic: 0;
 
@@ -73,10 +73,11 @@ Window {
         }
 
         onAccelCharacteristicChanged: {
-            if("急加速しない" == state) {
+            localfunc.printConsoleLog(state);
+            if("\"急加速しない\"" == state) {
                 stateNormalAccel.border.color = "blue"
                 stateSuddenAccel.border.color = "transparent"
-            }else if("急加速しがち" == state){
+            }else if("\"急加速しがち\"" == state){
                 stateNormalAccel.border.color = "transparent"
                 stateSuddenAccel.border.color = "blue"
             }else{ //未定義
