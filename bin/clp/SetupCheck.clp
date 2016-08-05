@@ -111,6 +111,14 @@
 		(return (create$))
 	)
 )
+(deffunction SpecificAgenda::getFact(?fact-address-or-index)
+	(bind ?ret (fact-relation ?fact-address-or-index))
+	(foreach ?name (fact-slot-names ?fact-address-or-index)
+		(bind ?ret (str-cat ?ret "," (fact-slot-value ?fact-address-or-index ?name)))
+	)
+	;(printout eventoutput ?ret)
+	(return ?ret)
+)
 	
 ;==================================================
 ; Rule(SetupCheck.clp)
