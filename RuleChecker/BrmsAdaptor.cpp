@@ -71,7 +71,7 @@ int BrmsAdaptor::displayData(const char *str)
 {
 //    qDebug()<<"logic Name:"<<logicalName<<" ->"<<str;
 
-    if (strlen(str) == 0)
+    if (strlen(str) == 0 || strcmp(str," ") == 0)
     {
         //qDebug()<<"BrmsAdaptor::printFunction logic Name:"<<logicalName<<" ->"<<str;
         return -1;
@@ -83,7 +83,7 @@ int BrmsAdaptor::displayData(const char *str)
     string tmp;
     vector<std::string> data;
 
-    while(getline(ss, tmp, ' ')) {
+    while(getline(ss, tmp, ',')) {
         //cout << tmp << endl;
         data.push_back(tmp);
     }
@@ -99,25 +99,25 @@ int BrmsAdaptor::displayData(const char *str)
     //データの種別によって処理を実施する
     if("profile01" == kind) {
         updateAccelInfo(data);
-    } else if("speed" == kind && 2 == data.size()) {
-        emit speedChanged(string2double(data.at(1)));
+    } else if("EventSpeed" == kind && 6 == data.size()) {
+        emit speedChanged(string2double(data.at(3)));
     } else if("driveScene" == kind && 2 == data.size()) {
         emit driveSceneChanged(string2QString(data.at(1)));
-    } else if("distance" == kind && 2 == data.size()) {
-        emit distanceChanged(string2double(data.at(1)));
+    } else if("EventDistance" == kind && 6 == data.size()) {
+        emit distanceChanged(string2double(data.at(3)));
     } else if("shiftPosition" == kind && 2 == data.size()) {
         //emit TBD(string2double(data.at(1)));
-    } else if("steeringangle" == kind && 2 == data.size()) {
+    } else if("EventSteeringAngle" == kind && 6 == data.size()) {
         //emit TBD(string2double(data.at(1)));
-    } else if("accelOpen" == kind && 2 == data.size()) {
-        emit accelChanged(string2double(data.at(1)));
+    } else if("EventAccelOpen" == kind && 6 == data.size()) {
+        emit accelChanged(string2double(data.at(3)));
     } else if("roadClassSig" == kind && 2 == data.size()) {
         emit roadClassSigChanged(string2QString(data.at(1)));
     } else if("roadClass" == kind && 2 == data.size()) {
         emit roadKindChanged(string2QString(data.at(1)));
-    } else if("accel" == kind && 2 == data.size()) {
+    } else if("EventAcceleration" == kind && 2 == data.size()) {
         emit aChanged(string2double(data.at(1)));
-    } else if("TTC" == kind && 2 == data.size()) {
+    } else if("EventDistanceDiff" == kind && 2 == data.size()) {
         emit ttcChanged(string2double(data.at(1)));
     } else if("steeringAngleAccel" == kind && 2 == data.size()) {
         //emit TBD(string2double(data.at(1)));
@@ -134,7 +134,7 @@ int BrmsAdaptor::displayData(const char *str)
     } else if("RightTurnState" == kind && 2 == data.size()) {
         //emit TBD(string2double(data.at(1)));
     } else {
-        cout << "Warning: BrmsAdaptor::displayData knid="<<kind<<" is undefined." << endl; 
+        cout << "[Warning] BrmsAdaptor::displayData knid='"<<kind<<"' is undefined." << endl; 
     }
 
 

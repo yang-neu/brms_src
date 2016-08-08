@@ -7,31 +7,31 @@
 	(switch ?value
 	(case 0 then
 		;(bind ?*list* (modify ?*list* (roadClassSig "高速自動車道路")))
-		(printout eventoutput "roadClassSig 高速自動車道路")
+		(printout eventoutput "roadClassSig,高速自動車道路")
 		(bind ?tmp EXPRESSWAY))
 	(case 1 then
 		;(bind ?*list* (modify ?*list* (roadClassSig "都市高速道路")))
-		(printout eventoutput "roadClassSig 都市高速道路")
+		(printout eventoutput "roadClassSig,都市高速道路")
 		(bind ?tmp EXPRESSWAY))
 	(case 2 then
 		;(bind ?*list* (modify ?*list* (roadClassSig "国道")))
-		(printout eventoutput "roadClassSig 国道")
+		(printout eventoutput "roadClassSig,国道")
 		(bind ?tmp OPENROAD))
 	(case 3 then
 		;(bind ?*list* (modify ?*list* (roadClassSig "主要地方道")))
-		(printout eventoutput "roadClassSig 主要地方道")
+		(printout eventoutput "roadClassSig,主要地方道")
 		(bind ?tmp OPENROAD))
 	(case 4 then
 		;(bind ?*list* (modify ?*list* (roadClassSig "主要地方道（都道府県道）")))
-		(printout eventoutput "roadClassSig 主要地方道（都道府県道）")
+		(printout eventoutput "roadClassSig,主要地方道（都道府県道）")
 		(bind ?tmp OPENROAD))
 	(case 5 then
 		;(bind ?*list* (modify ?*list* (roadClassSig "一般道(幹線)")))
-		(printout eventoutput "roadClassSig 一般道(幹線)")
+		(printout eventoutput "roadClassSig,一般道(幹線)")
 		(bind ?tmp OPENROAD))
 	(case 6 then
 		;(bind ?*list* (modify ?*list* (roadClassSig "一般道（その他案内道）")))
-		(printout eventoutput "roadClassSig 一般道（その他案内道）")
+		(printout eventoutput "roadClassSig,一般道（その他案内道）")
 		(bind ?tmp OPENROAD)))
 
 	(return ?tmp))
@@ -189,7 +189,7 @@
 	(bind ?new (assert (EventShiftState (name "Current Receiving Data Stream") (value ?value) (time ?time) (type ?type))))
 	(duplicate ?new (name "latestHistory Stream"))
 	;(bind ?*list* (modify ?*list* (shiftPosition ?value)))
-	(printout eventoutput (str-cat "shiftPosition" " " ?value))
+	(printout eventoutput (str-cat "shiftPosition" "," ?value))
 	)
 ;by sun-chl end start 2016/02/29
 
@@ -216,9 +216,10 @@
 
 	(printout qt "**** 最新のハンドル舵角情報を取り出す : " ?steeringangle " ******" crlf)
 
-	(assert (EventSteeringAngle (name "Current Receiving Data Stream") (value ?steeringangle) (time ?time) (type STEERING_ANGLE)))
+	(bind ?p (assert (EventSteeringAngle (name "Current Receiving Data Stream") (value ?steeringangle) (time ?time) (type STEERING_ANGLE))))
 	;(bind ?*list* (modify ?*list* (steeringangle ?steeringangle)))
-	(printout eventoutput (str-cat "steeringangle" " " ?steeringangle))
+	;(printout eventoutput (str-cat "steeringangle" " " ?steeringangle))
+	(printout eventoutput (getFact ?p))
 
 	;10秒前のfactは削除する
 	;(do-for-all-facts ((?t TableSpeed)) (< ?t:time (- ?time 10.0)) (retract ?t))
@@ -246,9 +247,10 @@
 	
 	(printout t "+++++ Get lastest speed : " ?speed " ******" crlf)
 	
-	(assert (EventSpeed (name "Current Receiving Data Stream") (speed ?speed) (time ?time) ))
+	(bind ?p (assert (EventSpeed (name "Current Receiving Data Stream") (speed ?speed) (time ?time) )))
 	;(bind ?*list* (modify ?*list* (speed ?speed)))
-	(printout eventoutput (str-cat "speed" " " ?speed))
+	;(printout eventoutput (str-cat "speed" " " ?speed))
+	(printout eventoutput (getFact ?p))
 	
 	;10秒前のfactは削除する
 	;(do-for-all-facts ((?t TableSpeed)) (< ?t:time (- ?time 10.0)) (retract ?t))
@@ -269,9 +271,10 @@
 	(bind ?type (nth$ 2 ?lastest))
 	(bind ?accelOpen (/ (nth$ 3 ?lastest) 2.0))
 	
-	(assert (EventAccelOpen (name "Current Receiving Data Stream") (accelOpen ?accelOpen) (time ?time) (type ?type)))
+	(bind ?p (assert (EventAccelOpen (name "Current Receiving Data Stream") (accelOpen ?accelOpen) (time ?time) (type ?type))))
 	;(bind ?*list* (modify ?*list* (accelOpen ?accelOpen)))
-	(printout eventoutput (str-cat "accelOpen" " " ?accelOpen))
+	;(printout eventoutput (str-cat "accelOpen" " " ?accelOpen))
+	(printout eventoutput (getFact ?p))
 	)
 
 (defrule SpecificAgenda::最新の車間距離情報を取り出す
@@ -294,9 +297,10 @@
 	(bind ?distance (fact-slot-value (expand$ ?latests) distance))
 	(bind ?time (fact-slot-value (expand$ ?latests) time))
 	
-	(assert (EventDistance (name "Current Receiving Data Stream") (distance ?distance) (time ?time) (type VEHICLE_FOLLOWING_DISTANCE)))
+	(bind ?p (assert (EventDistance (name "Current Receiving Data Stream") (distance ?distance) (time ?time) (type VEHICLE_FOLLOWING_DISTANCE))))
 	;(bind ?*list* (modify ?*list* (distance ?distance)))
-	(printout eventoutput (str-cat "distance" " " ?distance))
+	;(printout eventoutput (str-cat "distance" " " ?distance))
+	(printout eventoutput (getFact ?p))
 
 	;10秒前のfactは削除する
 	;(do-for-all-facts ((?t TableDistance)) (< ?t:time (- ?time 10.0)) (retract ?t)))
@@ -329,7 +333,7 @@
 	?x <- (EventRoadClass (name "Current Receiving Data Stream") (type ROAD_CLASS) (roadClass EXPRESSWAY))
 	=>
 	;(bind ?*list* (modify ?*list* (roadClass "高速道路")))
-	(printout eventoutput "roadClass 高速道路")
+	(printout eventoutput "roadClass,高速道路")
 	)
 
 (defrule SpecificAgenda::走行道路を判断する:一般道路
@@ -338,7 +342,7 @@
 	?x <- (EventRoadClass (name "Current Receiving Data Stream") (type ROAD_CLASS) (roadClass OPENROAD))
 	=>
 	;(bind ?*list* (modify ?*list* (roadClass "一般道路")))
-	(printout eventoutput "roadClass 一般道路")
+	(printout eventoutput "roadClass,一般道路")
 	)
 
 (defrule SpecificAgenda::加速度を計算する
@@ -357,7 +361,7 @@
 		(bind ?time2 (nth$ 5 ?beforeS))
 		
 		(bind ?acceleration (getAccelerationValue ?speed1 ?speed2 (- ?time1 ?time2)))
-		(assert (EventAcceleration (name "Calculation Stream") (acceleration ?acceleration)))
+		(bind ?p (assert (EventAcceleration (name "Calculation Stream") (acceleration ?acceleration))))
 		(format qt "==== speed : %4.1f, accel : %3.2f%n"  ?speed1 ?acceleration)
 		(printout t "+++++ speed : " ?speed1 ", accel : " ?acceleration " ******" crlf)
 		
@@ -367,7 +371,8 @@
 		(duplicate ?afterS (name "latestHistory Stream"))
 		
 		;(bind ?*list* (modify ?*list* (accel ?acceleration)))
-		(printout eventoutput (str-cat "accel" " " ?acceleration))
+		;(printout eventoutput (str-cat "accel" " " ?acceleration))
+		(printout eventoutput (getFact ?afterS))
 		))
 
 (defrule SpecificAgenda::車間距離差分を計算する
@@ -400,7 +405,8 @@
 		(retract ?latest)
 		(duplicate ?afterS (name "latestHistory Stream"))
 		;(bind ?*list* (modify ?*list* (TTC ?TTC)))
-		(printout eventoutput (str-cat "TTC" " " ?TTC))
+		;(printout eventoutput (str-cat "TTC" " " ?TTC))
+		(printout eventoutput (getFact ?afterS))
 		))
 
 (defrule SpecificAgenda::100ms前の車間距離差分を計算する
@@ -510,7 +516,8 @@
 	(duplicate ?afterS (name "latestHistory Stream"))
 
 	;(bind ?*list* (modify ?*list* (steeringAngleAccel ?acceleration)))
-	(printout eventoutput (str-cat "steeringAngleAccel" " " ?acceleration))
+	;(printout eventoutput (str-cat "steeringAngleAccel" " " ?acceleration))
+	(printout eventoutput (getFact ?afterS))
 	))
 
 (defrule SpecificAgenda::古いTableSppedを削除する

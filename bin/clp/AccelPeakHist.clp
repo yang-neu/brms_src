@@ -219,14 +219,14 @@
 		
 			(bind ?AccelInfoList (fact-slot-value ?p acceleration))
 			(bind ?CountInfoList (fact-slot-value ?p count))
-			(bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 ?AccelInfoList ?CountInfoList))
+			(bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 ?AccelInfoList , ?CountInfoList ,))
 			;(printout t "++++++Accel Peak info is:" ?*AccelPeakHistList* crlf)
 		)
 		(retract ?p)
 	)
 	(bind ?id 1)
    　;(send [FIFO] putData ?*AccelPeakHistList* ?id)
-    (printout eventoutput (str-cat "profile01" " " ?id " " (implode$ ?*AccelPeakHistList*)))
+    (printout eventoutput (str-cat "profile01" "," ?id "," (implode$ ?*AccelPeakHistList*)))
    　(printout t "+++++MakePreHistgram:"  ?*AccelPeakHistList* crlf)
    　(bind ?*AccelPeakHistList* (create$))
 )
@@ -259,7 +259,7 @@
 		
 			(bind ?AccelInfoList (fact-slot-value ?p acceleration))
 			(bind ?CountInfoList (fact-slot-value ?p count))
-			(bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 ?AccelInfoList ?CountInfoList))
+			(bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 ?AccelInfoList , ?CountInfoList ,))
 			;(printout t "++++++Accel Peak info is:" ?*AccelPeakHistList* crlf)
 		)
 		(modify ?p (count  0))
@@ -267,7 +267,7 @@
 	)
 	(bind ?id 1)
    　;(send [FIFO] putData ?*AccelPeakHistList* ?id)
-    (printout eventoutput (str-cat "profile01" " " ?id " " (implode$ ?*AccelPeakHistList*)))
+    (printout eventoutput (str-cat "profile01" "," ?id "," (implode$ ?*AccelPeakHistList*)))
    　(printout t "+++++MakeCurHistgram:　"  ?*AccelPeakHistList* crlf)
    　(bind ?*AccelPeakHistList* (create$))
 
@@ -375,14 +375,14 @@
 
 	(bind ?preStatus (create$))
 	(foreach ?n (fact-slot-names ?p1)
-		(bind ?preStatus (insert$ ?preStatus 1 (fact-slot-value ?p1 ?n)))
+		(bind ?preStatus (insert$ ?preStatus 1 (fact-slot-value ?p1 ?n) , ))
 	)
 	
 	
 	
 	(bind ?id 2)
    　;(send [FIFO] putData ?preStatus ?id)
-    (printout eventoutput (str-cat "profile01" " " ?id " " (implode$ ?preStatus))) 
+    (printout eventoutput (str-cat "profile01" "," ?id "," (implode$ ?preStatus))) 
    　(printout t "++++++Insert Previous Profile1 data to FIFO:"  ?preStatus crlf)
 	
 )
@@ -532,14 +532,14 @@
 									)))
 
 		(foreach ?n (fact-slot-names ?p1)
-			(bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 (fact-slot-value ?p1 ?n)))
+			(bind ?*AccelPeakHistList* (insert$ ?*AccelPeakHistList* 1 (fact-slot-value ?p1 ?n) , ))
 		)
 		
 		
 		
 		(bind ?id 2)
 	   　;(send [FIFO] putData ?*AccelPeakHistList* ?id)
-  	    (printout eventoutput (str-cat "profile01" " " ?id " " (implode$ ?*AccelPeakHistList*))) 
+  	    (printout eventoutput (str-cat "profile01" "," ?id "," (implode$ ?*AccelPeakHistList*))) 
 	   　(printout t "++++++Insert Profile1 data to FIFO:"  ?*AccelPeakHistList* crlf)
 		(bind ?*AccelPeakHistList* (create$))
 		
