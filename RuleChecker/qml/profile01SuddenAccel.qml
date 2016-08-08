@@ -73,11 +73,11 @@ Window {
         }
 
         onAccelCharacteristicChanged: {
-            localfunc.printConsoleLog(state);
-            if("\"急加速しない\"" == state) {
+            localfunc.printConsoleLog("'"+state+"'");
+            if(" \"急加速しない\" " == state) {
                 stateNormalAccel.border.color = "blue"
                 stateSuddenAccel.border.color = "transparent"
-            }else if("\"急加速しがち\"" == state){
+            }else if(" \"急加速しがち\" " == state){
                 stateNormalAccel.border.color = "transparent"
                 stateSuddenAccel.border.color = "blue"
             }else{ //未定義
